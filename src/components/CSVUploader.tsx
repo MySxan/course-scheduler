@@ -1,13 +1,15 @@
-import React, { useRef, useState } from 'react';
-import Papa from 'papaparse';
-import type { Course, CSVRow, DayOfWeek } from '../types/course';
-import { generateId } from '../utils/helpers';
+import React, { useRef, useState } from "react";
+import Papa from "papaparse";
+import type { Course, CSVRow, DaysOfWeek } from "../types/course";
+import { generateId } from "../utils/helpers";
 
 interface CSVUploaderProps {
   onCoursesLoaded: (courses: Course[]) => void;
 }
 
-export const CSVUploader: React.FC<CSVUploaderProps> = ({ onCoursesLoaded }) => {
+export const CSVUploader: React.FC<CSVUploaderProps> = ({
+  onCoursesLoaded,
+}) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -18,23 +20,23 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({ onCoursesLoaded }) => 
     return timeRegex.test(time);
   };
 
-  const normalizeDay = (day: string): DayOfWeek | null => {
+  const normalizeDay = (day: string): DaysOfWeek | null => {
     const normalizedDay = day.trim().toLowerCase();
-    const dayMap: Record<string, DayOfWeek> = {
-      'monday': 'Monday',
-      'mon': 'Monday',
-      'tuesday': 'Tuesday',
-      'tue': 'Tuesday',
-      'wednesday': 'Wednesday',
-      'wed': 'Wednesday',
-      'thursday': 'Thursday',
-      'thu': 'Thursday',
-      'friday': 'Friday',
-      'fri': 'Friday',
-      'saturday': 'Saturday',
-      'sat': 'Saturday',
-      'sunday': 'Sunday',
-      'sun': 'Sunday'
+    const dayMap: Record<string, DaysOfWeek> = {
+      monday: "Monday",
+      mon: "Monday",
+      tuesday: "Tuesday",
+      tue: "Tuesday",
+      wednesday: "Wednesday",
+      wed: "Wednesday",
+      thursday: "Thursday",
+      thu: "Thursday",
+      friday: "Friday",
+      fri: "Friday",
+      saturday: "Saturday",
+      sat: "Saturday",
+      sunday: "Sunday",
+      sun: "Sunday",
     };
     return dayMap[normalizedDay] || null;
   };
@@ -43,8 +45,8 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({ onCoursesLoaded }) => 
     const file = event.target.files?.[0];
     if (!file) return;
 
-    if (file.type !== 'text/csv' && !file.name.endsWith('.csv')) {
-      setError('Please select a valid CSV file');
+    if (file.type !== "text/csv" && !file.name.endsWith(".csv")) {
+      setError("Please select a valid CSV file");
       return;
     }
 
@@ -59,32 +61,32 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({ onCoursesLoaded }) => 
         // Normalize header names to match our expected format
         const normalized = header.trim().toLowerCase();
         switch (normalized) {
-          case 'course name':
-          case 'coursename':
-          case 'name':
-            return 'name';
-          case 'day of week':
-          case 'dayofweek':
-          case 'day':
-            return 'day';
-          case 'start time':
-          case 'starttime':
-          case 'start':
-            return 'startTime';
-          case 'end time':
-          case 'endtime':
-          case 'end':
-            return 'endTime';
-          case 'location':
-          case 'room':
-            return 'location';
+          case "course name":
+          case "coursename":
+          case "name":
+            return "name";
+          case "day of week":
+          case "dayofweek":
+          case "day":
+            return "day";
+          case "start time":
+          case "starttime":
+          case "start":
+            return "startTime";
+          case "end time":
+          case "endtime":
+          case "end":
+            return "endTime";
+          case "location":
+          case "room":
+            return "location";
           default:
             return header;
         }
       },
       complete: (results) => {
         setIsLoading(false);
-        
+
         if (results.errors.length > 0) {
           setError(`CSV parsing error: ${results.errors[0].message}`);
           return;
@@ -117,10 +119,23 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({ onCoursesLoaded }) => 
             return;
           }
 
-          // Validate day of week
-          const dayOfWeek = normalizeDay(row.day);
-          if (!dayOfWeek) {
-            errors.push(`Row ${rowNumber}: Invalid day of week "${row.day}"`);
+          // Validate day(s) of week - handle single day or comma-separated days
+          const dayStrings = row.day.split(",").map((d) => d.trim());
+          const daysOfWeek: DaysOfWeek[] = [];
+
+          for (const dayStr of dayStrings) {
+            const dayOfWeek = normalizeDay(dayStr);
+            if (!dayOfWeek) {
+              errors.push(`Row ${rowNumber}: Invalid day of week "${dayStr}"`);
+              return;
+            }
+            if (!daysOfWeek.includes(dayOfWeek)) {
+              daysOfWeek.push(dayOfWeek);
+            }
+          }
+
+          if (daysOfWeek.length === 0) {
+            errors.push(`Row ${rowNumber}: No valid days of week found`);
             return;
           }
 
@@ -129,18 +144,22 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({ onCoursesLoaded }) => 
           const endTime = row.endTime.trim();
 
           if (!validateTime(startTime)) {
-            errors.push(`Row ${rowNumber}: Invalid start time format "${startTime}". Use HH:mm format`);
+            errors.push(
+              `Row ${rowNumber}: Invalid start time format "${startTime}". Use HH:mm format`
+            );
             return;
           }
 
           if (!validateTime(endTime)) {
-            errors.push(`Row ${rowNumber}: Invalid end time format "${endTime}". Use HH:mm format`);
+            errors.push(
+              `Row ${rowNumber}: Invalid end time format "${endTime}". Use HH:mm format`
+            );
             return;
           }
 
           // Validate that end time is after start time
-          const [startHour, startMin] = startTime.split(':').map(Number);
-          const [endHour, endMin] = endTime.split(':').map(Number);
+          const [startHour, startMin] = startTime.split(":").map(Number);
+          const [endHour, endMin] = endTime.split(":").map(Number);
           const startMinutes = startHour * 60 + startMin;
           const endMinutes = endHour * 60 + endMin;
 
@@ -153,62 +172,72 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({ onCoursesLoaded }) => 
           validCourses.push({
             id: generateId(),
             name: row.name.trim(),
-            dayOfWeek,
+            daysOfWeek,
             startTime,
             endTime,
-            location: row.location?.trim() || undefined
+            location: row.location?.trim() || undefined,
           });
         });
 
         if (errors.length > 0) {
-          setError(`Found ${errors.length} error(s):\n${errors.slice(0, 5).join('\n')}${errors.length > 5 ? '\n...and more' : ''}`);
+          setError(
+            `Found ${errors.length} error(s):\n${errors.slice(0, 5).join("\n")}${errors.length > 5 ? "\n...and more" : ""}`
+          );
           return;
         }
 
         if (validCourses.length === 0) {
-          setError('No valid courses found in the CSV file');
+          setError("No valid courses found in the CSV file");
           return;
         }
 
         onCoursesLoaded(validCourses);
         setSuccess(`Successfully imported ${validCourses.length} course(s)`);
-        
+
         // Clear the file input
         if (fileInputRef.current) {
-          fileInputRef.current.value = '';
+          fileInputRef.current.value = "";
         }
       },
       error: (error) => {
         setIsLoading(false);
         setError(`Failed to parse CSV: ${error.message}`);
-      }
+      },
     });
   };
 
   const downloadSampleCSV = () => {
     const sampleData = [
-      ['name', 'day', 'startTime', 'endTime', 'location'],
-      ['Mathematics 101', 'Monday', '09:00', '10:30', 'Room A101'],
-      ['Physics Lab', 'Wednesday', '14:00', '16:00', 'Lab B205'],
-      ['English Literature', 'Friday', '11:00', '12:30', 'Room C301']
+      ["name", "day", "startTime", "endTime", "location"],
+      [
+        "Mathematics 101",
+        "Monday,Wednesday,Friday",
+        "09:00",
+        "10:30",
+        "Room A101",
+      ],
+      ["Physics Lab", "Tuesday,Thursday", "14:00", "16:00", "Lab B205"],
+      ["English Literature", "Friday", "11:00", "12:30", "Room C301"],
     ];
 
-    const csvContent = sampleData.map(row => row.join(',')).join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const csvContent = sampleData.map((row) => row.join(",")).join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
-    
-    const link = document.createElement('a');
+
+    const link = document.createElement("a");
     link.href = url;
-    link.download = 'sample_courses.csv';
+    link.download = "sample_courses.csv";
     link.click();
-    
+
     URL.revokeObjectURL(url);
   };
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md">
-      <h2 className="text-xl font-semibold mb-4 text-gray-800">Upload Courses from CSV</h2>
-      
+      <h2 className="text-xl font-semibold mb-4 text-gray-800">
+        Upload Courses from CSV
+      </h2>
+
       <div className="space-y-4">
         <div className="flex items-center gap-4">
           <input
@@ -219,7 +248,7 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({ onCoursesLoaded }) => 
             disabled={isLoading}
             className="file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 file:cursor-pointer cursor-pointer"
           />
-          
+
           <button
             onClick={downloadSampleCSV}
             className="text-sm text-blue-600 hover:text-blue-800 underline"
@@ -251,7 +280,10 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({ onCoursesLoaded }) => 
           <p className="font-medium mb-2">CSV Format Requirements:</p>
           <ul className="list-disc list-inside space-y-1 text-xs">
             <li>Headers: name, day, startTime, endTime, location (optional)</li>
-            <li>Day: Full day name (Monday) or abbreviation (Mon)</li>
+            <li>
+              Day: Full day name (Monday) or abbreviation (Mon). Use
+              comma-separated for multiple days (Monday,Wednesday,Friday)
+            </li>
             <li>Time: 24-hour format (HH:mm) like 09:00 or 14:30</li>
             <li>End time must be after start time</li>
           </ul>

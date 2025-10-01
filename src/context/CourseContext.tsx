@@ -1,5 +1,5 @@
 import React, { createContext, useState, useCallback, useMemo } from "react";
-import type { Course, DayOfWeek } from "../types/course";
+import type { Course, DaysOfWeek } from "../types/course";
 import { DAYS_OF_WEEK } from "../types/course";
 
 // Timetable structure for efficient day/time organization
@@ -21,8 +21,8 @@ export interface CourseContextType {
 
   // Computed values
   totalCourses: number;
-  coursesByDay: (day: DayOfWeek) => Course[];
-  hasCoursesOnDay: (day: DayOfWeek) => boolean;
+  coursesByDay: (day: DaysOfWeek) => Course[];
+  hasCoursesOnDay: (day: DaysOfWeek) => boolean;
   getConflictingCourses: (course: Course) => Course[];
 }
 
@@ -49,7 +49,10 @@ export const CourseProvider: React.FC<CourseProviderProps> = ({ children }) => {
 
     // Group courses by day and sort by start time
     courses.forEach((course) => {
-      table[course.dayOfWeek].push(course);
+      // Handle multiple days per course
+      course.daysOfWeek.forEach((day) => {
+        table[day].push(course);
+      });
     });
 
     // Sort courses within each day by start time
@@ -88,14 +91,14 @@ export const CourseProvider: React.FC<CourseProviderProps> = ({ children }) => {
   );
 
   const coursesByDay = useCallback(
-    (day: DayOfWeek) => {
+    (day: DaysOfWeek) => {
       return timetable[day] || [];
     },
     [timetable]
   );
 
   const hasCoursesOnDay = useCallback(
-    (day: DayOfWeek) => {
+    (day: DaysOfWeek) => {
       return timetable[day] && timetable[day].length > 0;
     },
     [timetable]
@@ -103,22 +106,34 @@ export const CourseProvider: React.FC<CourseProviderProps> = ({ children }) => {
 
   const getConflictingCourses = useCallback(
     (course: Course): Course[] => {
-      const sameDayCourses = timetable[course.dayOfWeek] || [];
+      const conflicts: Course[] = [];
 
-      return sameDayCourses.filter((existingCourse) => {
-        if (existingCourse.id === course.id) return false;
+      // Check conflicts for each day this course occurs
+      course.daysOfWeek.forEach((day) => {
+        const sameDayCourses = timetable[day] || [];
 
-        // Check for time overlap
-        const newStart = timeToMinutes(course.startTime);
-        const newEnd = timeToMinutes(course.endTime);
-        const existingStart = timeToMinutes(existingCourse.startTime);
-        const existingEnd = timeToMinutes(existingCourse.endTime);
+        sameDayCourses.forEach((existingCourse) => {
+          if (existingCourse.id === course.id) return;
 
-        return (
-          (newStart < existingEnd && newEnd > existingStart) ||
-          (existingStart < newEnd && existingEnd > newStart)
-        );
+          // Check for time overlap
+          const newStart = timeToMinutes(course.startTime);
+          const newEnd = timeToMinutes(course.endTime);
+          const existingStart = timeToMinutes(existingCourse.startTime);
+          const existingEnd = timeToMinutes(existingCourse.endTime);
+
+          if (
+            (newStart < existingEnd && newEnd > existingStart) ||
+            (existingStart < newEnd && existingEnd > newStart)
+          ) {
+            // Only add if not already in conflicts array
+            if (!conflicts.find((c) => c.id === existingCourse.id)) {
+              conflicts.push(existingCourse);
+            }
+          }
+        });
       });
+
+      return conflicts;
     },
     [timetable]
   );

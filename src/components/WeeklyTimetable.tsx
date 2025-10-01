@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import type { Course, DayOfWeek } from "../types/course";
+import type { Course, DaysOfWeek } from "../types/course";
 import { formatTime } from "../utils/helpers";
 
 interface WeeklyTimetableProps {
@@ -20,7 +20,7 @@ interface TimetableCourse extends Course {
   conflictLevel: number; // number of overlapping courses
 }
 
-const DAYS: DayOfWeek[] = [
+const DAYS: DaysOfWeek[] = [
   "Monday",
   "Tuesday",
   "Wednesday",
@@ -68,13 +68,15 @@ const detectConflicts = (courses: Course[]): Course[] => {
     conflictLevel: 0,
   }));
 
-  // Group by day
+  // Group by day (expand courses that occur on multiple days)
   const coursesByDay = coursesWithConflicts.reduce(
     (acc, course) => {
-      if (!acc[course.dayOfWeek]) {
-        acc[course.dayOfWeek] = [];
-      }
-      acc[course.dayOfWeek].push(course);
+      course.daysOfWeek.forEach((day) => {
+        if (!acc[day]) {
+          acc[day] = [];
+        }
+        acc[day].push(course);
+      });
       return acc;
     },
     {} as Record<string, typeof coursesWithConflicts>
@@ -128,10 +130,13 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
   const coursesByDay = useMemo(() => {
     return timetableCourses.reduce(
       (acc, course) => {
-        if (!acc[course.dayOfWeek]) {
-          acc[course.dayOfWeek] = [];
-        }
-        acc[course.dayOfWeek].push(course);
+        // Handle multiple days per course
+        course.daysOfWeek.forEach((day) => {
+          if (!acc[day]) {
+            acc[day] = [];
+          }
+          acc[day].push(course);
+        });
         return acc;
       },
       {} as Record<string, TimetableCourse[]>
@@ -380,7 +385,8 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
                     <div>
                       <div className="font-semibold">{course.name}</div>
                       <div className="text-sm opacity-90">
-                        {course.dayOfWeek} • {formatTime(course.startTime)} -{" "}
+                        {course.daysOfWeek.join(", ")} •{" "}
+                        {formatTime(course.startTime)} -{" "}
                         {formatTime(course.endTime)}
                       </div>
                       {course.location && (

@@ -27,13 +27,15 @@ export const CourseList: React.FC<CourseListProps> = ({
     );
   }
 
-  // Group courses by day of week
+  // Group courses by day of week (expand courses that occur on multiple days)
   const coursesByDay = courses.reduce(
     (acc, course) => {
-      if (!acc[course.dayOfWeek]) {
-        acc[course.dayOfWeek] = [];
-      }
-      acc[course.dayOfWeek].push(course);
+      course.daysOfWeek.forEach((day) => {
+        if (!acc[day]) {
+          acc[day] = [];
+        }
+        acc[day].push(course);
+      });
       return acc;
     },
     {} as Record<string, Course[]>
@@ -75,14 +77,34 @@ export const CourseList: React.FC<CourseListProps> = ({
                   className="flex items-center justify-between p-3 bg-gray-50 rounded-md border"
                 >
                   <div className="flex-1">
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-4 flex-wrap">
                       <h4 className="font-medium text-gray-900">
                         {course.name}
                       </h4>
+
+                      {/* Time Range tag */}
                       <span className="text-sm text-gray-600">
                         {formatTime(course.startTime)} -{" "}
                         {formatTime(course.endTime)}
                       </span>
+
+                      {/* Days of Week Tags */}
+                      <div className="flex gap-1 flex-wrap">
+                        {course.daysOfWeek.map((courseDay) => (
+                          <span
+                            key={courseDay}
+                            className={`text-xs px-2 py-1 rounded ${
+                              courseDay === day
+                                ? "bg-blue-100 text-blue-800 font-medium"
+                                : "bg-gray-100 text-gray-600"
+                            }`}
+                          >
+                            {courseDay.slice(0, 2)}
+                          </span>
+                        ))}
+                      </div>
+
+                      {/* Location Tag */}
                       {course.location && (
                         <span className="text-sm text-gray-500 bg-gray-200 px-2 py-1 rounded">
                           {course.location}
@@ -90,6 +112,7 @@ export const CourseList: React.FC<CourseListProps> = ({
                       )}
                     </div>
                   </div>
+                  {/* Remove Course Button */}
                   <button
                     onClick={() => onRemoveCourse(course.id)}
                     className="ml-4 text-red-600 hover:text-red-800 hover:bg-red-50 p-1 rounded transition-colors"
