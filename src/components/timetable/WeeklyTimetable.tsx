@@ -28,7 +28,7 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
     dynamicTimeRange: true,
     startHour: 7,
     endHour: 22,
-    slotDuration: 30,
+    slotDuration: 60,
     verticalScale: 1.0,
   });
   const [showSettings, setShowSettings] = useState(false);
@@ -78,32 +78,40 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
 
   const getCourseCardClasses = (course: TimetableCourse) => {
     const baseClasses =
-      "card card-compact shadow-sm absolute transition-all duration-200 hover:shadow-md cursor-pointer rounded-lg border border-opacity-30 backdrop-blur-sm";
+      "card card-compact shadow-lg absolute transition-all duration-200 hover:shadow-xl cursor-pointer rounded-lg border-2 backdrop-blur-sm";
 
     if (course.hasConflict) {
       if (course.conflictLevel > 1) {
-        return `${baseClasses} bg-error/90 text-error-content border-error hover:bg-error hover:scale-[1.01]`;
+        return `${baseClasses} bg-error text-error-content border-error hover:bg-error/90 hover:scale-[1.02]`;
       } else {
-        return `${baseClasses} bg-warning/90 text-warning-content border-warning hover:bg-warning hover:scale-[1.01]`;
+        return `${baseClasses} bg-warning text-warning-content border-warning hover:bg-warning/90 hover:scale-[1.02]`;
       }
     }
 
-    return `${baseClasses} bg-primary/90 text-primary-content border-primary hover:bg-primary hover:scale-[1.01]`;
+    return `${baseClasses} bg-primary text-primary-content border-primary hover:bg-primary/90 hover:scale-[1.02]`;
   };
 
   const getCoursePosition = (course: TimetableCourse) => {
-    // Each slot is 3rem * scale (48px * scale) tall, courses should fill the slot precisely
-    const height = course.duration * 3 * settings.verticalScale; // 3rem per slot duration * scale
-    const topMargin = 0.125 * settings.verticalScale; // Scale margins proportionally
+    // Calculate exact duration in minutes
+    const [startHours, startMinutes] = course.startTime.split(":").map(Number);
+    const [endHours, endMinutes] = course.endTime.split(":").map(Number);
+    const durationMinutes =
+      endHours * 60 + endMinutes - (startHours * 60 + startMinutes);
+
+    // Each minute takes (3rem / slot duration) * scale
+    const minuteHeight = (3 / settings.slotDuration) * settings.verticalScale;
+    const height = durationMinutes * minuteHeight;
+
+    const topMargin = 0.125 * settings.verticalScale;
     const bottomMargin = 0.125 * settings.verticalScale;
 
     return {
-      top: `${topMargin}rem`, // Scaled top margin
-      bottom: `${bottomMargin}rem`, // Scaled bottom margin
-      left: "0.25rem", // Keep horizontal margins constant
-      right: "0.25rem", // Keep horizontal margins constant
-      height: `calc(${height}rem - ${topMargin + bottomMargin}rem)`, // Account for scaled margins
-      minHeight: `${2.5 * settings.verticalScale}rem`, // Scaled minimum height for single slot
+      top: `${topMargin}rem`,
+      bottom: `${bottomMargin}rem`,
+      left: "0.25rem",
+      right: "0.25rem",
+      height: `calc(${height}rem - ${topMargin + bottomMargin}rem)`,
+      minHeight: `${1.5 * settings.verticalScale}rem`,
     };
   };
 
@@ -182,18 +190,18 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
         />
 
         {/* Legend */}
-        <div className="flex flex-wrap gap-4 mb-6 text-sm">
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-primary rounded"></div>
-            <span>Normal Course</span>
+        <div className="flex flex-wrap gap-3 mb-6">
+          <div className="badge badge-primary badge-lg gap-2">
+            <div className="w-3 h-3 bg-primary-content rounded"></div>
+            Normal Course
           </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-warning rounded border-2 border-warning"></div>
-            <span>Minor Conflict</span>
+          <div className="badge badge-warning badge-lg gap-2">
+            <div className="w-3 h-3 bg-warning-content rounded"></div>
+            Minor Conflict
           </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-error rounded border-2 border-error"></div>
-            <span>Major Conflict</span>
+          <div className="badge badge-error badge-lg gap-2">
+            <div className="w-3 h-3 bg-error-content rounded"></div>
+            Major Conflict
           </div>
         </div>
 
@@ -203,15 +211,11 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
             className={`min-w-full grid gap-0 bg-base-300 rounded-lg overflow-hidden`}
             style={{
               gridTemplateColumns: `120px repeat(${visibleDays.length}, 1fr)`,
-              transform: `scaleY(${settings.verticalScale})`,
-              transformOrigin: "top",
-              marginBottom: `${(settings.verticalScale - 1) * 50}%`,
+              gap: `${settings.verticalScale - 1}px 0`,
             }}
           >
             {/* Header Row */}
-            <div className="bg-base-200 p-4 font-bold text-center text-sm border-r border-base-300">
-              <div className="text-base-content/80">Time</div>
-            </div>
+            <div className="bg-base-200 border-r border-base-300"></div>
             {visibleDays.map((day) => (
               <div
                 key={day}
@@ -228,14 +232,8 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
             {timeSlots.map((slot, slotIndex) => (
               <React.Fragment key={slot.value}>
                 {/* Time Label */}
-                <div className="bg-base-100 text-xs border-b border-r border-base-300 flex items-start justify-center relative">
-                  <div
-                    className="font-medium text-base-content/70 absolute -top-2 left-1/2 transform -translate-x-1/2 bg-base-100 px-2 text-center"
-                    style={{
-                      fontSize: `${0.75 / settings.verticalScale}rem`,
-                      lineHeight: "1.2",
-                    }}
-                  >
+                <div className="bg-base-100 text-xs border-b border-r border-base-300 flex items-center justify-center relative">
+                  <div className="font-medium text-base-content/70 text-center whitespace-nowrap px-1">
                     {slot.label}
                   </div>
                 </div>
@@ -261,29 +259,33 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
                             title={`${course.name} - ${formatTime(course.startTime)} to ${formatTime(course.endTime)}${course.location ? ` at ${course.location}` : ""}`}
                           >
                             <div className="card-body p-2">
-                              <div className="font-semibold text-xs leading-tight line-clamp-2">
+                              <div className="font-bold text-xs leading-tight line-clamp-2 mb-1">
                                 {course.name}
                               </div>
-                              <div className="text-xs opacity-90 mt-1">
+                              <div className="badge badge-ghost badge-xs mb-1">
                                 {formatTime(course.startTime)} -{" "}
                                 {formatTime(course.endTime)}
                               </div>
                               {course.location && (
-                                <div className="text-xs opacity-80 flex items-center gap-1 mt-1">
+                                <div className="badge badge-outline badge-xs gap-1">
                                   <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="12"
-                                    height="12"
-                                    viewBox="0 0 24 24"
+                                    className="w-3 h-3"
                                     fill="none"
                                     stroke="currentColor"
-                                    stroke-width="2"
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    className="h-3 w-3"
+                                    viewBox="0 0 24 24"
                                   >
-                                    <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
-                                    <circle cx="12" cy="10" r="3" />
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth={2}
+                                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                                    />
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth={2}
+                                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                                    />
                                   </svg>
                                   <span className="truncate">
                                     {course.location}
@@ -291,24 +293,21 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
                                 </div>
                               )}
                               {course.hasConflict && (
-                                <div className="text-xs font-medium mt-1 flex items-center gap-1">
+                                <div className="badge badge-warning badge-xs gap-1 mt-1">
                                   <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="12"
-                                    height="12"
-                                    viewBox="0 0 24 24"
+                                    className="w-3 h-3"
                                     fill="none"
                                     stroke="currentColor"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    className="h-3 w-3"
+                                    viewBox="0 0 24 24"
                                   >
-                                    <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
-                                    <path d="M12 9v4" />
-                                    <path d="m12 17 .01 0" />
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth={2}
+                                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
+                                    />
                                   </svg>
-                                  Conflict
+                                  Alert
                                 </div>
                               )}
                             </div>
@@ -326,17 +325,32 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
 
         {/* Mobile-friendly course list for small screens */}
         <div className="sm:hidden mt-6">
-          <div className="text-sm font-medium mb-3">Course Details:</div>
-          <div className="space-y-2">
+          <div className="alert alert-info mb-4">
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            <span className="text-sm font-medium">Course Details</span>
+          </div>
+          <div className="space-y-3">
             {timetableCourses.map((course) => (
               <div
                 key={course.id}
-                className={`card card-compact ${
+                className={`card shadow-md ${
                   course.hasConflict
                     ? course.conflictLevel > 1
-                      ? "bg-error text-error-content"
-                      : "bg-warning text-warning-content"
-                    : "bg-primary text-primary-content"
+                      ? "bg-error text-error-content border-error"
+                      : "bg-warning text-warning-content border-warning"
+                    : "bg-primary text-primary-content border-primary"
                 }`}
               >
                 <div className="card-body">
@@ -355,7 +369,20 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
                       )}
                     </div>
                     {course.hasConflict && (
-                      <div className="badge badge-outline badge-sm">
+                      <div className="badge badge-ghost badge-sm gap-1">
+                        <svg
+                          className="w-3 h-3"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
+                          />
+                        </svg>
                         Conflict
                       </div>
                     )}

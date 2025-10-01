@@ -26,6 +26,7 @@ export type CoursesByDay = Partial<Record<DaysOfWeek, TimetableCourse[]>>;
 
 /**
  * Generate time slots with dynamic range and duration support
+ * For 30-minute slots, adds more timeline marks every 15 minutes
  */
 export const generateTimeSlots = (
   startHour: number = 7,
@@ -33,8 +34,12 @@ export const generateTimeSlots = (
   slotDuration: number = 30
 ): TimeSlot[] => {
   const slots: TimeSlot[] = [];
+
+  // For 30-minute slots, show every 15 minutes but only major slots count for positioning
+  const displayInterval = slotDuration === 30 ? 15 : slotDuration;
+
   for (let hour = startHour; hour <= endHour; hour++) {
-    for (let minute = 0; minute < 60; minute += slotDuration) {
+    for (let minute = 0; minute < 60; minute += displayInterval) {
       const timeString = `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`;
       const label = formatTime(timeString);
       slots.push({

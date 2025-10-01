@@ -1,5 +1,4 @@
 ﻿import React from "react";
-import { formatTime } from "../../lib/utils";
 import { VerticalScaleSlider } from "./VerticalScaleSlider";
 
 export interface TimetableSettings {
@@ -40,7 +39,7 @@ export const TimetableSettingsPanel: React.FC<TimetableSettingsPanelProps> = ({
       <div className="flex justify-center mb-4">
         <button
           onClick={onToggleSettings}
-          className="btn btn-sm btn-outline gap-2 transition-all duration-200"
+          className="btn btn-sm btn-outline flex items-center gap-2 transition-all duration-200"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -58,34 +57,17 @@ export const TimetableSettingsPanel: React.FC<TimetableSettingsPanelProps> = ({
           >
             <path d="m6 9 6 6 6-6" />
           </svg>
-          {showSettings ? "Hide Settings" : "Show Settings"}
+          <span>{showSettings ? "Hide Settings" : "Show Settings"}</span>
         </button>
       </div>
 
       <div
         className={`transition-all duration-300 ease-in-out overflow-hidden ${
-          showSettings ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+          showSettings ? "max-h-2000 opacity-100" : "max-h-0 opacity-0"
         }`}
       >
-        <div className="card bg-base-200 shadow-lg border border-base-300">
+        <div className="card bg-base-200 shadow-lg">
           <div className="card-body">
-            <div className="card-title flex items-center gap-2 mb-6">
-              <svg
-                className="w-5 h-5 text-primary"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"
-                />
-              </svg>
-              Display Settings
-            </div>
-
             <div className="grid lg:grid-cols-3 gap-6">
               <div className="card bg-base-100 shadow-sm">
                 <div className="card-body p-4">
@@ -132,82 +114,62 @@ export const TimetableSettingsPanel: React.FC<TimetableSettingsPanelProps> = ({
                     </label>
                   </div>
 
-                  {!settings.dynamicTimeRange && (
-                    <div className="p-4 bg-base-200 rounded-lg border-l-4 border-primary">
-                      <div className="grid grid-cols-2 gap-4 mb-3">
-                        <div className="form-control">
-                          <label className="label">
-                            <span className="label-text text-sm font-medium">
-                              Start
-                            </span>
-                          </label>
-                          <select
-                            className="select select-sm select-bordered w-full"
-                            value={settings.startHour}
-                            onChange={(e) =>
-                              handleSettingChange(
-                                "startHour",
-                                parseInt(e.target.value)
-                              )
-                            }
-                          >
-                            {Array.from({ length: 24 }, (_, i) => (
-                              <option key={i} value={i}>
-                                {i.toString().padStart(2, "0")}:00
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                        <div className="form-control">
-                          <label className="label">
-                            <span className="label-text text-sm font-medium">
-                              End
-                            </span>
-                          </label>
-                          <select
-                            className="select select-sm select-bordered w-full"
-                            value={settings.endHour}
-                            onChange={(e) =>
-                              handleSettingChange(
-                                "endHour",
-                                parseInt(e.target.value)
-                              )
-                            }
-                          >
-                            {Array.from({ length: 24 }, (_, i) => (
-                              <option key={i} value={i}>
-                                {i.toString().padStart(2, "0")}:00
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      </div>
-                      <div className="alert alert-info alert-sm">
-                        <svg
-                          className="w-4 h-4"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
+                  <div className="p-4 bg-base-200 rounded-lg border-l-4 border-primary">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="form-control">
+                        <label className="label">
+                          <span className="label-text text-sm font-medium">
+                            Start
+                          </span>
+                        </label>
+                        <select
+                          className={`select select-sm select-bordered w-full ${
+                            settings.dynamicTimeRange ? "select-disabled" : ""
+                          }`}
+                          value={settings.startHour}
+                          disabled={settings.dynamicTimeRange}
+                          onChange={(e) =>
+                            handleSettingChange(
+                              "startHour",
+                              parseInt(e.target.value)
+                            )
+                          }
                         >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                          />
-                        </svg>
-                        <span className="text-xs">
-                          {formatTime(
-                            `${settings.startHour.toString().padStart(2, "0")}:00`
-                          )}{" "}
-                          -{" "}
-                          {formatTime(
-                            `${settings.endHour.toString().padStart(2, "0")}:00`
-                          )}
-                        </span>
+                          {Array.from({ length: 24 }, (_, i) => (
+                            <option key={i} value={i}>
+                              {i.toString().padStart(2, "0")}:00
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className="form-control">
+                        <label className="label">
+                          <span className="label-text text-sm font-medium">
+                            End
+                          </span>
+                        </label>
+                        <select
+                          className={`select select-sm select-bordered w-full ${
+                            settings.dynamicTimeRange ? "select-disabled" : ""
+                          }`}
+                          value={settings.endHour}
+                          disabled={settings.dynamicTimeRange}
+                          onChange={(e) =>
+                            handleSettingChange(
+                              "endHour",
+                              parseInt(e.target.value)
+                            )
+                          }
+                        >
+                          {Array.from({ length: 24 }, (_, i) => (
+                            <option key={i} value={i}>
+                              {i.toString().padStart(2, "0")}:00
+                            </option>
+                          ))}
+                        </select>
                       </div>
                     </div>
-                  )}
+                  </div>
                 </div>
               </div>
 
@@ -249,9 +211,7 @@ export const TimetableSettingsPanel: React.FC<TimetableSettingsPanelProps> = ({
                         )
                       }
                     >
-                      <option value={15}>15 minutes</option>
                       <option value={30}>30 minutes</option>
-                      <option value={45}>45 minutes</option>
                       <option value={60}>60 minutes</option>
                     </select>
                   </div>
@@ -261,8 +221,8 @@ export const TimetableSettingsPanel: React.FC<TimetableSettingsPanelProps> = ({
                     onChange={(value) =>
                       handleSettingChange("verticalScale", value)
                     }
-                    min={0.5}
-                    max={2.0}
+                    min={1.0}
+                    max={1.5}
                     step={0.1}
                   />
                 </div>
