@@ -10,22 +10,17 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@hookform/resolvers": "^5.2.2",
     "@types/papaparse": "^5.3.16",
-    "@types/yup": "^0.29.14",
     "daisyui": "^5.1.25",
     "papaparse": "^5.5.3",
     "react": "^19.1.1",
-    "react-dom": "^19.1.1",
-    "react-hook-form": "^7.63.0",
-    "yup": "^1.7.1"
+    "react-dom": "^19.1.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",
     "@tailwindcss/vite": "^4.1.13",
     "@types/react": "^19.1.13",
     "@types/react-dom": "^19.1.9",
-    "@types/react-time-picker": "^4.0.3",
     "@typescript-eslint/eslint-plugin": "^8.45.0",
     "@typescript-eslint/parser": "^8.45.0",
     "@vitejs/plugin-react": "^5.0.3",

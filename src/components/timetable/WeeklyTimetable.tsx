@@ -45,10 +45,10 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
     settings.endHour,
   ]);
 
-  // Memoized time slots generation
+  // Memoized time slots generation (for display - always hourly)
   const timeSlots = useMemo(
-    () => generateTimeSlots(startHour, endHour, settings.slotDuration),
-    [startHour, endHour, settings.slotDuration]
+    () => generateTimeSlots(startHour, endHour),
+    [startHour, endHour]
   );
 
   // Memoized timetable courses with optimized conflict detection
@@ -229,11 +229,20 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
             ))}
 
             {/* Time Grid */}
-            {timeSlots.map((slot, slotIndex) => (
+            {timeSlots.map((slot) => (
               <React.Fragment key={slot.value}>
                 {/* Time Label */}
-                <div className="bg-base-100 text-xs border-b border-r border-base-300 flex items-center justify-center relative">
-                  <div className="font-medium text-base-content/70 text-center whitespace-nowrap px-1">
+                <div className="bg-base-100 text-xs border-b border-r border-base-300 flex items-start justify-center relative">
+                  <div
+                    className="font-medium text-base-content/70 text-center whitespace-nowrap px-1 absolute"
+                    style={{
+                      top: "-0.5rem",
+                      left: "50%",
+                      transform: "translateX(-50%)",
+                      backgroundColor: "hsl(var(--b1))",
+                      zIndex: 10,
+                    }}
+                  >
                     {slot.label}
                   </div>
                 </div>
@@ -248,9 +257,24 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
                       minHeight: `${3 * settings.verticalScale}rem`,
                     }}
                   >
+                    {/* 30-minute divider for 30-minute slots */}
+                    {settings.slotDuration === 30 && (
+                      <div
+                        className="absolute w-full border-t border-base-300/50"
+                        style={{
+                          top: `${1.5 * settings.verticalScale}rem`,
+                          left: 0,
+                          right: 0,
+                        }}
+                      />
+                    )}
                     {/* Render courses for this day and time slot */}
                     {coursesByDay[day]?.map((course) => {
-                      if (course.startSlot === slotIndex) {
+                      // Check if course starts within this hour
+                      const courseStartHour = parseInt(
+                        course.startTime.split(":")[0]
+                      );
+                      if (courseStartHour === slot.hour) {
                         return (
                           <div
                             key={course.id}
@@ -258,11 +282,11 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
                             style={getCoursePosition(course)}
                             title={`${course.name} - ${formatTime(course.startTime)} to ${formatTime(course.endTime)}${course.location ? ` at ${course.location}` : ""}`}
                           >
-                            <div className="card-body p-2">
-                              <div className="font-bold text-xs leading-tight line-clamp-2 mb-1">
+                            <div className="card-body p-1">
+                              <div className="font-bold text-xs leading-tight line-clamp-2">
                                 {course.name}
                               </div>
-                              <div className="badge badge-ghost badge-xs mb-1">
+                              <div className="badge badge-ghost badge-xs">
                                 {formatTime(course.startTime)} -{" "}
                                 {formatTime(course.endTime)}
                               </div>

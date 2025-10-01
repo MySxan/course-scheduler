@@ -25,21 +25,42 @@ export interface TimeRange {
 export type CoursesByDay = Partial<Record<DaysOfWeek, TimetableCourse[]>>;
 
 /**
- * Generate time slots with dynamic range and duration support
- * For 30-minute slots, adds more timeline marks every 15 minutes
+ * Generate time slots - always generates hourly slots for display, regardless of slot duration
  */
 export const generateTimeSlots = (
   startHour: number = 7,
   endHour: number = 22,
-  slotDuration: number = 30
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _slotDuration?: number
 ): TimeSlot[] => {
   const slots: TimeSlot[] = [];
 
-  // For 30-minute slots, show every 15 minutes but only major slots count for positioning
-  const displayInterval = slotDuration === 30 ? 15 : slotDuration;
+  // Always generate hourly slots for display
+  for (let hour = startHour; hour <= endHour; hour++) {
+    const timeString = `${hour.toString().padStart(2, "0")}:00`;
+    const label = formatTime(timeString);
+    slots.push({
+      hour,
+      minute: 0,
+      label,
+      value: timeString,
+    });
+  }
+  return slots;
+};
+
+/**
+ * Generate all time slots for positioning calculations (based on actual slot duration)
+ */
+export const generateAllTimeSlots = (
+  startHour: number = 7,
+  endHour: number = 22,
+  slotDuration: number = 60
+): TimeSlot[] => {
+  const slots: TimeSlot[] = [];
 
   for (let hour = startHour; hour <= endHour; hour++) {
-    for (let minute = 0; minute < 60; minute += displayInterval) {
+    for (let minute = 0; minute < 60; minute += slotDuration) {
       const timeString = `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`;
       const label = formatTime(timeString);
       slots.push({
@@ -51,10 +72,8 @@ export const generateTimeSlots = (
     }
   }
   return slots;
-};
-
-/**
- * Calculate dynamic time range based on courses with ±1 hour buffer
+}; /**
+ * Calculate dynamic time range based on courses - floor to nearest full hour (min) and ceil to nearest full hour (max)
  */
 export const calculateTimeRange = (courses: Course[]): TimeRange => {
   if (courses.length === 0) {
@@ -66,18 +85,23 @@ export const calculateTimeRange = (courses: Course[]): TimeRange => {
 
   courses.forEach((course) => {
     const startHour = parseInt(course.startTime.split(":")[0]);
+    const startMinutes = parseInt(course.startTime.split(":")[1]);
     const endHour = parseInt(course.endTime.split(":")[0]);
     const endMinutes = parseInt(course.endTime.split(":")[1]);
 
-    earliestHour = Math.min(earliestHour, startHour);
-    latestHour = Math.max(latestHour, endMinutes > 0 ? endHour + 1 : endHour);
+    // Floor start time to nearest full hour
+    const flooredStart = startMinutes > 0 ? startHour : startHour;
+    // Ceil end time to nearest full hour
+    const ceiledEnd = endMinutes > 0 ? endHour + 1 : endHour;
+
+    earliestHour = Math.min(earliestHour, flooredStart);
+    latestHour = Math.max(latestHour, ceiledEnd);
   });
 
-  // Add 1 hour buffer before and after
-  const bufferedStart = Math.max(0, earliestHour - 1);
-  const bufferedEnd = Math.min(23, latestHour + 1);
-
-  return { startHour: bufferedStart, endHour: bufferedEnd };
+  return {
+    startHour: Math.max(0, earliestHour),
+    endHour: Math.min(23, latestHour),
+  };
 };
 
 /**

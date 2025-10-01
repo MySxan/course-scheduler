@@ -1,7 +1,7 @@
 import React, { useRef, useState, useCallback, useEffect } from "react";
 
 interface HorizontalScaleSliderProps {
-  value: number; 
+  value: number;
   onChange: (value: number) => void;
   min?: number;
   max?: number;
@@ -100,7 +100,7 @@ export const VerticalScaleSlider: React.FC<HorizontalScaleSliderProps> = ({
           {/* Scale markers */}
           <div className="flex justify-between text-xs text-base-content/60 mt-2 px-1">
             <span className="badge badge-ghost badge-xs">{min}x</span>
-            <span className="badge badge-ghost badge-xs">1.25x</span>
+            <span className="badge badge-ghost badge-xs">1.0x</span>
             <span className="badge badge-ghost badge-xs">{max}x</span>
           </div>
         </div>
