@@ -1,155 +1,23 @@
-import React, { useMemo, useState } from "react";
-import type { Course, DaysOfWeek } from "../types/course";
+import React, { useMemo, useState, useCallback } from "react";
+import type { Course } from "../types/course";
 import { formatTime } from "../utils/helpers";
+import {
+  generateTimeSlots,
+  calculateTimeRange,
+  createTimetableCourses,
+  groupCoursesByDay,
+  getVisibleDays,
+  type TimetableCourse,
+  type CoursesByDay,
+} from "../utils/timetableUtils";
+import {
+  TimetableSettingsPanel,
+  type TimetableSettings,
+} from "./TimetableSettingsPanel";
 
 interface WeeklyTimetableProps {
   courses: Course[];
 }
-
-interface TimeSlot {
-  hour: number;
-  minute: number;
-  label: string;
-  value: string; // "HH:MM" format
-}
-
-interface TimetableCourse extends Course {
-  startSlot: number;
-  duration: number; // in 30-minute slots
-  hasConflict: boolean;
-  conflictLevel: number; // number of overlapping courses
-}
-
-interface TimetableSettings {
-  showWeekends: boolean;
-  startWithSunday: boolean;
-  dynamicTimeRange: boolean;
-}
-
-const DAYS: DaysOfWeek[] = [
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-  "Sunday",
-];
-
-// Generate time slots with dynamic range support
-const generateTimeSlots = (
-  startHour: number = 7,
-  endHour: number = 22
-): TimeSlot[] => {
-  const slots: TimeSlot[] = [];
-  for (let hour = startHour; hour <= endHour; hour++) {
-    for (let minute = 0; minute < 60; minute += 30) {
-      const timeString = `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`;
-      const label = formatTime(timeString);
-      slots.push({
-        hour,
-        minute,
-        label,
-        value: timeString,
-      });
-    }
-  }
-  return slots;
-};
-
-// Calculate dynamic time range based on courses
-const calculateTimeRange = (
-  courses: Course[]
-): { startHour: number; endHour: number } => {
-  if (courses.length === 0) {
-    return { startHour: 7, endHour: 22 };
-  }
-
-  let earliestHour = 24;
-  let latestHour = 0;
-
-  courses.forEach((course) => {
-    const startHour = parseInt(course.startTime.split(":")[0]);
-    const endHour = parseInt(course.endTime.split(":")[0]);
-    const endMinutes = parseInt(course.endTime.split(":")[1]);
-
-    earliestHour = Math.min(earliestHour, startHour);
-    latestHour = Math.max(latestHour, endMinutes > 0 ? endHour + 1 : endHour);
-  });
-
-  // Add 1 hour buffer before and after
-  const bufferedStart = Math.max(0, earliestHour - 1);
-  const bufferedEnd = Math.min(23, latestHour + 1);
-
-  return { startHour: bufferedStart, endHour: bufferedEnd };
-};
-
-const timeToSlotIndex = (time: string, startHour: number = 7): number => {
-  const [hours, minutes] = time.split(":").map(Number);
-  const totalMinutes = (hours - startHour) * 60 + minutes;
-  return Math.floor(totalMinutes / 30);
-};
-
-const calculateDuration = (
-  startTime: string,
-  endTime: string,
-  startHour: number = 7
-): number => {
-  const startSlot = timeToSlotIndex(startTime, startHour);
-  const endSlot = timeToSlotIndex(endTime, startHour);
-  return Math.max(1, endSlot - startSlot);
-};
-
-const detectConflicts = (courses: Course[]): Course[] => {
-  const coursesWithConflicts = courses.map((course) => ({
-    ...course,
-    hasConflict: false,
-    conflictLevel: 0,
-  }));
-
-  // Group by day (expand courses that occur on multiple days)
-  const coursesByDay = coursesWithConflicts.reduce(
-    (acc, course) => {
-      course.daysOfWeek.forEach((day) => {
-        if (!acc[day]) {
-          acc[day] = [];
-        }
-        acc[day].push(course);
-      });
-      return acc;
-    },
-    {} as Record<string, typeof coursesWithConflicts>
-  );
-
-  // Check for conflicts within each day
-  Object.keys(coursesByDay).forEach((day) => {
-    const dayCourses = coursesByDay[day];
-
-    for (let i = 0; i < dayCourses.length; i++) {
-      for (let j = i + 1; j < dayCourses.length; j++) {
-        const course1 = dayCourses[i];
-        const course2 = dayCourses[j];
-
-        const start1 = timeToSlotIndex(course1.startTime, 7);
-        const end1 =
-          start1 + calculateDuration(course1.startTime, course1.endTime, 7);
-        const start2 = timeToSlotIndex(course2.startTime, 7);
-        const end2 =
-          start2 + calculateDuration(course2.startTime, course2.endTime, 7);
-
-        // Check for overlap
-        if (start1 < end2 && start2 < end1) {
-          course1.hasConflict = true;
-          course2.hasConflict = true;
-          course1.conflictLevel++;
-          course2.conflictLevel++;
-        }
-      }
-    }
-  });
-
-  return coursesWithConflicts;
-};
 
 export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
   courses,
@@ -161,63 +29,43 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
   });
   const [showSettings, setShowSettings] = useState(false);
 
+  // Memoized time range calculation
   const { startHour, endHour } = useMemo(() => {
     return settings.dynamicTimeRange
       ? calculateTimeRange(courses)
       : { startHour: 7, endHour: 22 };
   }, [courses, settings.dynamicTimeRange]);
 
+  // Memoized time slots generation
   const timeSlots = useMemo(
     () => generateTimeSlots(startHour, endHour),
     [startHour, endHour]
   );
 
+  // Memoized timetable courses with optimized conflict detection
   const timetableCourses = useMemo(() => {
-    const coursesWithConflicts = detectConflicts(courses);
-
-    return coursesWithConflicts.map((course) => ({
-      ...course,
-      startSlot: timeToSlotIndex(course.startTime, startHour),
-      duration: calculateDuration(course.startTime, course.endTime, startHour),
-    })) as TimetableCourse[];
+    return createTimetableCourses(courses, startHour);
   }, [courses, startHour]);
 
+  // Memoized visible days calculation
   const visibleDays = useMemo(() => {
-    let days = [...DAYS];
-
-    if (!settings.showWeekends) {
-      days = days.filter((day) => !["Saturday", "Sunday"].includes(day));
-    }
-
-    if (settings.startWithSunday && settings.showWeekends) {
-      const sundayIndex = days.findIndex((day) => day === "Sunday");
-      if (sundayIndex !== -1) {
-        days = [
-          days[sundayIndex],
-          ...days.slice(0, sundayIndex),
-          ...days.slice(sundayIndex + 1),
-        ];
-      }
-    }
-
-    return days;
+    return getVisibleDays(settings.showWeekends, settings.startWithSunday);
   }, [settings.showWeekends, settings.startWithSunday]);
 
-  const coursesByDay = useMemo(() => {
-    return timetableCourses.reduce(
-      (acc, course) => {
-        // Handle multiple days per course
-        course.daysOfWeek.forEach((day) => {
-          if (!acc[day]) {
-            acc[day] = [];
-          }
-          acc[day].push(course);
-        });
-        return acc;
-      },
-      {} as Record<string, TimetableCourse[]>
-    );
+  // Memoized courses grouped by day
+  const coursesByDay: CoursesByDay = useMemo(() => {
+    return groupCoursesByDay(timetableCourses);
   }, [timetableCourses]);
+
+  // Settings change handler
+  const handleSettingsChange = useCallback((newSettings: TimetableSettings) => {
+    setSettings(newSettings);
+  }, []);
+
+  // Toggle settings handler
+  const handleToggleSettings = useCallback(() => {
+    setShowSettings((prev) => !prev);
+  }, []);
 
   const getCourseCardClasses = (course: TimetableCourse) => {
     const baseClasses =
@@ -312,119 +160,17 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
               {courses.length} courses
             </div>
           </div>
-
-          {/* Settings Toggle Button */}
-          <div className="flex justify-center mb-4">
-            <button
-              onClick={() => setShowSettings(!showSettings)}
-              className="btn btn-sm btn-outline gap-2 transition-all duration-200"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className={`h-4 w-4 transition-transform duration-200 ${showSettings ? "rotate-180" : ""}`}
-              >
-                <path d="m6 9 6 6 6-6" />
-              </svg>
-              {showSettings ? "Hide Settings" : "Show Settings"}
-            </button>
-          </div>
-
-          {/* Collapsible Settings Panel */}
-          <div
-            className={`transition-all duration-300 ease-in-out overflow-hidden ${
-              showSettings ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
-            }`}
-          >
-            <div className="bg-base-200 rounded-lg p-6 mb-6 border border-base-300">
-              <h3 className="text-lg font-semibold mb-4 text-base-content">
-                Display Settings
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="form-control">
-                  <label className="label cursor-pointer justify-start gap-4">
-                    <input
-                      type="checkbox"
-                      className="checkbox checkbox-primary"
-                      checked={settings.showWeekends}
-                      onChange={(e) =>
-                        setSettings((prev) => ({
-                          ...prev,
-                          showWeekends: e.target.checked,
-                        }))
-                      }
-                    />
-                    <div>
-                      <span className="label-text font-medium">
-                        Show Weekends
-                      </span>
-                      <div className="text-xs text-base-content/60">
-                        Display Saturday and Sunday
-                      </div>
-                    </div>
-                  </label>
-                </div>
-
-                <div className="form-control">
-                  <label className="label cursor-pointer justify-start gap-4">
-                    <input
-                      type="checkbox"
-                      className="checkbox checkbox-primary"
-                      checked={settings.startWithSunday}
-                      onChange={(e) =>
-                        setSettings((prev) => ({
-                          ...prev,
-                          startWithSunday: e.target.checked,
-                        }))
-                      }
-                    />
-                    <div>
-                      <span className="label-text font-medium">
-                        Start with Sunday
-                      </span>
-                      <div className="text-xs text-base-content/60">
-                        Begin the week on Sunday
-                      </div>
-                    </div>
-                  </label>
-                </div>
-
-                <div className="form-control">
-                  <label className="label cursor-pointer justify-start gap-4">
-                    <input
-                      type="checkbox"
-                      className="checkbox checkbox-primary"
-                      checked={settings.dynamicTimeRange}
-                      onChange={(e) =>
-                        setSettings((prev) => ({
-                          ...prev,
-                          dynamicTimeRange: e.target.checked,
-                        }))
-                      }
-                    />
-                    <div>
-                      <span className="label-text font-medium">
-                        Smart Time Range
-                      </span>
-                      <div className="text-xs text-base-content/60">
-                        {settings.dynamicTimeRange
-                          ? `${formatTime(`${startHour.toString().padStart(2, "0")}:00`)} - ${formatTime(`${endHour.toString().padStart(2, "0")}:00`)}`
-                          : "Show only relevant hours"}
-                      </div>
-                    </div>
-                  </label>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
+
+        {/* Settings Panel */}
+        <TimetableSettingsPanel
+          settings={settings}
+          onSettingsChange={handleSettingsChange}
+          showSettings={showSettings}
+          onToggleSettings={handleToggleSettings}
+          startHour={startHour}
+          endHour={endHour}
+        />
 
         {/* Legend */}
         <div className="flex flex-wrap gap-4 mb-6 text-sm">
