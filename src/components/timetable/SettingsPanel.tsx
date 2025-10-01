@@ -1,5 +1,5 @@
 ﻿import React from "react";
-import { VerticalScaleSlider } from "./VerticalScaleSlider";
+import { ScaleSlider } from "./ScaleSlider";
 
 export interface TimetableSettings {
   showWeekends: boolean;
@@ -193,35 +193,37 @@ export const TimetableSettingsPanel: React.FC<TimetableSettingsPanelProps> = ({
                   </div>
 
                   <div className="form-control mb-4">
-                    <label className="label">
-                      <span className="label-text font-medium">
-                        Slot Duration
-                      </span>
-                      <span className="label-text-alt badge badge-neutral badge-sm">
-                        {settings.slotDuration}min
-                      </span>
+                    <label className="label flex items-center gap-4 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        className="checkbox checkbox-accent w-5 h-5 py-0"
+                        checked={settings.slotDuration === 30}
+                        onChange={(e) =>
+                          handleSettingChange(
+                            "slotDuration",
+                            e.target.checked ? 30 : 60
+                          )
+                        }
+                      />
+                      <div className="flex-1">
+                        <span className="label-text font-medium">
+                          Display 30 min slot
+                        </span>
+                        <div className="label-text-alt text-xs opacity-70">
+                          {settings.slotDuration === 30
+                            ? "30-minute time slots"
+                            : "60-minute time slots"}
+                        </div>
+                      </div>
                     </label>
-                    <select
-                      className="select select-bordered w-full"
-                      value={settings.slotDuration}
-                      onChange={(e) =>
-                        handleSettingChange(
-                          "slotDuration",
-                          parseInt(e.target.value)
-                        )
-                      }
-                    >
-                      <option value={30}>30 minutes</option>
-                      <option value={60}>60 minutes</option>
-                    </select>
                   </div>
 
-                  <VerticalScaleSlider
+                  <ScaleSlider
                     value={settings.verticalScale}
                     onChange={(value) =>
                       handleSettingChange("verticalScale", value)
                     }
-                    min={1.0}
+                    min={0.5}
                     max={1.5}
                     step={0.1}
                   />
@@ -255,18 +257,10 @@ export const TimetableSettingsPanel: React.FC<TimetableSettingsPanelProps> = ({
 
                   <div className="space-y-3">
                     <div className="form-control">
-                      <label className="label cursor-pointer">
-                        <div className="flex-1">
-                          <span className="label-text font-medium">
-                            Show Weekends
-                          </span>
-                          <div className="label-text-alt text-xs opacity-70">
-                            Display Saturday and Sunday
-                          </div>
-                        </div>
+                      <label className="label flex items-center gap-4 cursor-pointer">
                         <input
                           type="checkbox"
-                          className="toggle toggle-success"
+                          className="checkbox checkbox-accent w-5 h-5 py-0"
                           checked={settings.showWeekends}
                           onChange={(e) =>
                             handleSettingChange(
@@ -275,22 +269,22 @@ export const TimetableSettingsPanel: React.FC<TimetableSettingsPanelProps> = ({
                             )
                           }
                         />
+                        <div className="flex-1">
+                          <span className="label-text font-medium">
+                            Show Weekends
+                          </span>
+                          <div className="label-text-alt text-xs opacity-70">
+                            Display Saturday and Sunday
+                          </div>
+                        </div>
                       </label>
                     </div>
 
                     <div className="form-control">
-                      <label className="label cursor-pointer">
-                        <div className="flex-1">
-                          <span className="label-text font-medium">
-                            Start with Sunday
-                          </span>
-                          <div className="label-text-alt text-xs opacity-70">
-                            Begin the week on Sunday
-                          </div>
-                        </div>
+                      <label className="label flex items-center gap-4 cursor-pointer">
                         <input
                           type="checkbox"
-                          className="toggle toggle-success"
+                          className="checkbox checkbox-accent w-5 h-5 py-0"
                           checked={settings.startWithSunday}
                           onChange={(e) =>
                             handleSettingChange(
@@ -299,6 +293,14 @@ export const TimetableSettingsPanel: React.FC<TimetableSettingsPanelProps> = ({
                             )
                           }
                         />
+                        <div className="flex-1">
+                          <span className="label-text font-medium">
+                            Start with Sunday
+                          </span>
+                          <div className="label-text-alt text-xs opacity-70">
+                            Begin the week on Sunday
+                          </div>
+                        </div>
                       </label>
                     </div>
                   </div>

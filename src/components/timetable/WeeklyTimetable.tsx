@@ -29,7 +29,7 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
     startHour: 7,
     endHour: 22,
     slotDuration: 60,
-    verticalScale: 1.0,
+    verticalScale: 0.8,
   });
   const [showSettings, setShowSettings] = useState(false);
 
@@ -98,20 +98,20 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
     const durationMinutes =
       endHours * 60 + endMinutes - (startHours * 60 + startMinutes);
 
-    // Each minute takes (3rem / slot duration) * scale
-    const minuteHeight = (3 / settings.slotDuration) * settings.verticalScale;
+    // Each minute takes (4rem / slot duration) * scale
+    const minuteHeight = (4 / 60) * settings.verticalScale;
     const height = durationMinutes * minuteHeight;
 
-    const topMargin = 0.125 * settings.verticalScale;
-    const bottomMargin = 0.125 * settings.verticalScale;
+    const topMargin = 0 * settings.verticalScale;
+    const bottomMargin = 0 * settings.verticalScale;
 
     return {
       top: `${topMargin}rem`,
       bottom: `${bottomMargin}rem`,
-      left: "0.25rem",
-      right: "0.25rem",
+      left: "0.2rem",
+      right: "0.2rem",
       height: `calc(${height}rem - ${topMargin + bottomMargin}rem)`,
-      minHeight: `${1.5 * settings.verticalScale}rem`,
+      minHeight: `${2 * settings.verticalScale}rem`,
     };
   };
 
@@ -253,21 +253,22 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
                     key={`${day}-${slot.value}`}
                     className="bg-base-100 relative border-b border-r border-base-300 last:border-r-0"
                     style={{
-                      height: `${3 * settings.verticalScale}rem`,
-                      minHeight: `${3 * settings.verticalScale}rem`,
+                      height: `${4 * settings.verticalScale}rem`,
+                      minHeight: `${4 * settings.verticalScale}rem`,
                     }}
                   >
                     {/* 30-minute divider for 30-minute slots */}
                     {settings.slotDuration === 30 && (
                       <div
-                        className="absolute w-full border-t border-base-300/50"
+                        className="absolute w-full border-gray-300 border-t border-base-300/50"
                         style={{
-                          top: `${1.5 * settings.verticalScale}rem`,
+                          top: `${2 * settings.verticalScale}rem`,
                           left: 0,
                           right: 0,
                         }}
                       />
                     )}
+
                     {/* Render courses for this day and time slot */}
                     {coursesByDay[day]?.map((course) => {
                       // Check if course starts within this hour
@@ -283,16 +284,17 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
                             title={`${course.name} - ${formatTime(course.startTime)} to ${formatTime(course.endTime)}${course.location ? ` at ${course.location}` : ""}`}
                           >
                             <div className="card-body p-1">
-                              <div className="font-bold text-xs leading-tight line-clamp-2">
+                              <div className="font-bold leading-tight line-clamp-2">
                                 {course.name}
                               </div>
-                              <div className="badge badge-ghost badge-xs">
-                                {formatTime(course.startTime)} -{" "}
+                              <div className="badge text-xs text-gray-600 badge-ghost badge-xs py-1">
+                                {formatTime(course.startTime)}
+                                {" - "}
                                 {formatTime(course.endTime)}
                               </div>
                               {course.location && (
-                                <div className="badge badge-outline badge-xs gap-1">
-                                  <svg
+                                <div className="badge flex items-center badge-outline badge-xs gap-1 -mt-0.5">
+                                  {/* <svg
                                     className="w-3 h-3"
                                     fill="none"
                                     stroke="currentColor"
@@ -310,8 +312,8 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
                                       strokeWidth={2}
                                       d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
                                     />
-                                  </svg>
-                                  <span className="truncate">
+                                  </svg> */}
+                                  <span className="truncate text-xs">
                                     {course.location}
                                   </span>
                                 </div>
