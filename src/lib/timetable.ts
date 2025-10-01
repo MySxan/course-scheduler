@@ -1,5 +1,5 @@
 import type { Course, DaysOfWeek } from "../types/course";
-import { formatTime } from "./helpers";
+import { formatTime } from "./utils";
 
 // Types for timetable utilities
 export interface TimeSlot {

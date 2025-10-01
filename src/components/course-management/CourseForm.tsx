@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import type { Course, CourseFormData, DaysOfWeek } from "../types/course";
-import { DAYS_OF_WEEK } from "../types/course";
-import { generateId, validateTimeRange } from "../utils/helpers";
+import type { Course, CourseFormData, DaysOfWeek } from "../../types/course";
+import { DAYS_OF_WEEK } from "../../types/course";
+import { generateId, validateTimeRange } from "../../lib/utils";
 
 interface CourseFormProps {
   onCourseAdded: (course: Course) => void;

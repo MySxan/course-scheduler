@@ -1,6 +1,6 @@
 import React from "react";
-import type { Course } from "../types/course";
-import { formatTime } from "../utils/helpers";
+import type { Course } from "../../types/course";
+import { formatTime } from "../../lib/utils";
 
 interface CourseListProps {
   courses: Course[];

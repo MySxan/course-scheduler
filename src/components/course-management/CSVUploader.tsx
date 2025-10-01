@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import Papa from "papaparse";
-import type { Course, CSVRow, DaysOfWeek } from "../types/course";
-import { generateId } from "../utils/helpers";
+import type { Course, CSVRow, DaysOfWeek } from "../../types/course";
+import { generateId } from "../../lib/utils";
 
 interface CSVUploaderProps {
   onCoursesLoaded: (courses: Course[]) => void;

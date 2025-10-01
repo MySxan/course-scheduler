@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useCallback } from "react";
-import type { Course } from "../types/course";
-import { formatTime } from "../utils/helpers";
+import type { Course } from "../../types/course";
+import { formatTime } from "../../lib/utils";
 import {
   generateTimeSlots,
   calculateTimeRange,
@@ -9,11 +9,11 @@ import {
   getVisibleDays,
   type TimetableCourse,
   type CoursesByDay,
-} from "../utils/timetableUtils";
+} from "../../lib/timetable";
 import {
   TimetableSettingsPanel,
   type TimetableSettings,
-} from "./TimetableSettingsPanel";
+} from "./SettingsPanel";
 
 interface WeeklyTimetableProps {
   courses: Course[];

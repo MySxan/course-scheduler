@@ -1,5 +1,5 @@
 import React from "react";
-import { formatTime } from "../utils/helpers";
+import { formatTime } from "../../lib/utils";
 
 export interface TimetableSettings {
   showWeekends: boolean;

@@ -1,9 +1,9 @@
 import { useState } from "react";
 import type { Course } from "./types/course";
-import { CSVUploader } from "./components/CSVUploader";
-import { CourseForm } from "./components/CourseForm";
-import { CourseList } from "./components/CourseList";
-import { WeeklyTimetable } from "./components/WeeklyTimetable";
+import { CSVUploader } from "./components/course-management";
+import { CourseForm } from "./components/course-management";
+import { CourseList } from "./components/course-management";
+import { WeeklyTimetable } from "./components/timetable";
 
 function App() {
   const [courses, setCourses] = useState<Course[]>([]);
