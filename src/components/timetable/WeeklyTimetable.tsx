@@ -26,6 +26,10 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
     showWeekends: true,
     startWithSunday: false,
     dynamicTimeRange: true,
+    startHour: 7,
+    endHour: 22,
+    slotDuration: 30,
+    verticalScale: 1.0,
   });
   const [showSettings, setShowSettings] = useState(false);
 
@@ -33,19 +37,24 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
   const { startHour, endHour } = useMemo(() => {
     return settings.dynamicTimeRange
       ? calculateTimeRange(courses)
-      : { startHour: 7, endHour: 22 };
-  }, [courses, settings.dynamicTimeRange]);
+      : { startHour: settings.startHour, endHour: settings.endHour };
+  }, [
+    courses,
+    settings.dynamicTimeRange,
+    settings.startHour,
+    settings.endHour,
+  ]);
 
   // Memoized time slots generation
   const timeSlots = useMemo(
-    () => generateTimeSlots(startHour, endHour),
-    [startHour, endHour]
+    () => generateTimeSlots(startHour, endHour, settings.slotDuration),
+    [startHour, endHour, settings.slotDuration]
   );
 
   // Memoized timetable courses with optimized conflict detection
   const timetableCourses = useMemo(() => {
-    return createTimetableCourses(courses, startHour);
-  }, [courses, startHour]);
+    return createTimetableCourses(courses, startHour, settings.slotDuration);
+  }, [courses, startHour, settings.slotDuration]);
 
   // Memoized visible days calculation
   const visibleDays = useMemo(() => {
@@ -83,16 +92,18 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
   };
 
   const getCoursePosition = (course: TimetableCourse) => {
-    // Each slot is 3rem (48px) tall, courses should fill the slot precisely
-    const height = course.duration * 3; // 3rem per slot duration
+    // Each slot is 3rem * scale (48px * scale) tall, courses should fill the slot precisely
+    const height = course.duration * 3 * settings.verticalScale; // 3rem per slot duration * scale
+    const topMargin = 0.125 * settings.verticalScale; // Scale margins proportionally
+    const bottomMargin = 0.125 * settings.verticalScale;
 
     return {
-      top: "0.125rem", // Small top margin
-      bottom: "0.125rem", // Small bottom margin
-      left: "0.25rem", // 4px left margin
-      right: "0.25rem", // 4px right margin
-      height: `calc(${height}rem - 0.25rem)`, // Account for margins
-      minHeight: "2.5rem", // Minimum height for single slot
+      top: `${topMargin}rem`, // Scaled top margin
+      bottom: `${bottomMargin}rem`, // Scaled bottom margin
+      left: "0.25rem", // Keep horizontal margins constant
+      right: "0.25rem", // Keep horizontal margins constant
+      height: `calc(${height}rem - ${topMargin + bottomMargin}rem)`, // Account for scaled margins
+      minHeight: `${2.5 * settings.verticalScale}rem`, // Scaled minimum height for single slot
     };
   };
 
@@ -168,8 +179,6 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
           onSettingsChange={handleSettingsChange}
           showSettings={showSettings}
           onToggleSettings={handleToggleSettings}
-          startHour={startHour}
-          endHour={endHour}
         />
 
         {/* Legend */}
@@ -194,6 +203,9 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
             className={`min-w-full grid gap-0 bg-base-300 rounded-lg overflow-hidden`}
             style={{
               gridTemplateColumns: `120px repeat(${visibleDays.length}, 1fr)`,
+              transform: `scaleY(${settings.verticalScale})`,
+              transformOrigin: "top",
+              marginBottom: `${(settings.verticalScale - 1) * 50}%`,
             }}
           >
             {/* Header Row */}
@@ -216,8 +228,14 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
             {timeSlots.map((slot, slotIndex) => (
               <React.Fragment key={slot.value}>
                 {/* Time Label */}
-                <div className="bg-base-100 p-3 text-xs text-center border-b border-r border-base-300 flex items-center justify-center">
-                  <div className="font-medium text-base-content/70">
+                <div className="bg-base-100 text-xs border-b border-r border-base-300 flex items-start justify-center relative">
+                  <div
+                    className="font-medium text-base-content/70 absolute -top-2 left-1/2 transform -translate-x-1/2 bg-base-100 px-2 text-center"
+                    style={{
+                      fontSize: `${0.75 / settings.verticalScale}rem`,
+                      lineHeight: "1.2",
+                    }}
+                  >
                     {slot.label}
                   </div>
                 </div>
@@ -227,7 +245,10 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
                   <div
                     key={`${day}-${slot.value}`}
                     className="bg-base-100 relative border-b border-r border-base-300 last:border-r-0"
-                    style={{ height: "3rem", minHeight: "3rem" }}
+                    style={{
+                      height: `${3 * settings.verticalScale}rem`,
+                      minHeight: `${3 * settings.verticalScale}rem`,
+                    }}
                   >
                     {/* Render courses for this day and time slot */}
                     {coursesByDay[day]?.map((course) => {

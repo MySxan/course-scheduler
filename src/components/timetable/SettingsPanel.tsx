@@ -1,10 +1,15 @@
-import React from "react";
+﻿import React from "react";
 import { formatTime } from "../../lib/utils";
+import { VerticalScaleSlider } from "./VerticalScaleSlider";
 
 export interface TimetableSettings {
   showWeekends: boolean;
   startWithSunday: boolean;
   dynamicTimeRange: boolean;
+  startHour: number;
+  endHour: number;
+  slotDuration: number;
+  verticalScale: number;
 }
 
 export interface TimetableSettingsPanelProps {
@@ -12,8 +17,6 @@ export interface TimetableSettingsPanelProps {
   onSettingsChange: (settings: TimetableSettings) => void;
   showSettings: boolean;
   onToggleSettings: () => void;
-  startHour: number;
-  endHour: number;
 }
 
 export const TimetableSettingsPanel: React.FC<TimetableSettingsPanelProps> = ({
@@ -21,12 +24,10 @@ export const TimetableSettingsPanel: React.FC<TimetableSettingsPanelProps> = ({
   onSettingsChange,
   showSettings,
   onToggleSettings,
-  startHour,
-  endHour,
 }) => {
   const handleSettingChange = (
     key: keyof TimetableSettings,
-    value: boolean
+    value: boolean | number
   ) => {
     onSettingsChange({
       ...settings,
@@ -36,7 +37,6 @@ export const TimetableSettingsPanel: React.FC<TimetableSettingsPanelProps> = ({
 
   return (
     <div className="mb-6">
-      {/* Settings Toggle Button */}
       <div className="flex justify-center mb-4">
         <button
           onClick={onToggleSettings}
@@ -62,85 +62,288 @@ export const TimetableSettingsPanel: React.FC<TimetableSettingsPanelProps> = ({
         </button>
       </div>
 
-      {/* Collapsible Settings Panel */}
       <div
         className={`transition-all duration-300 ease-in-out overflow-hidden ${
           showSettings ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
         }`}
       >
-        <div className="bg-base-200 rounded-lg p-6 mb-6 border border-base-300">
-          <h3 className="text-lg font-semibold mb-4 text-base-content">
-            Display Settings
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Show Weekends Setting */}
-            <div className="form-control">
-              <label className="label cursor-pointer justify-start gap-4">
-                <input
-                  type="checkbox"
-                  className="checkbox checkbox-primary"
-                  checked={settings.showWeekends}
-                  onChange={(e) =>
-                    handleSettingChange("showWeekends", e.target.checked)
-                  }
+        <div className="card bg-base-200 shadow-lg border border-base-300">
+          <div className="card-body">
+            <div className="card-title flex items-center gap-2 mb-6">
+              <svg
+                className="w-5 h-5 text-primary"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"
                 />
-                <div>
-                  <span className="label-text font-medium">Show Weekends</span>
-                  <div className="text-xs text-base-content/60">
-                    Display Saturday and Sunday
-                  </div>
-                </div>
-              </label>
+              </svg>
+              Display Settings
             </div>
 
-            {/* Start with Sunday Setting */}
-            <div className="form-control">
-              <label className="label cursor-pointer justify-start gap-4">
-                <input
-                  type="checkbox"
-                  className="checkbox checkbox-primary"
-                  checked={settings.startWithSunday}
-                  onChange={(e) =>
-                    handleSettingChange("startWithSunday", e.target.checked)
-                  }
-                />
-                <div>
-                  <span className="label-text font-medium">
-                    Start with Sunday
-                  </span>
-                  <div className="text-xs text-base-content/60">
-                    Begin the week on Sunday
+            <div className="grid lg:grid-cols-3 gap-6">
+              <div className="card bg-base-100 shadow-sm">
+                <div className="card-body p-4">
+                  <div className="card-title text-base flex items-center gap-2 mb-4">
+                    <svg
+                      className="w-4 h-4 text-secondary"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    Time Range
                   </div>
-                </div>
-              </label>
-            </div>
 
-            {/* Dynamic Time Range Setting */}
-            <div className="form-control">
-              <label className="label cursor-pointer justify-start gap-4">
-                <input
-                  type="checkbox"
-                  className="checkbox checkbox-primary"
-                  checked={settings.dynamicTimeRange}
-                  onChange={(e) =>
-                    handleSettingChange("dynamicTimeRange", e.target.checked)
-                  }
-                />
-                <div>
-                  <span className="label-text font-medium">
-                    Smart Time Range
-                  </span>
-                  <div className="text-xs text-base-content/60">
-                    {settings.dynamicTimeRange
-                      ? `${formatTime(
-                          `${startHour.toString().padStart(2, "0")}:00`
-                        )} - ${formatTime(
-                          `${endHour.toString().padStart(2, "0")}:00`
-                        )}`
-                      : "Show only relevant hours"}
+                  <div className="form-control mb-4">
+                    <label className="label cursor-pointer">
+                      <div className="flex-1">
+                        <span className="label-text font-medium">
+                          Smart Time Range
+                        </span>
+                        <div className="label-text-alt text-xs opacity-70">
+                          {settings.dynamicTimeRange
+                            ? "Auto-adjust based on courses"
+                            : "Use manual time range"}
+                        </div>
+                      </div>
+                      <input
+                        type="checkbox"
+                        className="toggle toggle-primary"
+                        checked={settings.dynamicTimeRange}
+                        onChange={(e) =>
+                          handleSettingChange(
+                            "dynamicTimeRange",
+                            e.target.checked
+                          )
+                        }
+                      />
+                    </label>
+                  </div>
+
+                  {!settings.dynamicTimeRange && (
+                    <div className="p-4 bg-base-200 rounded-lg border-l-4 border-primary">
+                      <div className="grid grid-cols-2 gap-4 mb-3">
+                        <div className="form-control">
+                          <label className="label">
+                            <span className="label-text text-sm font-medium">
+                              Start
+                            </span>
+                          </label>
+                          <select
+                            className="select select-sm select-bordered w-full"
+                            value={settings.startHour}
+                            onChange={(e) =>
+                              handleSettingChange(
+                                "startHour",
+                                parseInt(e.target.value)
+                              )
+                            }
+                          >
+                            {Array.from({ length: 24 }, (_, i) => (
+                              <option key={i} value={i}>
+                                {i.toString().padStart(2, "0")}:00
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                        <div className="form-control">
+                          <label className="label">
+                            <span className="label-text text-sm font-medium">
+                              End
+                            </span>
+                          </label>
+                          <select
+                            className="select select-sm select-bordered w-full"
+                            value={settings.endHour}
+                            onChange={(e) =>
+                              handleSettingChange(
+                                "endHour",
+                                parseInt(e.target.value)
+                              )
+                            }
+                          >
+                            {Array.from({ length: 24 }, (_, i) => (
+                              <option key={i} value={i}>
+                                {i.toString().padStart(2, "0")}:00
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
+                      <div className="alert alert-info alert-sm">
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                          />
+                        </svg>
+                        <span className="text-xs">
+                          {formatTime(
+                            `${settings.startHour.toString().padStart(2, "0")}:00`
+                          )}{" "}
+                          -{" "}
+                          {formatTime(
+                            `${settings.endHour.toString().padStart(2, "0")}:00`
+                          )}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="card bg-base-100 shadow-sm">
+                <div className="card-body p-4">
+                  <div className="card-title text-base flex items-center gap-2 mb-4">
+                    <svg
+                      className="w-4 h-4 text-accent"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"
+                      />
+                    </svg>
+                    Grid Settings
+                  </div>
+
+                  <div className="form-control mb-4">
+                    <label className="label">
+                      <span className="label-text font-medium">
+                        Slot Duration
+                      </span>
+                      <span className="label-text-alt badge badge-neutral badge-sm">
+                        {settings.slotDuration}min
+                      </span>
+                    </label>
+                    <select
+                      className="select select-bordered w-full"
+                      value={settings.slotDuration}
+                      onChange={(e) =>
+                        handleSettingChange(
+                          "slotDuration",
+                          parseInt(e.target.value)
+                        )
+                      }
+                    >
+                      <option value={15}>15 minutes</option>
+                      <option value={30}>30 minutes</option>
+                      <option value={45}>45 minutes</option>
+                      <option value={60}>60 minutes</option>
+                    </select>
+                  </div>
+
+                  <VerticalScaleSlider
+                    value={settings.verticalScale}
+                    onChange={(value) =>
+                      handleSettingChange("verticalScale", value)
+                    }
+                    min={0.5}
+                    max={2.0}
+                    step={0.1}
+                  />
+                </div>
+              </div>
+
+              <div className="card bg-base-100 shadow-sm">
+                <div className="card-body p-4">
+                  <div className="card-title text-base flex items-center gap-2 mb-4">
+                    <svg
+                      className="w-4 h-4 text-success"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                      />
+                    </svg>
+                    View Options
+                  </div>
+
+                  <div className="space-y-3">
+                    <div className="form-control">
+                      <label className="label cursor-pointer">
+                        <div className="flex-1">
+                          <span className="label-text font-medium">
+                            Show Weekends
+                          </span>
+                          <div className="label-text-alt text-xs opacity-70">
+                            Display Saturday and Sunday
+                          </div>
+                        </div>
+                        <input
+                          type="checkbox"
+                          className="toggle toggle-success"
+                          checked={settings.showWeekends}
+                          onChange={(e) =>
+                            handleSettingChange(
+                              "showWeekends",
+                              e.target.checked
+                            )
+                          }
+                        />
+                      </label>
+                    </div>
+
+                    <div className="form-control">
+                      <label className="label cursor-pointer">
+                        <div className="flex-1">
+                          <span className="label-text font-medium">
+                            Start with Sunday
+                          </span>
+                          <div className="label-text-alt text-xs opacity-70">
+                            Begin the week on Sunday
+                          </div>
+                        </div>
+                        <input
+                          type="checkbox"
+                          className="toggle toggle-success"
+                          checked={settings.startWithSunday}
+                          onChange={(e) =>
+                            handleSettingChange(
+                              "startWithSunday",
+                              e.target.checked
+                            )
+                          }
+                        />
+                      </label>
+                    </div>
                   </div>
                 </div>
-              </label>
+              </div>
             </div>
           </div>
         </div>
