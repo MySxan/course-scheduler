@@ -103,8 +103,8 @@ export const CourseForm: React.FC<CourseFormProps> = ({ onCourseAdded }) => {
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md">
-      <h2 className="text-xl font-semibold mb-4 text-gray-800">
+    <div className="bg-base-100 p-6 rounded-lg shadow-md">
+      <h2 className="text-xl font-semibold mb-4 text-base-content">
         Add Course Manually
       </h2>
 
@@ -113,7 +113,7 @@ export const CourseForm: React.FC<CourseFormProps> = ({ onCourseAdded }) => {
         <div>
           <label
             htmlFor="courseName"
-            className="block text-sm font-medium text-gray-700 mb-1"
+            className="block text-sm font-medium text-base-content mb-1"
           >
             Course Name
           </label>
@@ -123,12 +123,12 @@ export const CourseForm: React.FC<CourseFormProps> = ({ onCourseAdded }) => {
             value={formData.name}
             onChange={(e) => handleInputChange("name", e.target.value)}
             placeholder="e.g., Mathematics 101"
-            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-              errors.name ? "border-red-500 bg-red-50" : "border-gray-300"
+            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary ${
+              errors.name ? "border-error bg-error/10" : "border-base-300"
             }`}
           />
           {errors.name && (
-            <p className="mt-1 text-sm text-red-600">{errors.name}</p>
+            <p className="mt-1 text-sm text-error">{errors.name}</p>
           )}
         </div>
 
@@ -136,7 +136,7 @@ export const CourseForm: React.FC<CourseFormProps> = ({ onCourseAdded }) => {
         <div>
           <label
             htmlFor="dayOfWeek"
-            className="block text-sm font-medium text-gray-700 mb-1"
+            className="block text-sm font-medium text-base-content mb-1"
           >
             Day of Week
           </label>
@@ -172,8 +172,8 @@ export const CourseForm: React.FC<CourseFormProps> = ({ onCourseAdded }) => {
                   className={`px-3 py-2 rounded-md border transition
                   ${
                     isSelected
-                      ? "bg-blue-100 text-blue-800 border-blue-300 font-medium"
-                      : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
+                      ? "bg-primary/20 text-primary border-primary font-medium"
+                      : "bg-base-100 text-base-content border-base-300 hover:bg-base-200"
                   }`}
                 >
                   {day.slice(0, 2)}
@@ -182,7 +182,7 @@ export const CourseForm: React.FC<CourseFormProps> = ({ onCourseAdded }) => {
             })}
           </div>
           {errors.daysOfWeek && (
-            <p className="mt-1 text-sm text-red-600">{errors.daysOfWeek}</p>
+            <p className="mt-1 text-sm text-error">{errors.daysOfWeek}</p>
           )}
         </div>
 
@@ -192,7 +192,7 @@ export const CourseForm: React.FC<CourseFormProps> = ({ onCourseAdded }) => {
           <div>
             <label
               htmlFor="startTime"
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="block text-sm font-medium text-base-content mb-1"
             >
               Start Time
             </label>
@@ -201,14 +201,14 @@ export const CourseForm: React.FC<CourseFormProps> = ({ onCourseAdded }) => {
               type="time"
               value={formData.startTime}
               onChange={(e) => handleInputChange("startTime", e.target.value)}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary ${
                 errors.startTime
-                  ? "border-red-500 bg-red-50"
-                  : "border-gray-300"
+                  ? "border-error bg-error/10"
+                  : "border-base-300"
               }`}
             />
             {errors.startTime && (
-              <p className="mt-1 text-sm text-red-600">{errors.startTime}</p>
+              <p className="mt-1 text-sm text-error">{errors.startTime}</p>
             )}
           </div>
 
@@ -216,7 +216,7 @@ export const CourseForm: React.FC<CourseFormProps> = ({ onCourseAdded }) => {
           <div>
             <label
               htmlFor="endTime"
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="block text-sm font-medium text-base-content mb-1"
             >
               End Time
             </label>
@@ -225,13 +225,13 @@ export const CourseForm: React.FC<CourseFormProps> = ({ onCourseAdded }) => {
               type="time"
               value={formData.endTime}
               onChange={(e) => handleInputChange("endTime", e.target.value)}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                errors.endTime ? "border-red-500 bg-red-50" : "border-gray-300"
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary ${
+                errors.endTime ? "border-error bg-error/10" : "border-base-300"
               }`}
             />
 
             {errors.endTime && (
-              <p className="mt-1 text-sm text-red-600">{errors.endTime}</p>
+              <p className="mt-1 text-sm text-error">{errors.endTime}</p>
             )}
           </div>
         </div>
@@ -240,7 +240,7 @@ export const CourseForm: React.FC<CourseFormProps> = ({ onCourseAdded }) => {
         <div>
           <label
             htmlFor="location"
-            className="block text-sm font-medium text-gray-700 mb-1"
+            className="block text-sm font-medium text-base-content mb-1"
           >
             Location (Optional)
           </label>
@@ -250,7 +250,7 @@ export const CourseForm: React.FC<CourseFormProps> = ({ onCourseAdded }) => {
             value={formData.location}
             onChange={(e) => handleInputChange("location", e.target.value)}
             placeholder="e.g., Lincoln Hall 1019, Chem Lab 205"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-base-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
           />
         </div>
 
@@ -261,9 +261,9 @@ export const CourseForm: React.FC<CourseFormProps> = ({ onCourseAdded }) => {
             disabled={isSubmitting}
             className={`px-6 py-2 rounded-md font-medium transition-colors ${
               isSubmitting
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-blue-600 hover:bg-blue-700 focus:bg-blue-700"
-            } text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2`}
+                ? "bg-neutral/50 cursor-not-allowed"
+                : "bg-primary hover:bg-primary/90 focus:bg-primary/90"
+            } text-primary-content focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2`}
           >
             {isSubmitting ? "Adding..." : "Add Course"}
           </button>

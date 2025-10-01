@@ -233,8 +233,8 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md">
-      <h2 className="text-xl font-semibold mb-4 text-gray-800">
+    <div className="bg-base-100 p-6 rounded-lg shadow-md">
+      <h2 className="text-xl font-semibold mb-4 text-base-content">
         Upload Courses from CSV
       </h2>
 
@@ -246,37 +246,37 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
             accept=".csv"
             onChange={handleFileUpload}
             disabled={isLoading}
-            className="file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 file:cursor-pointer cursor-pointer"
+            className="file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 file:cursor-pointer cursor-pointer"
           />
 
           <button
             onClick={downloadSampleCSV}
-            className="text-sm text-blue-600 hover:text-blue-800 underline"
+            className="text-sm text-primary hover:text-primary/80 underline"
           >
             Download Sample CSV
           </button>
         </div>
 
         {isLoading && (
-          <div className="flex items-center gap-2 text-blue-600">
-            <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-600 border-t-transparent"></div>
+          <div className="flex items-center gap-2 text-primary">
+            <div className="animate-spin rounded-full h-4 w-4 border-2 border-primary border-t-transparent"></div>
             <span>Processing CSV file...</span>
           </div>
         )}
 
         {error && (
-          <div className="p-3 bg-red-50 border border-red-200 rounded-md">
-            <p className="text-red-800 text-sm whitespace-pre-line">{error}</p>
+          <div className="p-3 bg-error/10 border border-error/20 rounded-md">
+            <p className="text-error text-sm whitespace-pre-line">{error}</p>
           </div>
         )}
 
         {success && (
-          <div className="p-3 bg-green-50 border border-green-200 rounded-md">
-            <p className="text-green-800 text-sm">{success}</p>
+          <div className="p-3 bg-success/10 border border-success/20 rounded-md">
+            <p className="text-success text-sm">{success}</p>
           </div>
         )}
 
-        <div className="text-sm text-gray-600">
+        <div className="text-sm text-base-content/70">
           <p className="font-medium mb-2">CSV Format Requirements:</p>
           <ul className="list-disc list-inside space-y-1 text-xs">
             <li>Headers: name, day, startTime, endTime, location (optional)</li>

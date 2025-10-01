@@ -145,13 +145,13 @@ export const ScaleSlider: React.FC<ScaleSliderProps> = ({
 
             {/* Progress fill */}
             <div
-              className="absolute inset-y-0 left-0 rounded-full bg-blue-400 transition-all duration-200 ease-out"
+              className="absolute inset-y-0 left-0 rounded-full bg-primary transition-all duration-200 ease-out"
               style={{ width: `${thumbPosition}%` }}
             />
 
             {/* Thumb */}
             <div
-              className={`absolute top-1/2 w-10 h-6 rounded-full bg-blue-500 border-2 border-primary shadow-lg transition-all duration-200 ease-out transform -translate-y-1/2 -translate-x-1/2 ${
+              className={`absolute top-1/2 w-10 h-6 rounded-full bg-primary border-2 border-primary shadow-lg transition-all duration-200 ease-out transform -translate-y-1/2 -translate-x-1/2 ${
                 isDragging
                   ? "scale-110 shadow-xl cursor-grabbing"
                   : "hover:scale-105 cursor-grab focus:scale-105"
@@ -171,4 +171,3 @@ export const ScaleSlider: React.FC<ScaleSliderProps> = ({
     </div>
   );
 };
-

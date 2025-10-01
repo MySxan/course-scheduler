@@ -2,7 +2,6 @@ import React, { useMemo, useState, useCallback } from "react";
 import type { Course } from "../../types/course";
 import { formatTime } from "../../lib/utils";
 import {
-  generateTimeSlots,
   calculateTimeRange,
   createTimetableCourses,
   groupCoursesByDay,
@@ -45,12 +44,6 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
     settings.endHour,
   ]);
 
-  // Memoized time slots generation (for display - always hourly)
-  const timeSlots = useMemo(
-    () => generateTimeSlots(startHour, endHour),
-    [startHour, endHour]
-  );
-
   // Memoized timetable courses with optimized conflict detection
   const timetableCourses = useMemo(() => {
     return createTimetableCourses(courses, startHour, settings.slotDuration);
@@ -78,7 +71,7 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
 
   const getCourseCardClasses = (course: TimetableCourse) => {
     const baseClasses =
-      "card card-compact shadow-lg absolute transition-all duration-200 hover:shadow-xl cursor-pointer rounded-lg border-2 backdrop-blur-sm";
+      "card card-compact shadow-lg absolute transition-all duration-200 hover:shadow-xl cursor-pointer rounded-lg border-2 backdrop-blur-sm opacity-90";
 
     if (course.hasConflict) {
       if (course.conflictLevel > 1) {
@@ -91,27 +84,27 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
     return `${baseClasses} bg-primary text-primary-content border-primary hover:bg-primary/90 hover:scale-[1.02]`;
   };
 
-  const getCoursePosition = (course: TimetableCourse) => {
-    // Calculate exact duration in minutes
-    const [startHours, startMinutes] = course.startTime.split(":").map(Number);
-    const [endHours, endMinutes] = course.endTime.split(":").map(Number);
-    const durationMinutes =
-      endHours * 60 + endMinutes - (startHours * 60 + startMinutes);
+  const getCoursePosition = (
+    course: TimetableCourse,
+    startHour: number,
+    verticalScale: number
+  ) => {
+    const [startH, startM] = course.startTime.split(":").map(Number);
+    const [endH, endM] = course.endTime.split(":").map(Number);
 
-    // Each minute takes (4rem / slot duration) * scale
-    const minuteHeight = (4 / 60) * settings.verticalScale;
-    const height = durationMinutes * minuteHeight;
+    const courseStartMinutes = (startH - startHour) * 60 + startM;
+    const courseEndMinutes = (endH - startHour) * 60 + endM;
+    const durationMinutes = courseEndMinutes - courseStartMinutes;
 
-    const topMargin = 0 * settings.verticalScale;
-    const bottomMargin = 0 * settings.verticalScale;
+    // 每分钟高度 (4rem / 60min) * verticalScale
+    const minuteHeight = (4 / 60) * verticalScale;
 
     return {
-      top: `${topMargin}rem`,
-      bottom: `${bottomMargin}rem`,
+      top: `${courseStartMinutes * minuteHeight}rem`,
+      height: `${durationMinutes * minuteHeight}rem`,
       left: "0.2rem",
       right: "0.2rem",
-      height: `calc(${height}rem - ${topMargin + bottomMargin}rem)`,
-      minHeight: `${2 * settings.verticalScale}rem`,
+      position: "absolute" as const,
     };
   };
 
@@ -205,148 +198,109 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
           </div>
         </div>
 
-        {/* Timetable Grid */}
-        <div className="overflow-x-auto shadow-lg rounded-lg">
-          <div
-            className={`min-w-full grid gap-0 bg-base-300 rounded-lg overflow-hidden`}
-            style={{
-              gridTemplateColumns: `120px repeat(${visibleDays.length}, 1fr)`,
-              gap: `${settings.verticalScale - 1}px 0`,
-            }}
-          >
-            {/* Header Row */}
-            <div className="bg-base-200 border-r border-base-300"></div>
-            {visibleDays.map((day) => (
-              <div
-                key={day}
-                className="bg-base-200 p-4 font-bold text-center text-sm border-r border-base-300 last:border-r-0"
-              >
-                <div className="hidden sm:block text-base-content">{day}</div>
-                <div className="sm:hidden text-base-content">
-                  {day.slice(0, 3)}
-                </div>
+        <div
+          className="min-w-full grid gap-0 bg-base-300 rounded-lg overflow-hidden relative"
+          style={{
+            gridTemplateColumns: `120px repeat(${visibleDays.length}, 1fr)`,
+            gridTemplateRows: `40px repeat(${endHour - startHour + 1}, ${4 * settings.verticalScale}rem)`,
+          }}
+        >
+          {/* Header Row */}
+          <div className="bg-base-200 border-r border-base-300"></div>
+          {visibleDays.map((day) => (
+            <div
+              key={day}
+              className="bg-base-200 p-4 font-bold text-center text-sm border-r border-base-300 last:border-r-0"
+            >
+              <div className="hidden sm:block text-base-content">{day}</div>
+              <div className="sm:hidden text-base-content">
+                {day.slice(0, 3)}
               </div>
-            ))}
+            </div>
+          ))}
 
-            {/* Time Grid */}
-            {timeSlots.map((slot) => (
-              <React.Fragment key={slot.value}>
-                {/* Time Label */}
-                <div className="bg-base-100 text-xs border-b border-r border-base-300 flex items-start justify-center relative">
+          {/* Time Labels (第一列) */}
+          {Array.from({ length: endHour - startHour + 1 }, (_, i) => {
+            const hour = startHour + i;
+            return (
+              <div
+                key={hour}
+                className="text-xs text-right pr-1 border-b border-base-300 flex items-start justify-end"
+                style={{ gridColumn: 1, gridRow: i + 2 }}
+              >
+                {`${hour}:00`}
+              </div>
+            );
+          })}
+
+          {/* Hour slots (背景网格) */}
+          {Array.from({ length: endHour - startHour + 1 }, (_, i) =>
+            visibleDays.map((day, dayIndex) => (
+              <div
+                key={`${day}-${i}`}
+                className="border-b border-r border-base-300 bg-base-100"
+                style={{ gridColumn: dayIndex + 2, gridRow: i + 2 }}
+              />
+            ))
+          )}
+          {/* Hour slots (背景网格) */}
+          {Array.from({ length: endHour - startHour + 1 }, (_, i) =>
+            visibleDays.map((day, dayIndex) => (
+              <div
+                key={`${day}-${i}`}
+                className="relative border-b border-r border-base-300 bg-base-100"
+                style={{ gridColumn: dayIndex + 2, gridRow: i + 2 }}
+              >
+                {/* 30-min divider */}
+                {settings.slotDuration === 30 && (
                   <div
-                    className="font-medium text-base-content/70 text-center whitespace-nowrap px-1 absolute"
-                    style={{
-                      top: "-0.5rem",
-                      left: "50%",
-                      transform: "translateX(-50%)",
-                      backgroundColor: "hsl(var(--b1))",
-                      zIndex: 10,
-                    }}
-                  >
-                    {slot.label}
+                    className="absolute w-full border-t border-base-300/50"
+                    style={{ top: "50%", left: 0 }}
+                  />
+                )}
+              </div>
+            ))
+          )}
+
+          {/* Day overlays (课程卡片) */}
+          {visibleDays.map((day, dayIndex) => (
+            <div
+              key={day}
+              className="relative"
+              style={{
+                gridColumn: dayIndex + 2,
+                gridRow: "2 / -1",
+              }}
+            >
+              {coursesByDay[day]?.map((course) => (
+                <div
+                  key={course.id}
+                  className={getCourseCardClasses(course)}
+                  style={getCoursePosition(
+                    course,
+                    startHour,
+                    settings.verticalScale
+                  )}
+                  title={`${course.name} - ${formatTime(course.startTime)} to ${formatTime(course.endTime)}${course.location ? ` at ${course.location}` : ""}`}
+                >
+                  <div className="card-body p-1">
+                    <div className="text-lg font-bold leading-tight line-clamp-2">
+                      {course.name}
+                    </div>
+                    <div className="text-xs text-base-content/60 -mt-1.5">
+                      {formatTime(course.startTime)} -{" "}
+                      {formatTime(course.endTime)}
+                    </div>
+                    {course.location && (
+                      <div className="truncate text-xs -mt-1.5">
+                        {course.location}
+                      </div>
+                    )}
                   </div>
                 </div>
-
-                {/* Day Columns */}
-                {visibleDays.map((day) => (
-                  <div
-                    key={`${day}-${slot.value}`}
-                    className="bg-base-100 relative border-b border-r border-base-300 last:border-r-0"
-                    style={{
-                      height: `${4 * settings.verticalScale}rem`,
-                      minHeight: `${4 * settings.verticalScale}rem`,
-                    }}
-                  >
-                    {/* 30-minute divider for 30-minute slots */}
-                    {settings.slotDuration === 30 && (
-                      <div
-                        className="absolute w-full border-gray-300 border-t border-base-300/50"
-                        style={{
-                          top: `${2 * settings.verticalScale}rem`,
-                          left: 0,
-                          right: 0,
-                        }}
-                      />
-                    )}
-
-                    {/* Render courses for this day and time slot */}
-                    {coursesByDay[day]?.map((course) => {
-                      // Check if course starts within this hour
-                      const courseStartHour = parseInt(
-                        course.startTime.split(":")[0]
-                      );
-                      if (courseStartHour === slot.hour) {
-                        return (
-                          <div
-                            key={course.id}
-                            className={getCourseCardClasses(course)}
-                            style={getCoursePosition(course)}
-                            title={`${course.name} - ${formatTime(course.startTime)} to ${formatTime(course.endTime)}${course.location ? ` at ${course.location}` : ""}`}
-                          >
-                            <div className="card-body p-1">
-                              <div className="font-bold leading-tight line-clamp-2">
-                                {course.name}
-                              </div>
-                              <div className="badge text-xs text-gray-600 badge-ghost badge-xs py-1">
-                                {formatTime(course.startTime)}
-                                {" - "}
-                                {formatTime(course.endTime)}
-                              </div>
-                              {course.location && (
-                                <div className="badge flex items-center badge-outline badge-xs gap-1 -mt-0.5">
-                                  {/* <svg
-                                    className="w-3 h-3"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                  >
-                                    <path
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                      strokeWidth={2}
-                                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                                    />
-                                    <path
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                      strokeWidth={2}
-                                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                                    />
-                                  </svg> */}
-                                  <span className="truncate text-xs">
-                                    {course.location}
-                                  </span>
-                                </div>
-                              )}
-                              {course.hasConflict && (
-                                <div className="badge badge-warning badge-xs gap-1 mt-1">
-                                  <svg
-                                    className="w-3 h-3"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                  >
-                                    <path
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                      strokeWidth={2}
-                                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
-                                    />
-                                  </svg>
-                                  Alert
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        );
-                      }
-                      return null;
-                    })}
-                  </div>
-                ))}
-              </React.Fragment>
-            ))}
-          </div>
+              ))}
+            </div>
+          ))}
         </div>
 
         {/* Mobile-friendly course list for small screens */}
