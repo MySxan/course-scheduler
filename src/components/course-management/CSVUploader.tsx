@@ -244,8 +244,8 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
         Upload Courses from CSV
       </h2>
 
-      <div className="space-y-4">
-        <div className="flex items-center gap-4">
+      <div className="space-y-4 ">
+        <div className="flex items-center justify-between gap-4">
           <input
             ref={fileInputRef}
             type="file"
@@ -282,9 +282,9 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
           </div>
         )}
 
-        <div className="text-sm text-base-content/70">
+        <div className="text-lg text-base-content/70">
           <p className="font-medium mb-2">CSV Format Requirements:</p>
-          <ul className="list-disc list-inside space-y-1 text-xs">
+          <ul className="list-disc list-inside space-y-2 text-sm">
             <li>Headers: name, day, startTime, endTime, location (optional)</li>
             <li>
               Day: Full day name (Monday) or abbreviation (Mon). Use

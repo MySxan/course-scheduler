@@ -73,7 +73,7 @@ export const TimetableSettingsPanel: React.FC<TimetableSettingsPanelProps> = ({
                 <div className="card-body p-4">
                   <div className="card-title text-base flex items-center gap-2 mb-4">
                     <svg
-                      className="w-4 h-4 text-secondary"
+                      className="w-4 h-4 text-accent"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"

@@ -99,7 +99,7 @@ export const calculateTimeRange = (courses: Course[]): TimeRange => {
   });
 
   return {
-    startHour: Math.max(0, earliestHour),
+    startHour: Math.max(0, earliestHour - 1),
     endHour: Math.min(23, latestHour),
   };
 };

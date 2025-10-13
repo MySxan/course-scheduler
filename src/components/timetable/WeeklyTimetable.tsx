@@ -192,18 +192,18 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
         </div>
 
         <div
-          className="min-w-full grid gap-0 bg-base-300 rounded-lg overflow-hidden relative"
+          className="min-w-full grid gap-0 bg-base rounded-lg overflow-hidden relative"
           style={{
             gridTemplateColumns: `120px repeat(${visibleDays.length}, 1fr)`,
             gridTemplateRows: `40px repeat(${endHour - startHour + 1}, ${4 * settings.verticalScale}rem)`,
           }}
         >
           {/* Header Row */}
-          <div className="bg-base-200 border-r border-base-300"></div>
+          <div className="bg-base"></div>
           {visibleDays.map((day) => (
             <div
               key={day}
-              className="bg-base-200 p-4 font-bold text-center text-sm border-r border-base-300 last:border-r-0"
+              className="bg-base font-bold text-center text-sm border-b border-slate-400"
             >
               <div className="hidden sm:block text-base-content">{day}</div>
               <div className="sm:hidden text-base-content">
@@ -212,42 +212,37 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
             </div>
           ))}
 
-          {/* Time Labels (第一列) */}
-          {Array.from({ length: endHour - startHour + 1 }, (_, i) => {
+          {/* Time Labels */}
+          {Array.from({ length: endHour - startHour + 2 }, (_, i) => {
             const hour = startHour + i;
+            const isExtraRow = i === endHour - startHour + 1;
             return (
               <div
                 key={hour}
-                className="text-xs text-right pr-1 border-b border-base-300 flex items-start justify-end"
-                style={{ gridColumn: 1, gridRow: i + 2 }}
+                className="text-xs text-right flex items-start justify-end mr-6"
+                style={{
+                  gridColumn: 1,
+                  gridRow: i + 2,
+                  transform: "translateY(-0.5rem)",
+                }}
               >
-                {`${hour}:00`}
+                {!isExtraRow ? `${hour}:00` : `${endHour + 1}:00`}{" "}
               </div>
             );
           })}
 
-          {/* Hour slots (背景网格) */}
+          {/* Hour slots */}
           {Array.from({ length: endHour - startHour + 1 }, (_, i) =>
             visibleDays.map((day, dayIndex) => (
               <div
                 key={`${day}-${i}`}
-                className="border-b border-r border-base-300 bg-base-100"
-                style={{ gridColumn: dayIndex + 2, gridRow: i + 2 }}
-              />
-            ))
-          )}
-          {/* Hour slots (背景网格) */}
-          {Array.from({ length: endHour - startHour + 1 }, (_, i) =>
-            visibleDays.map((day, dayIndex) => (
-              <div
-                key={`${day}-${i}`}
-                className="relative border-b border-r border-base-300 bg-base-100"
+                className="relative border-b border-slate-400 "
                 style={{ gridColumn: dayIndex + 2, gridRow: i + 2 }}
               >
                 {/* 30-min divider */}
                 {settings.slotDuration === 30 && (
                   <div
-                    className="absolute w-full border-t border-base-300/50"
+                    className="absolute w-full border-t border-slate-200"
                     style={{ top: "50%", left: 0 }}
                   />
                 )}
