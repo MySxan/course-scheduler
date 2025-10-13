@@ -66,7 +66,7 @@ export const TimetableSettingsPanel: React.FC<TimetableSettingsPanelProps> = ({
           showSettings ? "max-h-2000 opacity-100" : "max-h-0 opacity-0"
         }`}
       >
-        <div className="card bg-base-200 shadow-lg">
+        <div className="card bg-base-200 shadow-lg text-">
           <div className="card-body">
             <div className="grid lg:grid-cols-3 gap-6">
               <div className="card bg-base-100 shadow-sm">
@@ -89,7 +89,7 @@ export const TimetableSettingsPanel: React.FC<TimetableSettingsPanelProps> = ({
                   </div>
 
                   <div className="form-control mb-4">
-                    <label className="label cursor-pointer">
+                    <label className="label flex items-center cursor-pointer">
                       <div className="flex-1">
                         <span className="label-text font-medium">
                           Smart Time Range
@@ -102,7 +102,7 @@ export const TimetableSettingsPanel: React.FC<TimetableSettingsPanelProps> = ({
                       </div>
                       <input
                         type="checkbox"
-                        className="toggle toggle-primary"
+                        className="toggle toggle-accent"
                         checked={settings.dynamicTimeRange}
                         onChange={(e) =>
                           handleSettingChange(
@@ -114,7 +114,7 @@ export const TimetableSettingsPanel: React.FC<TimetableSettingsPanelProps> = ({
                     </label>
                   </div>
 
-                  <div className="p-4 bg-base-200 rounded-lg border-l-4 border-primary">
+                  <div className="p-4 bg-base-200 rounded-lg border-primary">
                     <div className="grid grid-cols-2 gap-4">
                       <div className="form-control">
                         <label className="label">
@@ -192,19 +192,8 @@ export const TimetableSettingsPanel: React.FC<TimetableSettingsPanelProps> = ({
                     Grid Settings
                   </div>
 
-                  <div className="form-control mb-4">
+                  <div className="form-control mb-4 ">
                     <label className="label flex items-center gap-4 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        className="checkbox checkbox-accent w-5 h-5 py-0"
-                        checked={settings.slotDuration === 30}
-                        onChange={(e) =>
-                          handleSettingChange(
-                            "slotDuration",
-                            e.target.checked ? 30 : 60
-                          )
-                        }
-                      />
                       <div className="flex-1">
                         <span className="label-text font-medium">
                           Display 30 min slot
@@ -215,6 +204,17 @@ export const TimetableSettingsPanel: React.FC<TimetableSettingsPanelProps> = ({
                             : "60-minute time slots"}
                         </div>
                       </div>
+                      <input
+                        type="checkbox"
+                        className="toggle toggle-accent"
+                        checked={settings.slotDuration === 30}
+                        onChange={(e) =>
+                          handleSettingChange(
+                            "slotDuration",
+                            e.target.checked ? 30 : 60
+                          )
+                        }
+                      />
                     </label>
                   </div>
 
@@ -225,7 +225,7 @@ export const TimetableSettingsPanel: React.FC<TimetableSettingsPanelProps> = ({
                     }
                     min={0.5}
                     max={1.5}
-                    step={0.1}
+                    step={0.05}
                   />
                 </div>
               </div>
@@ -258,6 +258,14 @@ export const TimetableSettingsPanel: React.FC<TimetableSettingsPanelProps> = ({
                   <div className="space-y-3">
                     <div className="form-control">
                       <label className="label flex items-center gap-4 cursor-pointer">
+                        <div className="flex-1">
+                          <span className="label-text font-medium">
+                            Show Weekends
+                          </span>
+                          <div className="label-text-alt text-xs opacity-70">
+                            Display Saturday and Sunday
+                          </div>
+                        </div>
                         <input
                           type="checkbox"
                           className="checkbox checkbox-accent w-5 h-5 py-0"
@@ -269,19 +277,19 @@ export const TimetableSettingsPanel: React.FC<TimetableSettingsPanelProps> = ({
                             )
                           }
                         />
-                        <div className="flex-1">
-                          <span className="label-text font-medium">
-                            Show Weekends
-                          </span>
-                          <div className="label-text-alt text-xs opacity-70">
-                            Display Saturday and Sunday
-                          </div>
-                        </div>
                       </label>
                     </div>
 
                     <div className="form-control">
                       <label className="label flex items-center gap-4 cursor-pointer">
+                        <div className="flex-1">
+                          <span className="label-text font-medium">
+                            Start with Sunday
+                          </span>
+                          <div className="label-text-alt text-xs opacity-70">
+                            Begin the week on Sunday
+                          </div>
+                        </div>
                         <input
                           type="checkbox"
                           className="checkbox checkbox-accent w-5 h-5 py-0"
@@ -293,14 +301,6 @@ export const TimetableSettingsPanel: React.FC<TimetableSettingsPanelProps> = ({
                             )
                           }
                         />
-                        <div className="flex-1">
-                          <span className="label-text font-medium">
-                            Start with Sunday
-                          </span>
-                          <div className="label-text-alt text-xs opacity-70">
-                            Begin the week on Sunday
-                          </div>
-                        </div>
                       </label>
                     </div>
                   </div>
