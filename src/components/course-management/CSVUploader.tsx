@@ -57,6 +57,8 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
     Papa.parse<CSVRow>(file, {
       header: true,
       skipEmptyLines: true,
+      delimiter: ",", // Explicitly set comma as delimiter
+      quoteChar: '"', // Use double quotes for parsing quoted fields
       transformHeader: (header: string) => {
         // Normalize header names to match our expected format
         const normalized = header.trim().toLowerCase();
@@ -220,7 +222,11 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
       ["English Literature", "Friday", "11:00", "12:30", "Room C301"],
     ];
 
-    const csvContent = sampleData.map((row) => row.join(",")).join("\n");
+    // Use Papa Parse to generate properly formatted CSV
+    const csvContent = Papa.unparse(sampleData, {
+      header: false,
+      quotes: true, // Always quote fields to avoid comma issues
+    });
     const blob = new Blob([csvContent], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
 

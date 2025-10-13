@@ -76,7 +76,7 @@ export const ScaleSlider: React.FC<ScaleSliderProps> = ({
       const newValue = min + (max - min) * pct;
       onChange(clampValue(newValue));
     },
-    [sliderWidth, usableWidth, min, max, onChange, clampValue]
+    [sliderWidth, THUMB_HALF, usableWidth, min, max, onChange, clampValue]
   );
 
   // Mouse handling
