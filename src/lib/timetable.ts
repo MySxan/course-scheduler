@@ -6,12 +6,12 @@ export interface TimeSlot {
   hour: number;
   minute: number;
   label: string;
-  value: string; // "HH:MM" format
+  value: string; 
 }
 
 export interface TimetableCourse extends Course {
   startSlot: number;
-  duration: number; // in 30-minute slots
+  duration: number; 
   hasConflict: boolean;
   conflictLevel: number; // number of overlapping courses
 }
@@ -35,7 +35,6 @@ export const generateTimeSlots = (
 ): TimeSlot[] => {
   const slots: TimeSlot[] = [];
 
-  // Always generate hourly slots for display
   for (let hour = startHour; hour <= endHour; hour++) {
     const timeString = `${hour.toString().padStart(2, "0")}:00`;
     const label = formatTime(timeString);

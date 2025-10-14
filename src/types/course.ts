@@ -1,6 +1,7 @@
 export interface Course {
   id: string;
   name: string;
+  section?: string; // Optional course section
   daysOfWeek: DaysOfWeek[];
   startTime: string; // Format: "HH:mm" (24-hour)
   endTime: string; // Format: "HH:mm" (24-hour)
@@ -28,6 +29,7 @@ export const DAYS_OF_WEEK: DaysOfWeek[] = [
 
 export interface CourseFormData {
   name: string;
+  section: string;
   daysOfWeek: DaysOfWeek[];
   startTime: string;
   endTime: string;
@@ -37,6 +39,7 @@ export interface CourseFormData {
 // For CSV parsing
 export interface CSVRow {
   name: string;
+  section?: string;
   day: string;
   startTime: string;
   endTime: string;

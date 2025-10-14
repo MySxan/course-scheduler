@@ -184,7 +184,6 @@ export const TimetableSettingsPanel: React.FC<TimetableSettingsPanelProps> = ({
                         >
                           {Array.from({ length: 23 }, (_, i) => {
                             const displayHour = i + 1;
-                            // Disable end hours that would be <= current start hour
                             const isDisabled =
                               !settings.dynamicTimeRange &&
                               i <= settings.startHour;

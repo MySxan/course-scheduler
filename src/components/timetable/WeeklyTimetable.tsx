@@ -95,8 +95,6 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
     const courseStartMinutes = (startH - startHour) * 60 + startM;
     const courseEndMinutes = (endH - startHour) * 60 + endM;
     const durationMinutes = courseEndMinutes - courseStartMinutes;
-
-    // 每分钟高度 (4rem / 60min) * verticalScale
     const minuteHeight = (4 / 60) * verticalScale;
 
     return {
@@ -144,7 +142,7 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
     <div className="card bg-base-100 shadow-xl">
       <div className="card-body p-6">
         {/* Header */}
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -167,9 +165,7 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
               Weekly Timetable
             </h2>
           </div>
-          <div className="badge badge-primary badge-lg align-middle">
-            {courses.length} courses
-          </div>
+          <div>{courses.length} courses</div>
         </div>
 
         {/* Settings Panel */}
@@ -250,7 +246,7 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
             ))
           )}
 
-          {/* Day overlays (课程卡片) */}
+          {/* Day overlays */}
           {visibleDays.map((day, dayIndex) => (
             <div
               key={day}
@@ -269,18 +265,23 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
                     startHour,
                     settings.verticalScale
                   )}
-                  title={`${course.name} - ${formatTime(course.startTime)} to ${formatTime(course.endTime)}${course.location ? ` at ${course.location}` : ""}`}
+                  title={`${course.name}${course.section ? ` (${course.section})` : ""} - ${formatTime(course.startTime)} to ${formatTime(course.endTime)}${course.location ? ` at ${course.location}` : ""}`}
                 >
                   <div className="card-body p-1">
                     <div className="text-lg font-bold leading-tight line-clamp-2">
                       {course.name}
+                      {course.section && (
+                        <span className="textarea-xs font-bold ml-1">
+                          - {course.section}
+                        </span>
+                      )}
                     </div>
-                    <div className="text-xs text-base-content/60 -mt-1.5">
+                    <div className="textarea-xs text-base-content/60 opacity-80 -mt-2">
                       {formatTime(course.startTime)} -{" "}
                       {formatTime(course.endTime)}
                     </div>
                     {course.location && (
-                      <div className="truncate text-xs -mt-1.5">
+                      <div className="truncate text-xs -mt-2">
                         {course.location}
                       </div>
                     )}
@@ -324,7 +325,14 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
                 <div className="card-body">
                   <div className="flex justify-between items-start">
                     <div>
-                      <div className="font-semibold">{course.name}</div>
+                      <div className="font-semibold">
+                        {course.name}
+                        {course.section && (
+                          <span className="text-sm font-normal opacity-80 ml-1">
+                            {course.section}
+                          </span>
+                        )}
+                      </div>
                       <div className="text-sm opacity-90">
                         {course.daysOfWeek.join(", ")} •{" "}
                         {formatTime(course.startTime)} -{" "}

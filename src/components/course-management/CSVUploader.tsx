@@ -67,6 +67,10 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
           case "coursename":
           case "name":
             return "name";
+          case "section":
+          case "course section":
+          case "coursesection":
+            return "section";
           case "day of week":
           case "dayofweek":
           case "day":
@@ -174,6 +178,7 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
           validCourses.push({
             id: generateId(),
             name: row.name.trim(),
+            section: row.section?.trim() || undefined,
             daysOfWeek,
             startTime,
             endTime,
@@ -210,16 +215,17 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
 
   const downloadSampleCSV = () => {
     const sampleData = [
-      ["name", "day", "startTime", "endTime", "location"],
+      ["name", "section", "day", "startTime", "endTime", "location"],
       [
-        "Mathematics 101",
-        "Monday,Wednesday,Friday",
+        "MATH 231",
+        "AL",
+        "Mon,Wed,Fri",
         "09:00",
         "10:30",
         "Room A101",
       ],
-      ["Physics Lab", "Tuesday,Thursday", "14:00", "16:00", "Lab B205"],
-      ["English Literature", "Friday", "11:00", "12:30", "Room C301"],
+      ["PHY", "B1", "Mon,Wed,Fri", "14:00", "16:00", "Lab B205"],
+      ["ENG 115", "", "Friday", "11:00", "12:30", "Room C301"],
     ];
 
     // Use Papa Parse to generate properly formatted CSV
@@ -285,7 +291,10 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
         <div className="text-lg text-base-content/70">
           <p className="font-medium mb-2">CSV Format Requirements:</p>
           <ul className="list-disc list-inside space-y-2 text-sm">
-            <li>Headers: name, day, startTime, endTime, location (optional)</li>
+            <li>
+              Headers: name, section (optional), day, startTime, endTime,
+              location (optional)
+            </li>
             <li>
               Day: Full day name (Monday) or abbreviation (Mon). Use
               comma-separated for multiple days (Monday,Wednesday,Friday)

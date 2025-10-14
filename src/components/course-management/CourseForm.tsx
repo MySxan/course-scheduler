@@ -11,6 +11,7 @@ export const CourseForm: React.FC<CourseFormProps> = ({ onCourseAdded }) => {
   // Form state
   const [formData, setFormData] = useState<CourseFormData>({
     name: "",
+    section: "",
     daysOfWeek: [],
     startTime: "",
     endTime: "",
@@ -68,6 +69,7 @@ export const CourseForm: React.FC<CourseFormProps> = ({ onCourseAdded }) => {
     const newCourse: Course = {
       id: generateId(),
       name: formData.name.trim(),
+      section: formData.section.trim() || undefined,
       daysOfWeek: formData.daysOfWeek as DaysOfWeek[],
       startTime: formData.startTime,
       endTime: formData.endTime,
@@ -79,6 +81,7 @@ export const CourseForm: React.FC<CourseFormProps> = ({ onCourseAdded }) => {
     // Reset form
     setFormData({
       name: "",
+      section: "",
       daysOfWeek: [],
       startTime: "",
       endTime: "",
@@ -132,6 +135,24 @@ export const CourseForm: React.FC<CourseFormProps> = ({ onCourseAdded }) => {
           )}
         </div>
 
+        {/* Course Section */}
+        <div>
+          <label
+            htmlFor="courseSection"
+            className="block text-sm font-medium text-base-content mb-1"
+          >
+            Section <span className="text-base-content/60">(Optional)</span>
+          </label>
+          <input
+            id="courseSection"
+            type="text"
+            value={formData.section}
+            onChange={(e) => handleInputChange("section", e.target.value)}
+            placeholder="e.g., AL, B1, Y19"
+            className="w-full px-3 py-2 border border-base-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+          />
+        </div>
+
         {/* Days of Week */}
         <div>
           <label
@@ -169,14 +190,14 @@ export const CourseForm: React.FC<CourseFormProps> = ({ onCourseAdded }) => {
                       });
                     }
                   }}
-                  className={`px-3 py-2 rounded-md border transition
+                  className={`px-3 py-2 rounded-md border flex-1 transition
                   ${
                     isSelected
                       ? "bg-primary/20 text-primary border-primary font-medium"
                       : "bg-base-100 text-base-content border-base-300 hover:bg-base-200"
                   }`}
                 >
-                  {day.slice(0, 2)}
+                  {day.slice(0, 3)}
                 </button>
               );
             })}

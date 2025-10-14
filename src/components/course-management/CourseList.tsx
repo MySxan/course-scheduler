@@ -71,7 +71,7 @@ export const CourseList: React.FC<CourseListProps> = ({
       <div className="space-y-6">
         {sortedDays.map((day) => (
           <div key={day} className="border-l-4 border-primary pl-4">
-            <h3 className="text-lg font-medium text-base-content mb-3">
+            <h3 className="text-lg font-bold text-base-content mb-3">
               {day}
             </h3>
             <div className="space-y-2">
@@ -82,8 +82,13 @@ export const CourseList: React.FC<CourseListProps> = ({
                 >
                   <div className="flex-1">
                     <div className="flex items-center gap-4 flex-wrap">
-                      <h4 className="font-medium text-base-content">
+                      <h4 className="font-bold text-base-content">
                         {course.name}
+                        {course.section && (
+                          <span className="text-sm font-normal text-base-content/70 ml-1">
+                            - {course.section}
+                          </span>
+                        )}
                       </h4>
 
                       {/* Time Range tag */}

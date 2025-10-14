@@ -49,6 +49,10 @@ function App() {
 
         {/* Course Display Tabs */}
         <div className="space-y-6">
+          {/* Weekly Timetable Grid */}
+          <WeeklyTimetable courses={courses} />
+
+          {/* Clear All Button */}
           {courses.length > 0 && (
             <div className="flex justify-end">
               <button
@@ -59,9 +63,6 @@ function App() {
               </button>
             </div>
           )}
-
-          {/* Weekly Timetable Grid */}
-          <WeeklyTimetable courses={courses} />
 
           {/* Course List */}
           <CourseList courses={courses} onRemoveCourse={handleRemoveCourse} />
