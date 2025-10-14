@@ -181,7 +181,7 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
         />
 
         {/* Legend */}
-        <div className="flex flex-wrap gap-3 mb-6">
+        {/* <div className="flex flex-wrap gap-3 mb-6">
           <div className="badge badge-primary badge-lg gap-2">
             Normal Course
           </div>
@@ -189,12 +189,12 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
             Minor Conflict
           </div>
           <div className="badge badge-error badge-lg gap-2">Major Conflict</div>
-        </div>
+        </div> */}
 
         <div
           className="min-w-full grid gap-0 bg-base rounded-lg overflow-hidden relative"
           style={{
-            gridTemplateColumns: `120px repeat(${visibleDays.length}, 1fr)`,
+            gridTemplateColumns: `60px repeat(${visibleDays.length}, 1fr)`,
             gridTemplateRows: `40px repeat(${endHour - startHour + 1}, ${4 * settings.verticalScale}rem)`,
           }}
         >

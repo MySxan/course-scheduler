@@ -35,7 +35,7 @@ export const TimetableSettingsPanel: React.FC<TimetableSettingsPanelProps> = ({
   };
 
   return (
-    <div className="mb-6">
+    <div className="mb-4">
       <div className="flex justify-center mb-4">
         <button
           onClick={onToggleSettings}
@@ -57,7 +57,9 @@ export const TimetableSettingsPanel: React.FC<TimetableSettingsPanelProps> = ({
           >
             <path d="m6 9 6 6 6-6" />
           </svg>
-          <span>{showSettings ? "Hide Settings" : "Show Settings"}</span>
+          <span className="text-base">
+            {showSettings ? "Hide Settings" : "Show Settings"}
+          </span>
         </button>
       </div>
 
@@ -118,8 +120,8 @@ export const TimetableSettingsPanel: React.FC<TimetableSettingsPanelProps> = ({
                     <div className="grid grid-cols-2 gap-4">
                       <div className="form-control">
                         <label className="label">
-                          <span className="label-text text-sm font-medium">
-                            Start
+                          <span className="label-text text-sm font-medium mb-2">
+                            Start Time
                           </span>
                         </label>
                         <select
@@ -128,45 +130,77 @@ export const TimetableSettingsPanel: React.FC<TimetableSettingsPanelProps> = ({
                           }`}
                           value={settings.startHour}
                           disabled={settings.dynamicTimeRange}
-                          onChange={(e) =>
-                            handleSettingChange(
-                              "startHour",
-                              parseInt(e.target.value)
-                            )
-                          }
+                          onChange={(e) => {
+                            const newStartHour = parseInt(e.target.value);
+                            if (newStartHour >= settings.endHour) {
+                              handleSettingChange(
+                                "endHour",
+                                Math.min(newStartHour + 1, 22)
+                              );
+                            }
+                            handleSettingChange("startHour", newStartHour);
+                          }}
                         >
-                          {Array.from({ length: 24 }, (_, i) => (
-                            <option key={i} value={i}>
-                              {i.toString().padStart(2, "0")}:00
-                            </option>
-                          ))}
+                          {Array.from({ length: 24 }, (_, i) => {
+                            const isDisabled =
+                              !settings.dynamicTimeRange &&
+                              i >= settings.endHour &&
+                              settings.endHour === 22;
+                            return (
+                              <option key={i} value={i} disabled={isDisabled}>
+                                {i.toString().padStart(2, "0")}:00
+                              </option>
+                            );
+                          })}
                         </select>
                       </div>
                       <div className="form-control">
                         <label className="label">
-                          <span className="label-text text-sm font-medium">
-                            End
+                          <span className="label-text text-sm font-medium mb-2">
+                            End Time
                           </span>
                         </label>
                         <select
                           className={`select select-sm select-bordered w-full ${
                             settings.dynamicTimeRange ? "select-disabled" : ""
+                          } ${
+                            !settings.dynamicTimeRange &&
+                            settings.startHour >= settings.endHour
+                              ? "select-error"
+                              : ""
                           }`}
                           value={settings.endHour}
                           disabled={settings.dynamicTimeRange}
-                          onChange={(e) =>
-                            handleSettingChange(
-                              "endHour",
-                              parseInt(e.target.value)
-                            )
-                          }
+                          onChange={(e) => {
+                            const newEndHour = parseInt(e.target.value);
+                            if (newEndHour <= settings.startHour) {
+                              handleSettingChange(
+                                "startHour",
+                                Math.max(newEndHour - 1, 0)
+                              );
+                            }
+                            handleSettingChange("endHour", newEndHour);
+                          }}
                         >
-                          {Array.from({ length: 24 }, (_, i) => (
-                            <option key={i} value={i}>
-                              {i.toString().padStart(2, "0")}:00
-                            </option>
-                          ))}
+                          {Array.from({ length: 23 }, (_, i) => {
+                            const displayHour = i + 1;
+                            // Disable end hours that would be <= current start hour
+                            const isDisabled =
+                              !settings.dynamicTimeRange &&
+                              i <= settings.startHour;
+                            return (
+                              <option key={i} value={i} disabled={isDisabled}>
+                                {displayHour.toString().padStart(2, "0")}:00
+                              </option>
+                            );
+                          })}
                         </select>
+                        {!settings.dynamicTimeRange &&
+                          settings.startHour >= settings.endHour && (
+                            <div className="label-text-alt text-xs text-error">
+                              End time must be after start time
+                            </div>
+                          )}
                       </div>
                     </div>
                   </div>
@@ -225,7 +259,7 @@ export const TimetableSettingsPanel: React.FC<TimetableSettingsPanelProps> = ({
                     }
                     min={0.5}
                     max={1.5}
-                    step={0.05}
+                    step={0.1}
                   />
                 </div>
               </div>
