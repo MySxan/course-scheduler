@@ -49,7 +49,7 @@ function App() {
               Course Scheduler
             </h1>
             <p className="text-base-content/70">
-              Use the sidebar to add courses
+              add courses to see your weekly timetable
             </p>
           </div>
 
