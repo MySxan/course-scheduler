@@ -4,22 +4,35 @@ import { CSVUploader } from "./components/course-management";
 import { CourseForm } from "./components/course-management";
 import { CourseList } from "./components/course-management";
 import { WeeklyTimetable } from "./components/timetable";
-import { Sidebar } from "./components/layout/Sidebar";
-import { Modal } from "./components/layout/Modal";
+import { Sidebar, type PanelType } from "./components/layout/Sidebar";
+import { SlidePanel } from "./components/layout/SlidePanel";
+import {
+  SettingsPanel,
+  type TimetableSettings,
+} from "./components/timetable/SettingsPanel";
 
 function App() {
   const [courses, setCourses] = useState<Course[]>([]);
-  const [isUploadOpen, setIsUploadOpen] = useState(false);
-  const [isManualOpen, setIsManualOpen] = useState(false);
+  const [activePanel, setActivePanel] = useState<PanelType>(null);
+  const [settings, setSettings] = useState<TimetableSettings>({
+    showWeekends: true,
+    startWithSunday: false,
+    dynamicTimeRange: true,
+    startHour: 7,
+    endHour: 17,
+    slotDuration: 60,
+    verticalScale: 100,
+    width: 100,
+  });
 
   const handleCoursesFromCSV = (newCourses: Course[]) => {
     setCourses((prevCourses) => [...prevCourses, ...newCourses]);
-    setIsUploadOpen(false);
+    setActivePanel(null);
   };
 
   const handleCourseAdded = (newCourse: Course) => {
     setCourses((prevCourses) => [...prevCourses, newCourse]);
-    setIsManualOpen(false);
+    setActivePanel(null);
   };
 
   const handleRemoveCourse = (courseId: string) => {
@@ -34,14 +47,47 @@ function App() {
     }
   };
 
+  const getPanelTitle = (panel: PanelType) => {
+    switch (panel) {
+      case "import":
+        return "Import Courses";
+      case "add":
+        return "Add Course";
+      case "style":
+        return "Card Style";
+      case "settings":
+        return "Settings";
+      default:
+        return "";
+    }
+  };
+
   return (
     <div className="min-h-screen bg-base-200 flex">
-      <Sidebar
-        onOpenUpload={() => setIsUploadOpen(true)}
-        onOpenManual={() => setIsManualOpen(true)}
-      />
+      <Sidebar activePanel={activePanel} onPanelSelect={setActivePanel} />
 
-      <div className="flex-1 ml-16">
+      <SlidePanel
+        isOpen={activePanel !== null}
+        onClose={() => setActivePanel(null)}
+        title={getPanelTitle(activePanel)}
+      >
+        {activePanel === "import" && (
+          <CSVUploader onCoursesLoaded={handleCoursesFromCSV} />
+        )}
+        {activePanel === "add" && (
+          <CourseForm onCourseAdded={handleCourseAdded} />
+        )}
+        {activePanel === "style" && (
+          <div className="p-4 text-center opacity-50">
+            Card Style Settings (Coming Soon)
+          </div>
+        )}
+        {activePanel === "settings" && (
+          <SettingsPanel settings={settings} onSettingsChange={setSettings} />
+        )}
+      </SlidePanel>
+
+      <div className="flex-1 ml-14 transition-all duration-300 ease-in-out">
         <div className="container mx-auto px-4 py-8">
           {/* Header */}
           <div className="text-center mb-8">
@@ -49,14 +95,14 @@ function App() {
               Course Scheduler
             </h1>
             <p className="text-base-content/70">
-              add courses to see your weekly timetable
+              Use the sidebar to add courses and customize your view
             </p>
           </div>
 
           {/* Course Display Tabs */}
           <div className="space-y-6">
             {/* Weekly Timetable Grid */}
-            <WeeklyTimetable courses={courses} />
+            <WeeklyTimetable courses={courses} settings={settings} />
 
             {/* Clear All Button */}
             {courses.length > 0 && (
@@ -80,23 +126,6 @@ function App() {
           </footer>
         </div>
       </div>
-
-      {/* Modals */}
-      <Modal
-        isOpen={isUploadOpen}
-        onClose={() => setIsUploadOpen(false)}
-        title="Upload CSV"
-      >
-        <CSVUploader onCoursesLoaded={handleCoursesFromCSV} />
-      </Modal>
-
-      <Modal
-        isOpen={isManualOpen}
-        onClose={() => setIsManualOpen(false)}
-        title="Add Course Manually"
-      >
-        <CourseForm onCourseAdded={handleCourseAdded} />
-      </Modal>
     </div>
   );
 }

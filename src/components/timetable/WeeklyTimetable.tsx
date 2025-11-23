@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useCallback } from "react";
+import React, { useMemo } from "react";
 import type { Course } from "../../types/course";
 import { formatTime } from "../../lib/utils";
 import {
@@ -9,30 +9,17 @@ import {
   type TimetableCourse,
   type CoursesByDay,
 } from "../../lib/timetable";
-import {
-  TimetableSettingsPanel,
-  type TimetableSettings,
-} from "./SettingsPanel";
+import type { TimetableSettings } from "./SettingsPanel";
 
 interface WeeklyTimetableProps {
   courses: Course[];
+  settings: TimetableSettings;
 }
 
 export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
   courses,
+  settings,
 }) => {
-  const [settings, setSettings] = useState<TimetableSettings>({
-    showWeekends: true,
-    startWithSunday: false,
-    dynamicTimeRange: true,
-    startHour: 7,
-    endHour: 17,
-    slotDuration: 60,
-    verticalScale: 100,
-    width: 100,
-  });
-  const [showSettings, setShowSettings] = useState(false);
-
   // Memoized time range calculation
   const { startHour, endHour } = useMemo(() => {
     return settings.dynamicTimeRange
@@ -59,16 +46,6 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
   const coursesByDay: CoursesByDay = useMemo(() => {
     return groupCoursesByDay(timetableCourses);
   }, [timetableCourses]);
-
-  // Settings change handler
-  const handleSettingsChange = useCallback((newSettings: TimetableSettings) => {
-    setSettings(newSettings);
-  }, []);
-
-  // Toggle settings handler
-  const handleToggleSettings = useCallback(() => {
-    setShowSettings((prev) => !prev);
-  }, []);
 
   const getCourseCardClasses = (course: TimetableCourse) => {
     const baseClasses =
@@ -169,13 +146,7 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
           <div>{courses.length} courses</div>
         </div>
 
-        {/* Settings Panel */}
-        <TimetableSettingsPanel
-          settings={settings}
-          onSettingsChange={handleSettingsChange}
-          showSettings={showSettings}
-          onToggleSettings={handleToggleSettings}
-        />
+        {/* Settings Panel - Moved to Sidebar */}
 
         <div className="flex justify-center w-full overflow-x-auto">
           <div
