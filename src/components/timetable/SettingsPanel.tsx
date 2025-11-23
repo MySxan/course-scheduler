@@ -9,6 +9,7 @@ export interface TimetableSettings {
   endHour: number;
   slotDuration: number;
   verticalScale: number;
+  width: number;
 }
 
 export interface TimetableSettingsPanelProps {
@@ -260,6 +261,28 @@ export const TimetableSettingsPanel: React.FC<TimetableSettingsPanelProps> = ({
                     max={1.5}
                     step={0.1}
                   />
+
+                  <div className="mt-4">
+                    <label className="label ">
+                      <span className="label-text font-medium">Table Width</span>
+                      <span className="label-text-alt">{settings.width}%</span>
+                    </label>
+                    <input
+                      type="range"
+                      min="50"
+                      max="100"
+                      value={settings.width}
+                      onChange={(e) =>
+                        handleSettingChange("width", parseInt(e.target.value))
+                      }
+                      className="range range-xs range-accent"
+                    />
+                    <div className="w-full flex justify-between text-xs px-2 mt-1 opacity-70">
+                      <span>50%</span>
+                      <span>75%</span>
+                      <span>100%</span>
+                    </div>
+                  </div>
                 </div>
               </div>
 

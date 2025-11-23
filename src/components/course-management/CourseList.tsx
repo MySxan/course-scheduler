@@ -71,9 +71,7 @@ export const CourseList: React.FC<CourseListProps> = ({
       <div className="space-y-6">
         {sortedDays.map((day) => (
           <div key={day} className="border-l-4 border-primary pl-4">
-            <h3 className="text-lg font-bold text-base-content mb-3">
-              {day}
-            </h3>
+            <h3 className="text-lg font-bold text-base-content mb-3">{day}</h3>
             <div className="space-y-2">
               {coursesByDay[day].map((course) => (
                 <div

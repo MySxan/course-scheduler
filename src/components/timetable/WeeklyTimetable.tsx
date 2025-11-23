@@ -29,6 +29,7 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
     endHour: 22,
     slotDuration: 60,
     verticalScale: 0.8,
+    width: 100,
   });
   const [showSettings, setShowSettings] = useState(false);
 
@@ -187,14 +188,17 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
           <div className="badge badge-error badge-lg gap-2">Major Conflict</div>
         </div> */}
 
-        <div
-          className="min-w-full grid gap-0 bg-base rounded-lg overflow-hidden relative"
-          style={{
-            gridTemplateColumns: `60px repeat(${visibleDays.length}, 1fr)`,
-            gridTemplateRows: `40px repeat(${endHour - startHour + 1}, ${4 * settings.verticalScale}rem)`,
-          }}
-        >
-          {/* Header Row */}
+        <div className="flex justify-center w-full overflow-x-auto">
+          <div
+            className="grid gap-0 bg-base rounded-lg overflow-hidden relative transition-all duration-300"
+            style={{
+              width: `${settings.width}%`,
+              minWidth: "600px", // Prevent it from becoming too narrow to read
+              gridTemplateColumns: `60px repeat(${visibleDays.length}, 1fr)`,
+              gridTemplateRows: `40px repeat(${endHour - startHour + 1}, ${4 * settings.verticalScale}rem)`,
+            }}
+          >
+            {/* Header Row */}
           <div className="bg-base"></div>
           {visibleDays.map((day) => (
             <div
@@ -290,6 +294,7 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
               ))}
             </div>
           ))}
+          </div>
         </div>
 
         {/* Mobile-friendly course list for small screens */}
