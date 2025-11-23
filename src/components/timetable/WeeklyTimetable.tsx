@@ -26,9 +26,9 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
     startWithSunday: false,
     dynamicTimeRange: true,
     startHour: 7,
-    endHour: 22,
+    endHour: 17,
     slotDuration: 60,
-    verticalScale: 0.8,
+    verticalScale: 1,
     width: 100,
   });
   const [showSettings, setShowSettings] = useState(false);
@@ -177,23 +177,11 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
           onToggleSettings={handleToggleSettings}
         />
 
-        {/* Legend */}
-        {/* <div className="flex flex-wrap gap-3 mb-6">
-          <div className="badge badge-primary badge-lg gap-2">
-            Normal Course
-          </div>
-          <div className="badge badge-warning badge-lg gap-2">
-            Minor Conflict
-          </div>
-          <div className="badge badge-error badge-lg gap-2">Major Conflict</div>
-        </div> */}
-
         <div className="flex justify-center w-full overflow-x-auto">
           <div
             className="grid gap-0 bg-base rounded-lg overflow-hidden relative transition-all duration-300"
             style={{
               width: `${settings.width}%`,
-              minWidth: "600px", // Prevent it from becoming too narrow to read
               gridTemplateColumns: `60px repeat(${visibleDays.length}, 1fr)`,
               gridTemplateRows: `40px repeat(${endHour - startHour + 1}, ${4 * settings.verticalScale}rem)`,
             }}
@@ -294,83 +282,6 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
               ))}
             </div>
           ))}
-          </div>
-        </div>
-
-        {/* Mobile-friendly course list for small screens */}
-        <div className="sm:hidden mt-6">
-          <div className="alert alert-info mb-4">
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-            <span className="text-sm font-medium">Course Details</span>
-          </div>
-          <div className="space-y-3">
-            {timetableCourses.map((course) => (
-              <div
-                key={course.id}
-                className={`card shadow-md ${
-                  course.hasConflict
-                    ? course.conflictLevel > 1
-                      ? "bg-error text-error-content border-error"
-                      : "bg-warning text-warning-content border-warning"
-                    : "bg-primary text-primary-content border-primary"
-                }`}
-              >
-                <div className="card-body">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <div className="font-semibold">
-                        {course.name}
-                        {course.section && (
-                          <span className="text-sm font-normal opacity-80 ml-1">
-                            {course.section}
-                          </span>
-                        )}
-                      </div>
-                      <div className="text-sm opacity-90">
-                        {course.daysOfWeek.join(", ")} •{" "}
-                        {formatTime(course.startTime)} -{" "}
-                        {formatTime(course.endTime)}
-                      </div>
-                      {course.location && (
-                        <div className="text-sm opacity-80">
-                          {course.location}
-                        </div>
-                      )}
-                    </div>
-                    {course.hasConflict && (
-                      <div className="badge badge-ghost badge-sm gap-1">
-                        <svg
-                          className="w-3 h-3"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
-                          />
-                        </svg>
-                        Conflict
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))}
           </div>
         </div>
       </div>

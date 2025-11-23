@@ -251,11 +251,11 @@ export const TimetableSettingsPanel: React.FC<TimetableSettingsPanelProps> = ({
                     </label>
                   </div>
 
-                  <div className="mt-4">
-                    <label className="label">
+                  <div className="mt-4 w-full">
+                    <label className="label w-full">
                       <span className="label-text font-medium">Table Scale</span>
                       <span className="label-text-alt">
-                        {settings.verticalScale}x
+                        {settings.verticalScale.toFixed(1)}x
                       </span>
                     </label>
                     <input
@@ -270,7 +270,7 @@ export const TimetableSettingsPanel: React.FC<TimetableSettingsPanelProps> = ({
                           parseFloat(e.target.value)
                         )
                       }
-                      className="range range-xs range-accent"
+                      className="range range-xs range-accent w-full"
                     />
                     <div className="w-full flex justify-between text-xs mt-1 opacity-70">
                       <span>0.5x</span>
@@ -279,8 +279,8 @@ export const TimetableSettingsPanel: React.FC<TimetableSettingsPanelProps> = ({
                     </div>
                   </div>
 
-                  <div className="mt-4">
-                    <label className="label ">
+                  <div className="mt-4 w-full">
+                    <label className="label w-full">
                       <span className="label-text font-medium">Table Width</span>
                       <span className="label-text-alt">{settings.width}%</span>
                     </label>
@@ -292,12 +292,12 @@ export const TimetableSettingsPanel: React.FC<TimetableSettingsPanelProps> = ({
                       onChange={(e) =>
                         handleSettingChange("width", parseInt(e.target.value))
                       }
-                      className="range range-xs range-accent"
+                      className="range range-xs range-accent w-full"
                     />
                     <div className="w-full flex justify-between text-xs mt-1 opacity-70">
-                      <span>50%</span>
-                      <span>75%</span>
-                      <span>100%</span>
+                      <span>0.5x</span>
+                      <span>0.75x</span>
+                      <span>1.0x</span>
                     </div>
                   </div>
                 </div>
