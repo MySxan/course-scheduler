@@ -68,12 +68,14 @@ export const TimetableSettingsPanel: React.FC<TimetableSettingsPanelProps> = ({
           showSettings ? "max-h-2000 opacity-100" : "max-h-0 opacity-0"
         }`}
       >
-        <div className="card bg-base-200 shadow-lg text-">
+        <div className="card bg-base-200 shadow-lg">
           <div className="card-body">
             <div className="grid lg:grid-cols-3 gap-6">
+              {/* time range */}
               <div className="card bg-base-100 shadow-sm">
                 <div className="card-body p-4">
-                  <div className="card-title text-base flex items-center gap-2 mb-4">
+                  {/* title */}
+                  <div className="card-title text-base flex items-center gap-2 mb-2">
                     <svg
                       className="w-4 h-4 text-accent"
                       fill="none"
@@ -90,7 +92,8 @@ export const TimetableSettingsPanel: React.FC<TimetableSettingsPanelProps> = ({
                     Time Range
                   </div>
 
-                  <div className="form-control mb-4">
+                  {/* Smart Time Range */}
+                  <div className="form-control mb-2">
                     <label className="label flex items-center cursor-pointer">
                       <div className="flex-1">
                         <span className="label-text font-medium">
@@ -116,8 +119,10 @@ export const TimetableSettingsPanel: React.FC<TimetableSettingsPanelProps> = ({
                     </label>
                   </div>
 
+                  {/* Time Range Settings */}
                   <div className="p-4 bg-base-200 rounded-lg border-primary">
                     <div className="grid grid-cols-2 gap-4">
+                      {/* start time */}
                       <div className="form-control">
                         <label className="label">
                           <span className="label-text text-sm font-medium mb-2">
@@ -154,6 +159,8 @@ export const TimetableSettingsPanel: React.FC<TimetableSettingsPanelProps> = ({
                           })}
                         </select>
                       </div>
+
+                      {/* end time */}
                       <div className="form-control">
                         <label className="label">
                           <span className="label-text text-sm font-medium mb-2">
@@ -206,9 +213,11 @@ export const TimetableSettingsPanel: React.FC<TimetableSettingsPanelProps> = ({
                 </div>
               </div>
 
+              {/* grid settings */}
               <div className="card bg-base-100 shadow-sm">
                 <div className="card-body p-4">
-                  <div className="card-title text-base flex items-center gap-2 mb-4">
+                  {/* title */}
+                  <div className="card-title text-base flex items-center gap-2 mb-2">
                     <svg
                       className="w-4 h-4 text-accent"
                       fill="none"
@@ -225,7 +234,8 @@ export const TimetableSettingsPanel: React.FC<TimetableSettingsPanelProps> = ({
                     Grid Settings
                   </div>
 
-                  <div className="form-control mb-4 ">
+                  {/* display 30 min slot */}
+                  <div className="form-control mb-2">
                     <label className="label flex items-center gap-4 cursor-pointer">
                       <div className="flex-1">
                         <span className="label-text font-medium">
@@ -251,50 +261,59 @@ export const TimetableSettingsPanel: React.FC<TimetableSettingsPanelProps> = ({
                     </label>
                   </div>
 
-                  <div className="mt-4 w-full">
-                    <label className="label w-full">
-                      <span className="label-text font-medium">Table Scale</span>
+                  {/* table scale */}
+                  <div className="w-full mb-2">
+                    <label className="label w-full flex justify-between">
+                      <span className="label-text font-medium">
+                        Table Scale
+                      </span>
                       <span className="label-text-alt">
-                        {settings.verticalScale.toFixed(1)}x
+                        {(settings.verticalScale / 100).toFixed(2)}x{" "}
                       </span>
                     </label>
                     <input
                       type="range"
-                      min="0.5"
-                      max="1.5"
-                      step="0.1"
+                      min="50"
+                      max="150"
+                      step="5"
                       value={settings.verticalScale}
                       onChange={(e) =>
                         handleSettingChange(
                           "verticalScale",
-                          parseFloat(e.target.value)
+                          parseInt(e.target.value)
                         )
                       }
                       className="range range-xs range-accent w-full"
                     />
-                    <div className="w-full flex justify-between text-xs mt-1 opacity-70">
+                    <div className="w-full flex justify-between text-xs mt-1 label">
                       <span>0.5x</span>
                       <span>1.0x</span>
                       <span>1.5x</span>
                     </div>
                   </div>
 
-                  <div className="mt-4 w-full">
-                    <label className="label w-full">
-                      <span className="label-text font-medium">Table Width</span>
-                      <span className="label-text-alt">{settings.width}%</span>
+                  {/* table width */}
+                  <div className="w-full">
+                    <label className="label w-full flex justify-between">
+                      <span className="label-text font-medium">
+                        Table Width
+                      </span>
+                      <span className="label-text-alt">
+                        {(settings.width / 100).toFixed(2)}x
+                      </span>
                     </label>
                     <input
                       type="range"
                       min="50"
                       max="100"
+                      step="5"
                       value={settings.width}
                       onChange={(e) =>
                         handleSettingChange("width", parseInt(e.target.value))
                       }
                       className="range range-xs range-accent w-full"
                     />
-                    <div className="w-full flex justify-between text-xs mt-1 opacity-70">
+                    <div className="w-full flex justify-between text-xs mt-1 label">
                       <span>0.5x</span>
                       <span>0.75x</span>
                       <span>1.0x</span>
@@ -303,9 +322,11 @@ export const TimetableSettingsPanel: React.FC<TimetableSettingsPanelProps> = ({
                 </div>
               </div>
 
+              {/* view options */}
               <div className="card bg-base-100 shadow-sm">
                 <div className="card-body p-4">
-                  <div className="card-title text-base flex items-center gap-2 mb-4">
+                  {/* title */}
+                  <div className="card-title text-base flex items-center gap-2 mb-2">
                     <svg
                       className="w-4 h-4 text-success"
                       fill="none"
@@ -328,54 +349,55 @@ export const TimetableSettingsPanel: React.FC<TimetableSettingsPanelProps> = ({
                     View Options
                   </div>
 
-                  <div className="space-y-3">
-                    <div className="form-control">
-                      <label className="label flex items-center gap-4 cursor-pointer">
-                        <div className="flex-1">
-                          <span className="label-text font-medium">
-                            Show Weekends
-                          </span>
-                          <div className="label-text-alt text-xs opacity-70">
-                            Display Saturday and Sunday
-                          </div>
+                  {/* show weekends */}
+                  <div className="form-control mb-2">
+                    <label className="label flex items-center gap-4 cursor-pointer">
+                      <div className="flex-1">
+                        <span className="label-text font-medium">
+                          Show Weekends
+                        </span>
+                        <div className="label-text-alt text-xs opacity-70">
+                          {settings.showWeekends
+                            ? "Display Saturday and Sunday"
+                            : "Hide Saturday and Sunday"}
                         </div>
-                        <input
-                          type="checkbox"
-                          className="checkbox checkbox-accent w-5 h-5 py-0"
-                          checked={settings.showWeekends}
-                          onChange={(e) =>
-                            handleSettingChange(
-                              "showWeekends",
-                              e.target.checked
-                            )
-                          }
-                        />
-                      </label>
-                    </div>
+                      </div>
+                      <input
+                        type="checkbox"
+                        className="toggle toggle-accent"
+                        checked={settings.showWeekends}
+                        onChange={(e) =>
+                          handleSettingChange("showWeekends", e.target.checked)
+                        }
+                      />
+                    </label>
+                  </div>
 
-                    <div className="form-control">
-                      <label className="label flex items-center gap-4 cursor-pointer">
-                        <div className="flex-1">
-                          <span className="label-text font-medium">
-                            Start with Sunday
-                          </span>
-                          <div className="label-text-alt text-xs opacity-70">
-                            Begin the week on Sunday
-                          </div>
+                  {/* start with sunday */}
+                  <div className="form-control">
+                    <label className="label flex items-center gap-4 cursor-pointer">
+                      <div className="flex-1">
+                        <span className="label-text font-medium">
+                          Start with Sunday
+                        </span>
+                        <div className="label-text-alt text-xs opacity-70">
+                          {settings.startWithSunday
+                            ? "Begin the week on Sunday"
+                            : "Begin the week on Monday"}
                         </div>
-                        <input
-                          type="checkbox"
-                          className="checkbox checkbox-accent w-5 h-5 py-0"
-                          checked={settings.startWithSunday}
-                          onChange={(e) =>
-                            handleSettingChange(
-                              "startWithSunday",
-                              e.target.checked
-                            )
-                          }
-                        />
-                      </label>
-                    </div>
+                      </div>
+                      <input
+                        type="checkbox"
+                        className="toggle toggle-accent"
+                        checked={settings.startWithSunday}
+                        onChange={(e) =>
+                          handleSettingChange(
+                            "startWithSunday",
+                            e.target.checked
+                          )
+                        }
+                      />
+                    </label>
                   </div>
                 </div>
               </div>
