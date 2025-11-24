@@ -15,7 +15,7 @@ export const SlidePanel: React.FC<SlidePanelProps> = ({
 }) => {
   return (
     <div
-      className={`fixed top-0 left-14 h-full w-80 bg-base-100 shadow-2xl transform transition-transform duration-300 ease-in-out z-40 flex flex-col border-r border-base-200 ${
+      className={`fixed top-0 left-14 h-full w-[520px] bg-base-100 shadow-2xl transform transition-transform duration-300 ease-in-out z-40 flex flex-col border-r border-base-200 ${
         isOpen ? "translate-x-0" : "-translate-x-full"
       }`}
     >

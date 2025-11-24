@@ -24,6 +24,7 @@ function App() {
     verticalScale: 100,
     width: 100,
   });
+  const [activeTab, setActiveTab] = useState<"timetable" | "list">("timetable");
 
   const handleCoursesFromCSV = (newCourses: Course[]) => {
     setCourses((prevCourses) => [...prevCourses, ...newCourses]);
@@ -41,11 +42,7 @@ function App() {
     );
   };
 
-  const handleClearAll = () => {
-    if (window.confirm("Are you sure you want to remove all courses?")) {
-      setCourses([]);
-    }
-  };
+  
 
   const getPanelTitle = (panel: PanelType) => {
     switch (panel) {
@@ -78,9 +75,7 @@ function App() {
           <CourseForm onCourseAdded={handleCourseAdded} />
         )}
         {activePanel === "style" && (
-          <div className="p-4 text-center opacity-50">
-            Card Style Settings (Coming Soon)
-          </div>
+          <div className="p-4 text-center opacity-50">Card Style Settings</div>
         )}
         {activePanel === "settings" && (
           <SettingsPanel settings={settings} onSettingsChange={setSettings} />
@@ -90,38 +85,92 @@ function App() {
       <div className="flex-1 ml-14 transition-all duration-300 ease-in-out">
         <div className="container mx-auto px-4 py-8">
           {/* Header */}
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-base-content mb-2">
+          <div className="mb-6">
+            <h1 className="text-3xl font-bold text-base-content mb-1">
               Course Scheduler
             </h1>
-            <p className="text-base-content/70">
-              Use the sidebar to add courses and customize your view
+            <p className="text-base-content/70 label text-">
+              Manage your weekly schedule efficiently
             </p>
           </div>
 
-          {/* Course Display Tabs */}
-          <div className="space-y-6">
-            {/* Weekly Timetable Grid */}
-            <WeeklyTimetable courses={courses} settings={settings} />
-
-            {/* Clear All Button */}
-            {courses.length > 0 && (
-              <div className="flex justify-end">
-                <button
-                  onClick={handleClearAll}
-                  className="px-4 py-2 text-sm bg-error text-error-content rounded-md hover:bg-error/90 focus:outline-none focus:ring-2 focus:ring-error focus:ring-offset-2 transition-colors"
+          {/* Tabs */}
+          <div className="border-b border-base-300 mb-6">
+            <div className="flex gap-6">
+              <button
+                onClick={() => setActiveTab("timetable")}
+                className={`pb-3 px-1 border-b-2 transition-all flex items-center gap-2 text-sm font-medium ${
+                  activeTab === "timetable"
+                    ? "border-primary text-base-content"
+                    : "border-transparent text-base-content/60 hover:text-base-content hover:border-base-300"
+                }`}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-4 w-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
                 >
-                  Clear All Courses
-                </button>
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
+                </svg>
+                Timetable
+              </button>
+
+              <button
+                onClick={() => setActiveTab("list")}
+                className={`pb-3 px-1 border-b-2 transition-all flex items-center gap-2 text-sm font-medium ${
+                  activeTab === "list"
+                    ? "border-primary text-base-content"
+                    : "border-transparent text-base-content/60 hover:text-base-content hover:border-base-300"
+                }`}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-4 w-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 6h16M4 10h16M4 14h16M4 18h16"
+                  />
+                </svg>
+                Course List
+                {courses.length > 0 && (
+                  <span className="ml-1 bg-base-300 text-base-content/80 text-xs py-0.5 px-1.5 rounded-full">
+                    {courses.length}
+                  </span>
+                )}
+              </button>
+            </div>
+          </div>
+
+          {/* Tab Content */}
+          <div className="min-h-[600px]">
+            {activeTab === "timetable" ? (
+              <WeeklyTimetable courses={courses} settings={settings} />
+            ) : (
+              <div className="space-y-6">
+                
+                <CourseList
+                  courses={courses}
+                  onRemoveCourse={handleRemoveCourse}
+                />
               </div>
             )}
-
-            {/* Course List */}
-            <CourseList courses={courses} onRemoveCourse={handleRemoveCourse} />
           </div>
 
           {/* Footer */}
-          <footer className="mt-12 text-center text-sm text-base-content/50">
+          <footer className="mt-12 text-center text-sm text-base-content/50 border-t border-base-300 pt-8">
             <p>Built with React, TypeScript, and Tailwind CSS</p>
           </footer>
         </div>

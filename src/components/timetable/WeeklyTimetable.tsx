@@ -117,40 +117,11 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
   }
 
   return (
-    <div className="card bg-base-100 shadow-xl">
+    <div className="card ">
       <div className="card-body p-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="h-6 w-6 text-primary"
-            >
-              <path d="M8 2v4" />
-              <path d="m16 2v4" />
-              <rect width="18" height="18" x="3" y="4" rx="2" />
-              <path d="M3 10h18" />
-            </svg>
-            <h2 className="text-2xl font-bold text-base-content">
-              Weekly Timetable
-            </h2>
-          </div>
-          <div>{courses.length} courses</div>
-        </div>
-
-        {/* Settings Panel - Moved to Sidebar */}
-
         <div className="flex justify-center w-full overflow-x-auto">
           <div
-            className="grid gap-0 bg-base rounded-lg overflow-hidden relative transition-all duration-300"
+            className="grid gap-0 bg-base rounded-lg overflow-hidden relative transition-all duration-100"
             style={{
               width: `${settings.width}%`,
               gridTemplateColumns: `60px repeat(${visibleDays.length}, 1fr)`,
