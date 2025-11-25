@@ -35,7 +35,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
       {/* Time Range */}
       <div className="card bg-base-200 shadow-sm">
         <div className="card-body p-4">
-          <div className="card-title text-base flex items-center gap-2 mb-4">
+          <div className="card-title text-base flex items-center gap-2 mb-2">
             <svg
               className="w-4 h-4 text-accent"
               fill="none"
@@ -52,7 +52,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
             Time Range
           </div>
 
-          <div className="form-control mb-4">
+          <div className="form-control mb-2">
             <label className="label flex items-center cursor-pointer">
               <div className="flex-1">
                 <span className="label-text font-medium">Smart Time Range</span>
@@ -160,7 +160,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
       {/* Grid Settings */}
       <div className="card bg-base-200 shadow-sm">
         <div className="card-body p-4">
-          <div className="card-title text-base flex items-center gap-2 mb-4">
+          <div className="card-title text-base flex items-center gap-2 mb-2">
             <svg
               className="w-4 h-4 text-accent"
               fill="none"
@@ -177,7 +177,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
             Grid Settings
           </div>
 
-          <div className="form-control mb-4">
+          <div className="form-control mb-2">
             <label className="label flex items-center gap-4 cursor-pointer">
               <div className="flex-1">
                 <span className="label-text font-medium">
@@ -201,12 +201,10 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
             </label>
           </div>
 
-          <div className="mt-4 w-full">
+          <div className="mb-2 w-full">
             <label className="label w-full">
               <span className="label-text font-medium">Table Scale</span>
-              <span className="label-text-alt">
-                {settings.verticalScale}%
-              </span>
+              <span className="label-text-alt">{settings.verticalScale}%</span>
             </label>
             <input
               type="range"
@@ -227,7 +225,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
             </div>
           </div>
 
-          <div className="mt-4 w-full">
+          <div className="w-full">
             <label className="label w-full">
               <span className="label-text font-medium">Table Width</span>
               <span className="label-text-alt">{settings.width}%</span>
@@ -261,7 +259,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
       <div className="card bg-base-200 shadow-sm">
         <div className="card-body p-4">
           {/* title */}
-          <div className="card-title text-base flex items-center gap-2 mb-4">
+          <div className="card-title text-base flex items-center gap-2 mb-2">
             <svg
               className="w-4 h-4 text-success"
               fill="none"

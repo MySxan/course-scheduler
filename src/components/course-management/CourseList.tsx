@@ -13,14 +13,32 @@ export const CourseList: React.FC<CourseListProps> = ({
 }) => {
   if (courses.length === 0) {
     return (
-      <div className="bg-base-100 p-6 rounded-lg shadow-md">
-        <h2 className="text-xl font-semibold mb-4 text-base-content">
-          Course Schedule
-        </h2>
-        <div className="text-center text-base-content/60">
-          <p>No courses added yet.</p>
-          <p className="text-sm mt-1">
-            Upload a CSV file or add courses manually to get started.
+      <div className="card">
+        <div className="card-body p-8 text-center">
+          <div className="mx-auto w-12 h-12 bg-base-100 rounded-full flex items-center justify-center mb-3">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              className="h-6 w-6 text-base-content/40"
+            >
+              <path d="M3 5h.01" />
+              <path d="M3 12h.01" />
+              <path d="M3 19h.01" />
+              <path d="M8 5h13" />
+              <path d="M8 12h13" />
+              <path d="M8 19h13" />
+            </svg>
+          </div>
+          <h3 className="text-lg font-bold">No courses added yet</h3>
+          <p className="text-sm text-base-content/70">
+            Upload a CSV file or add courses manually to get started
           </p>
         </div>
       </div>
@@ -58,17 +76,7 @@ export const CourseList: React.FC<CourseListProps> = ({
   const sortedDays = daysOrder.filter((day) => coursesByDay[day]);
 
   return (
-    <div className="bg-base-100 p-6 rounded-lg shadow-md">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold text-base-content">
-          Course Schedule
-        </h2>
-        <span className="text-sm text-base-content/70">
-          {courses.length} course{courses.length !== 1 ? "s" : ""}
-        </span>
-        
-      </div>
-
+    <div className="card">
       <div className="space-y-6">
         {sortedDays.map((day) => (
           <div key={day} className="border-l-4 border-primary pl-4">
