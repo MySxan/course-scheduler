@@ -26,7 +26,7 @@ export const CourseForm: React.FC<CourseFormProps> = ({ onCourseAdded }) => {
 
     // Validate name
     if (!formData.name.trim()) {
-      newErrors.name = "Course name is required";
+      newErrors.name = "Name is required";
     }
 
     // Validate days of week
@@ -107,193 +107,185 @@ export const CourseForm: React.FC<CourseFormProps> = ({ onCourseAdded }) => {
 
   return (
     <div className="card bg-base-200 shadow-sm">
-      <div className="card-body p-4">
-        <h2 className="card-title text-base mb-2">Add Course Manually</h2>
+      <form onSubmit={handleSubmit} className="card-body p-4 space-y-2">
+        <div className="card-title text-base flex items-center gap-2">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="w-4 h-4 text-primary"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            strokeWidth={2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M13 21h8" />
+            <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
+          </svg>
+          Add Course Manually
+        </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="flex gap-4">
-            {/* Course Name */}
-            <div>
-              <label
-                htmlFor="courseName"
-                className="block text-sm font-medium text-base-content mb-1"
-              >
-                Course Name
-              </label>
-              <input
-                id="courseName"
-                type="text"
-                value={formData.name}
-                onChange={(e) => handleInputChange("name", e.target.value)}
-                placeholder="e.g. CHEM 101"
-                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary ${
-                  errors.name ? "border-error bg-error/10" : "border-base-300"
-                }`}
-              />
-              {errors.name && (
-                <p className="mt-1 text-sm text-error">{errors.name}</p>
-              )}
-            </div>
-
-            {/* Course Section */}
-            <div>
-              <label
-                htmlFor="courseSection"
-                className="block text-sm font-medium text-base-content mb-1"
-              >
-                Section <span className="text-base-content/60">(optional)</span>
-              </label>
-              <input
-                id="courseSection"
-                type="text"
-                value={formData.section}
-                onChange={(e) => handleInputChange("section", e.target.value)}
-                placeholder="e.g. Y19"
-                className="w-full px-3 py-2 border border-base-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-              />
-            </div>
-          </div>
-
-          {/* Days of Week */}
-          <div>
-            <label
-              htmlFor="dayOfWeek"
-              className="block text-sm font-medium text-base-content mb-2"
-            >
-              Day of Week
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Course Name */}
+          <div className="form-control">
+            <label htmlFor="courseName" className="label mb-1">
+              Course Name
             </label>
-            <div className="flex flex-wrap gap-2">
-              {DAYS_OF_WEEK.map((day) => {
-                const isSelected = Array.isArray(formData.daysOfWeek)
-                  ? formData.daysOfWeek.includes(day)
-                  : false;
-                return (
-                  <button
-                    key={day}
-                    type="button"
-                    onClick={() => {
-                      const currentDays = Array.isArray(formData.daysOfWeek)
-                        ? formData.daysOfWeek
-                        : [];
-                      let newDays: DaysOfWeek[];
-                      if (isSelected) {
-                        newDays = currentDays.filter((d) => d !== day);
-                      } else {
-                        newDays = [...currentDays, day];
-                      }
-                      setFormData((prev) => ({ ...prev, daysOfWeek: newDays }));
-
-                      if (errors.daysOfWeek) {
-                        setErrors((prev) => {
-                          const newErrors = { ...prev };
-                          delete newErrors.daysOfWeek;
-                          return newErrors;
-                        });
-                      }
-                    }}
-                    className={`py-2 rounded-md flex-1 border transition
-                  ${
-                    isSelected
-                      ? "bg-primary/20 text-primary border-primary font-medium"
-                      : "bg-base-100 text-base-content border-base-300 hover:bg-base-200"
-                  }`}
-                  >
-                    {day.slice(0, 2)}
-                  </button>
-                );
-              })}
-            </div>
-            {errors.daysOfWeek && (
-              <p className="mt-1 text-sm text-error">{errors.daysOfWeek}</p>
+            <input
+              id="courseName"
+              type="text"
+              value={formData.name}
+              onChange={(e) => handleInputChange("name", e.target.value)}
+              placeholder="e.g. CHEM 101"
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary ${
+                errors.name ? "border-error bg-error/10" : "border-base-300"
+              }`}
+            />
+            {errors.name && (
+              <p className="mt-1 text-sm text-error">{errors.name}</p>
             )}
           </div>
 
-          {/* Time Inputs */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Start Time */}
-            <div>
-              <label
-                htmlFor="startTime"
-                className="block text-sm font-medium text-base-content mb-1"
-              >
-                Start Time
-              </label>
-              <input
-                id="startTime"
-                type="time"
-                value={formData.startTime}
-                onChange={(e) => handleInputChange("startTime", e.target.value)}
-                className={`w-full px-2 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary ${
-                  errors.startTime
-                    ? "border-error bg-error/10"
-                    : "border-base-300"
-                }`}
-              />
-              {errors.startTime && (
-                <p className="mt-1 text-sm text-error">{errors.startTime}</p>
-              )}
-            </div>
-
-            {/* End Time */}
-            <div>
-              <label
-                htmlFor="endTime"
-                className="block text-sm font-medium text-base-content mb-1"
-              >
-                End Time
-              </label>
-              <input
-                id="endTime"
-                type="time"
-                value={formData.endTime}
-                onChange={(e) => handleInputChange("endTime", e.target.value)}
-                className={`w-full px-2 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary ${
-                  errors.endTime
-                    ? "border-error bg-error/10"
-                    : "border-base-300"
-                }`}
-              />
-
-              {errors.endTime && (
-                <p className="mt-1 text-sm text-error">{errors.endTime}</p>
-              )}
-            </div>
-          </div>
-
-          {/* Location */}
-          <div>
-            <label
-              htmlFor="location"
-              className="block text-sm font-medium text-base-content mb-1"
-            >
-              Location (optional)
+          {/* Course Section */}
+          <div className="form-control">
+            <label htmlFor="courseSection" className="label mb-1">
+              Section (optional)
             </label>
             <input
-              id="location"
+              id="courseSection"
               type="text"
-              value={formData.location}
-              onChange={(e) => handleInputChange("location", e.target.value)}
-              placeholder="e.g., Lincoln Hall 1019, Chem Lab 205"
+              value={formData.section}
+              onChange={(e) => handleInputChange("section", e.target.value)}
+              placeholder="e.g. Y19"
               className="w-full px-3 py-2 border border-base-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
             />
           </div>
+        </div>
 
-          {/* Submit Button */}
-          <div className="flex">
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className={`w-full px-6 py-2 rounded-md font-medium transition-colors ${
-                isSubmitting
-                  ? "bg-neutral/50 cursor-not-allowed"
-                  : "bg-primary hover:bg-primary/90 focus:bg-primary/90"
-              } text-primary-content focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2`}
-            >
-              {isSubmitting ? "Adding..." : "Add Course"}
-            </button>
+        {/* Days of Week */}
+        <div className="form-control">
+          <label htmlFor="dayOfWeek" className="label mb-1">
+            Day of Week
+          </label>
+          <div className="flex flex-wrap gap-2">
+            {DAYS_OF_WEEK.map((day) => {
+              const isSelected = Array.isArray(formData.daysOfWeek)
+                ? formData.daysOfWeek.includes(day)
+                : false;
+              return (
+                <button
+                  key={day}
+                  type="button"
+                  onClick={() => {
+                    const currentDays = Array.isArray(formData.daysOfWeek)
+                      ? formData.daysOfWeek
+                      : [];
+                    let newDays: DaysOfWeek[];
+                    if (isSelected) {
+                      newDays = currentDays.filter((d) => d !== day);
+                    } else {
+                      newDays = [...currentDays, day];
+                    }
+                    setFormData((prev) => ({ ...prev, daysOfWeek: newDays }));
+
+                    if (errors.daysOfWeek) {
+                      setErrors((prev) => {
+                        const newErrors = { ...prev };
+                        delete newErrors.daysOfWeek;
+                        return newErrors;
+                      });
+                    }
+                  }}
+                  className={`font-normal py-1.5 rounded-md flex-1 border transition-colors
+                  ${
+                    isSelected
+                      ? "bg-primary-content text-primary border-primary font-medium"
+                      : "bg-base-100 text-base-content border-base-300 hover:bg-base-200"
+                  }`}
+                >
+                  {day.slice(0, 2)}
+                </button>
+              );
+            })}
           </div>
-        </form>
-      </div>
+          {errors.daysOfWeek && (
+            <p className="mt-1 text-sm text-error">{errors.daysOfWeek}</p>
+          )}
+        </div>
+
+        {/* Time Inputs */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Start Time */}
+          <div className="form-control">
+            <label htmlFor="startTime" className="label mb-1">
+              Start Time
+            </label>
+            <input
+              id="startTime"
+              type="time"
+              value={formData.startTime}
+              onChange={(e) => handleInputChange("startTime", e.target.value)}
+              className={`w-full pl-3 pr-2 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary ${
+                errors.startTime
+                  ? "border-error bg-error/10"
+                  : "border-base-300"
+              }`}
+            />
+            {errors.startTime && (
+              <p className="mt-1 text-sm text-error">{errors.startTime}</p>
+            )}
+          </div>
+
+          {/* End Time */}
+          <div className="form-control">
+            <label htmlFor="endTime" className="label mb-1">
+              End Time
+            </label>
+            <input
+              id="endTime"
+              type="time"
+              value={formData.endTime}
+              onChange={(e) => handleInputChange("endTime", e.target.value)}
+              className={`w-full pl-3 pr-2 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary ${
+                errors.endTime ? "border-error bg-error/10" : "border-base-300"
+              }`}
+            />
+            {errors.endTime && (
+              <p className="mt-1 text-sm text-error">{errors.endTime}</p>
+            )}
+          </div>
+        </div>
+
+        {/* Location */}
+        <div className="form-control">
+          <label htmlFor="location" className="label mb-1">
+            Location (optional)
+          </label>
+          <input
+            id="location"
+            type="text"
+            value={formData.location}
+            onChange={(e) => handleInputChange("location", e.target.value)}
+            placeholder="e.g., Lincoln Hall 1019, Chem Lab 205"
+            className="w-full px-3 py-2 border border-base-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+          />
+        </div>
+
+        {/* Submit Button */}
+        <div className="flex">
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className={`w-full px-6 py-2 rounded-md font-medium transition-colors ${
+              isSubmitting
+                ? "bg-neutral/50 cursor-not-allowed"
+                : "bg-primary hover:bg-primary/90 focus:bg-primary/90"
+            } text-primary-content focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2`}
+          >
+            {isSubmitting ? "Adding..." : "Add Course"}
+          </button>
+        </div>
+      </form>
     </div>
   );
 };

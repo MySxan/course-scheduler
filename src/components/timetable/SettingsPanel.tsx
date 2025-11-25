@@ -34,8 +34,8 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
     <div className="flex flex-col gap-4">
       {/* Time Range */}
       <div className="card bg-base-200 shadow-sm">
-        <div className="card-body p-4">
-          <div className="card-title text-base flex items-center gap-2 mb-2">
+        <div className="card-body p-4 space-y-2">
+          <div className="card-title text-base flex items-center gap-2">
             <svg
               className="w-4 h-4 text-accent"
               fill="none"
@@ -52,7 +52,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
             Time Range
           </div>
 
-          <div className="form-control mb-2">
+          <div className="form-control">
             <label className="label flex items-center cursor-pointer">
               <div className="flex-1">
                 <span className="label-text font-medium">Smart Time Range</span>
@@ -76,13 +76,12 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
           <div className="p-4 bg-base-100 rounded-lg border-primary">
             <div className="grid grid-cols-2 gap-4">
               <div className="form-control">
-                <label className="label">
-                  <span className="label-text text-sm font-medium mb-2">
-                    Start Time
-                  </span>
+                <label htmlFor="startHour" className="label mb-1">
+                  Start Time
                 </label>
                 <select
-                  className={`select select-sm select-bordered w-full ${
+                  id="startHour"
+                  className={`select select-sm select-bordered rounded-md w-full ${
                     settings.dynamicTimeRange ? "select-disabled" : ""
                   }`}
                   value={settings.startHour}
@@ -113,13 +112,12 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
               </div>
 
               <div className="form-control">
-                <label className="label">
-                  <span className="label-text text-sm font-medium mb-2">
-                    End Time
-                  </span>
+                <label htmlFor="endHour" className="label mb-1">
+                  End Time
                 </label>
                 <select
-                  className={`select select-sm select-bordered w-full ${
+                  id="endHour"
+                  className={`select select-sm select-bordered rounded-md w-full ${
                     settings.dynamicTimeRange ? "select-disabled" : ""
                   } ${
                     !settings.dynamicTimeRange &&
@@ -159,8 +157,8 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
 
       {/* Grid Settings */}
       <div className="card bg-base-200 shadow-sm">
-        <div className="card-body p-4">
-          <div className="card-title text-base flex items-center gap-2 mb-2">
+        <div className="card-body p-4 space-y-2">
+          <div className="card-title text-base flex items-center gap-2">
             <svg
               className="w-4 h-4 text-accent"
               fill="none"
@@ -177,14 +175,14 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
             Grid Settings
           </div>
 
-          <div className="form-control mb-2">
+          <div className="form-control">
             <label className="label flex items-center gap-4 cursor-pointer">
               <div className="flex-1">
                 <span className="label-text font-medium">
                   Display 30 min slot
                 </span>
                 <div className="label-text-alt text-xs opacity-70">
-                  {"slots for better time resolution"}
+                  Slots for better time resolution
                 </div>
               </div>
               <input
@@ -201,8 +199,8 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
             </label>
           </div>
 
-          <div className="mb-2 w-full">
-            <label className="label w-full">
+          <div className="form-control">
+            <label className="label w-full flex justify-between">
               <span className="label-text font-medium">Table Scale</span>
               <span className="label-text-alt">{settings.verticalScale}%</span>
             </label>
@@ -225,8 +223,8 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
             </div>
           </div>
 
-          <div className="w-full">
-            <label className="label w-full">
+          <div className="form-control">
+            <label className="label w-full flex justify-between">
               <span className="label-text font-medium">Table Width</span>
               <span className="label-text-alt">{settings.width}%</span>
             </label>
@@ -257,73 +255,64 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
 
       {/* View Options */}
       <div className="card bg-base-200 shadow-sm">
-        <div className="card-body p-4">
+        <div className="card-body p-4 space-y-2">
           {/* title */}
-          <div className="card-title text-base flex items-center gap-2 mb-2">
+          <div className="card-title text-base flex items-center gap-2">
             <svg
-              className="w-4 h-4 text-success"
+              className="w-4 h-4 text-accent"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-              />
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-              />
+              <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
             </svg>
             View Options
           </div>
 
           {/* show weekends */}
-          <div className="space-y-3">
-            <div className="form-control">
-              <label className="label flex items-center gap-4 cursor-pointer">
-                <div className="flex-1">
-                  <span className="label-text font-medium">Show Weekends</span>
-                  <div className="label-text-alt text-xs opacity-70">
-                    Display Saturday and Sunday
-                  </div>
+          <div className="form-control">
+            <label className="label flex items-center gap-4 cursor-pointer">
+              <div className="flex-1">
+                <span className="label-text font-medium">Show Weekends</span>
+                <div className="label-text-alt text-xs opacity-70">
+                  Display Saturday and Sunday
                 </div>
-                <input
-                  type="checkbox"
-                  className="checkbox checkbox-accent w-5 h-5"
-                  checked={settings.showWeekends}
-                  onChange={(e) =>
-                    handleSettingChange("showWeekends", e.target.checked)
-                  }
-                />
-              </label>
-            </div>
+              </div>
+              <input
+                type="checkbox"
+                className="checkbox checkbox-accent w-5 h-5"
+                checked={settings.showWeekends}
+                onChange={(e) =>
+                  handleSettingChange("showWeekends", e.target.checked)
+                }
+              />
+            </label>
+          </div>
 
-            {/* start with Sunday */}
-            <div className="form-control">
-              <label className="label flex items-center gap-4 cursor-pointer">
-                <div className="flex-1">
-                  <span className="label-text font-medium">
-                    Start with Sunday
-                  </span>
-                  <div className="label-text-alt text-xs opacity-70">
-                    Begin the week on Sunday
-                  </div>
+          {/* start with Sunday */}
+          <div className="form-control">
+            <label className="label flex items-center gap-4 cursor-pointer">
+              <div className="flex-1">
+                <span className="label-text font-medium">
+                  Start with Sunday
+                </span>
+                <div className="label-text-alt text-xs opacity-70">
+                  Begin the week on Sunday
                 </div>
-                <input
-                  type="checkbox"
-                  className="checkbox checkbox-accent w-5 h-5"
-                  checked={settings.startWithSunday}
-                  onChange={(e) =>
-                    handleSettingChange("startWithSunday", e.target.checked)
-                  }
-                />
-              </label>
-            </div>
+              </div>
+              <input
+                type="checkbox"
+                className="checkbox checkbox-accent w-5 h-5"
+                checked={settings.startWithSunday}
+                onChange={(e) =>
+                  handleSettingChange("startWithSunday", e.target.checked)
+                }
+              />
+            </label>
           </div>
         </div>
       </div>

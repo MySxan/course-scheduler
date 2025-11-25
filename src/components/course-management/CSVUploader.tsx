@@ -239,63 +239,76 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
 
   return (
     <div className="card bg-base-200 shadow-sm">
-      <div className="card-body p-4">
-        <h2 className="card-title text-base mb-4">Add Courses from CSV</h2>
-
-        <div className="space-y-4 ">
-          <div className="flex items-center justify-between gap-4">
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".csv"
-              onChange={handleFileUpload}
-              disabled={isLoading}
-              className="file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 file:cursor-pointer cursor-pointer"
-            />
-
-            <button
-              onClick={downloadSampleCSV}
-              className="text-sm text-primary hover:text-primary/80 underline"
-            >
-              Download Sample CSV
-            </button>
-          </div>
-
-          {isLoading && (
-            <div className="flex items-center gap-2 text-primary">
-              <div className="animate-spin rounded-full h-4 w-4 border-2 border-primary border-t-transparent"></div>
-              <span>Processing CSV file...</span>
-            </div>
-          )}
-
-          {error && (
-            <div className="p-3 bg-error/10 border border-error/20 rounded-md">
-              <p className="text-error text-sm whitespace-pre-line">{error}</p>
-            </div>
-          )}
-
-          {success && (
-            <div className="p-3 bg-success/10 border border-success/20 rounded-md">
-              <p className="text-success text-sm">{success}</p>
-            </div>
-          )}
-
-          <div className="text-lg text-base-content/70">
-            <p className="font-medium mb-2">CSV Format Requirements:</p>
-            <ul className="list-disc list-inside space-y-2 text-sm">
-              <li>
-                Headers: name, section (optional), day, startTime, endTime,
-                location (optional)
-              </li>
-              <li>
-                Day: Full day name (Monday) or abbreviation (Mon). Use
-                comma-separated for multiple days (Monday,Wednesday,Friday)
-              </li>
-              <li>Time: 24-hour format (HH:mm) like 09:00 or 14:30</li>
-              <li>End time must be after start time</li>
-            </ul>
-          </div>
+      <div className="card-body p-4 space-y-2">
+        <div className="card-title text-base flex items-center gap-2">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="w-4 h-4 text-primary"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            strokeWidth={2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M12 3v12" />
+            <path d="m8 11 4 4 4-4" />
+            <path d="M8 5H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-4" />
+          </svg>
+          Add Courses from CSV
         </div>
+
+        <div className="form-control">
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".csv"
+            onChange={handleFileUpload}
+            disabled={isLoading}
+            className="file:mr-4 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 file:cursor-pointer cursor-pointer"
+          />
+        </div>
+
+        {isLoading && (
+          <div className="flex items-center gap-2 text-primary">
+            <div className="animate-spin rounded-full h-4 w-4 border-2 border-primary border-t-transparent"></div>
+            <span>Processing CSV file...</span>
+          </div>
+        )}
+
+        {error && (
+          <div className="p-3 bg-error/10 border border-error/20 rounded-md">
+            <p className="text-error text-sm whitespace-pre-line">{error}</p>
+          </div>
+        )}
+
+        {success && (
+          <div className="p-3 bg-success/10 border border-success/20 rounded-md">
+            <p className="text-success text-sm">{success}</p>
+          </div>
+        )}
+
+        <div className="text-base-content/70">
+          <label className="label mb-2">CSV Format Requirements:</label>
+          <ul className="list-disc list-inside space-y-2 opacity-50 text-sm">
+            <li>
+              Headers: name, section (optional), day, startTime, endTime,
+              location (optional)
+            </li>
+            <li>
+              Day: Full day name (Monday) or abbreviation (Mon). Use
+              comma-separated for multiple days (Monday,Wednesday,Friday)
+            </li>
+            <li>Time: 24-hour format (HH:mm) like 09:00 or 14:30</li>
+            <li>End time must be after start time</li>
+          </ul>
+        </div>
+        <button
+          onClick={downloadSampleCSV}
+          className="text-left text-sm text-primary hover:text-primary/80 underline"
+        >
+          Download Sample CSV
+        </button>
       </div>
     </div>
   );
