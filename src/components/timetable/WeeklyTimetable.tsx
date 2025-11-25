@@ -118,114 +118,126 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
 
   return (
     <div className="card ">
-      <div className="card-body p-6">
+      <div className="card-body p-4">
         <div className="flex justify-center w-full overflow-x-auto">
-          <div
-            className="grid gap-0 bg-base rounded-lg overflow-hidden relative transition-all duration-100"
-            style={{
-              width: `${settings.width}%`,
-              gridTemplateColumns: `60px repeat(${visibleDays.length}, 1fr)`,
-              gridTemplateRows: `40px repeat(${endHour - startHour + 1}, ${
-                4 * (settings.verticalScale / 120)
-              }rem)`,
-            }}
-          >
-            {/* Header Row */}
-            <div className="bg-base"></div>
-            {visibleDays.map((day) => (
+          <div className="w-[1200px]">
+            <div
+              className="relative bg-base-100 flex justify-center rounded-xl p-4"
+              style={{
+                width: "1200px",
+                minHeight: "600px",
+              }}
+            >
               <div
-                key={day}
-                className="bg-base font-bold text-center text-sm border-b border-slate-400"
-              >
-                <div className="hidden sm:block text-base-content">{day}</div>
-                <div className="sm:hidden text-base-content">
-                  {day.slice(0, 3)}
-                </div>
-              </div>
-            ))}
-
-            {/* Time Labels */}
-            {Array.from({ length: endHour - startHour + 2 }, (_, i) => {
-              const hour = startHour + i;
-              const isExtraRow = i === endHour - startHour + 1;
-              return (
-                <div
-                  key={hour}
-                  className="text-xs text-right flex items-start justify-end mr-6"
-                  style={{
-                    gridColumn: 1,
-                    gridRow: i + 2,
-                    transform: "translateY(-0.5rem)",
-                  }}
-                >
-                  {!isExtraRow ? `${hour}:00` : `${endHour + 1}:00`}{" "}
-                </div>
-              );
-            })}
-
-            {/* Hour slots */}
-            {Array.from({ length: endHour - startHour + 1 }, (_, i) =>
-              visibleDays.map((day, dayIndex) => (
-                <div
-                  key={`${day}-${i}`}
-                  className="relative border-b border-slate-400 "
-                  style={{ gridColumn: dayIndex + 2, gridRow: i + 2 }}
-                >
-                  {/* 30-min divider */}
-                  {settings.slotDuration === 30 && (
-                    <div
-                      className="absolute w-full border-t border-slate-200"
-                      style={{ top: "50%", left: 0 }}
-                    />
-                  )}
-                </div>
-              ))
-            )}
-
-            {/* Day overlays */}
-            {visibleDays.map((day, dayIndex) => (
-              <div
-                key={day}
-                className="relative"
+                className="grid gap-0 bg-base rounded-lg overflow-hidden relative transition-all duration-100"
                 style={{
-                  gridColumn: dayIndex + 2,
-                  gridRow: "2 / -1",
+                  width: `${settings.width}%`,
+                  gridTemplateColumns: `60px repeat(${visibleDays.length}, 1fr)`,
+                  gridTemplateRows: `40px repeat(${endHour - startHour + 1}, ${
+                    4 * (settings.verticalScale / 120)
+                  }rem)`,
                 }}
               >
-                {coursesByDay[day]?.map((course) => (
+                {/* Header Row */}
+                <div className="bg-base"></div>
+                {visibleDays.map((day) => (
                   <div
-                    key={course.id}
-                    className={getCourseCardClasses(course)}
-                    style={getCoursePosition(
-                      course,
-                      startHour,
-                      settings.verticalScale / 120
-                    )}
-                    title={`${course.name}${course.section ? ` (${course.section})` : ""} - ${formatTime(course.startTime)} to ${formatTime(course.endTime)}${course.location ? ` at ${course.location}` : ""}`}
+                    key={day}
+                    className="bg-base font-bold text-center text-sm border-b border-slate-400"
                   >
-                    <div className="card-body p-1">
-                      <div className="text-lg font-bold leading-tight line-clamp-2">
-                        {course.name}
-                        {course.section && (
-                          <span className="textarea-xs font-bold ml-1">
-                            - {course.section}
-                          </span>
-                        )}
-                      </div>
-                      <div className="textarea-xs text-base-content/60 opacity-80 -mt-2">
-                        {formatTime(course.startTime)} -{" "}
-                        {formatTime(course.endTime)}
-                      </div>
-                      {course.location && (
-                        <div className="truncate text-xs -mt-2">
-                          {course.location}
-                        </div>
-                      )}
+                    <div className="hidden sm:block text-base-content">
+                      {day}
+                    </div>
+                    <div className="sm:hidden text-base-content">
+                      {day.slice(0, 3)}
                     </div>
                   </div>
                 ))}
+
+                {/* Time Labels */}
+                {Array.from({ length: endHour - startHour + 2 }, (_, i) => {
+                  const hour = startHour + i;
+                  const isExtraRow = i === endHour - startHour + 1;
+                  return (
+                    <div
+                      key={hour}
+                      className="text-xs text-right flex items-start justify-end mr-6"
+                      style={{
+                        gridColumn: 1,
+                        gridRow: i + 2,
+                        transform: "translateY(-0.5rem)",
+                      }}
+                    >
+                      {!isExtraRow ? `${hour}:00` : `${endHour + 1}:00`}{" "}
+                    </div>
+                  );
+                })}
+
+                {/* Hour slots */}
+                {Array.from({ length: endHour - startHour + 1 }, (_, i) =>
+                  visibleDays.map((day, dayIndex) => (
+                    <div
+                      key={`${day}-${i}`}
+                      className="relative border-b border-slate-400 "
+                      style={{ gridColumn: dayIndex + 2, gridRow: i + 2 }}
+                    >
+                      {/* 30-min divider */}
+                      {settings.slotDuration === 30 && (
+                        <div
+                          className="absolute w-full border-t border-slate-200"
+                          style={{ top: "50%", left: 0 }}
+                        />
+                      )}
+                    </div>
+                  ))
+                )}
+
+                {/* Day overlays */}
+                {visibleDays.map((day, dayIndex) => (
+                  <div
+                    key={day}
+                    className="relative"
+                    style={{
+                      gridColumn: dayIndex + 2,
+                      gridRow: "2 / -1",
+                    }}
+                  >
+                    {coursesByDay[day]?.map((course) => (
+                      <div
+                        key={course.id}
+                        className={getCourseCardClasses(course)}
+                        style={getCoursePosition(
+                          course,
+                          startHour,
+                          settings.verticalScale / 120
+                        )}
+                        title={`${course.name}${course.section ? ` (${course.section})` : ""} - ${formatTime(course.startTime)} to ${formatTime(course.endTime)}${course.location ? ` at ${course.location}` : ""}`}
+                      >
+                        <div className="card-body p-1">
+                          <div className="text-lg font-bold leading-tight line-clamp-2">
+                            {course.name}
+                            {course.section && (
+                              <span className="textarea-xs font-bold ml-1">
+                                - {course.section}
+                              </span>
+                            )}
+                          </div>
+                          <div className="textarea-xs text-base-content/60 opacity-80 -mt-2">
+                            {formatTime(course.startTime)} -{" "}
+                            {formatTime(course.endTime)}
+                          </div>
+                          {course.location && (
+                            <div className="truncate text-xs -mt-2">
+                              {course.location}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
           </div>
         </div>
       </div>

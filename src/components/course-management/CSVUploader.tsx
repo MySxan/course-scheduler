@@ -245,12 +245,11 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
   };
 
   return (
-    <div className="bg-base-100 p-6 rounded-lg shadow-md">
-      <h2 className="text-xl font-semibold mb-4 text-base-content">
-        Upload Courses from CSV
-      </h2>
+    <div className="card bg-base-200 shadow-sm">
+      <div className="card-body p-4">
+        <h2 className="card-title text-base mb-4">Add Courses from CSV</h2>
 
-      <div className="space-y-4 ">
+        <div className="space-y-4 ">
         <div className="flex items-center justify-between gap-4">
           <input
             ref={fileInputRef}
@@ -303,6 +302,7 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
             <li>End time must be after start time</li>
           </ul>
         </div>
+      </div>
       </div>
     </div>
   );

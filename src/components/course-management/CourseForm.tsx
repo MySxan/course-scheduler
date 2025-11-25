@@ -106,13 +106,12 @@ export const CourseForm: React.FC<CourseFormProps> = ({ onCourseAdded }) => {
   };
 
   return (
-    <div className="bg-base-100 p-6 rounded-lg shadow-md">
-      <h2 className="text-xl font-semibold mb-4 text-base-content">
-        Add Course Manually
-      </h2>
+    <div className="card bg-base-200 shadow-sm">
+      <div className="card-body p-4">
+        <h2 className="card-title text-base mb-4">Add Course Manually</h2>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Course Name */}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Course Name */}
         <div>
           <label
             htmlFor="courseName"
@@ -290,6 +289,7 @@ export const CourseForm: React.FC<CourseFormProps> = ({ onCourseAdded }) => {
           </button>
         </div>
       </form>
+      </div>
     </div>
   );
 };

@@ -42,12 +42,8 @@ function App() {
     );
   };
 
-  
-
   const getPanelTitle = (panel: PanelType) => {
     switch (panel) {
-      case "import":
-        return "Import Courses";
       case "add":
         return "Add Course";
       case "style":
@@ -68,11 +64,11 @@ function App() {
         onClose={() => setActivePanel(null)}
         title={getPanelTitle(activePanel)}
       >
-        {activePanel === "import" && (
-          <CSVUploader onCoursesLoaded={handleCoursesFromCSV} />
-        )}
         {activePanel === "add" && (
-          <CourseForm onCourseAdded={handleCourseAdded} />
+          <div className="flex flex-col gap-6 pb-8">
+            <CourseForm onCourseAdded={handleCourseAdded} />
+            <CSVUploader onCoursesLoaded={handleCoursesFromCSV} />
+          </div>
         )}
         {activePanel === "style" && (
           <div className="p-4 text-center opacity-50">Card Style Settings</div>
@@ -160,7 +156,6 @@ function App() {
               <WeeklyTimetable courses={courses} settings={settings} />
             ) : (
               <div className="space-y-6">
-                
                 <CourseList
                   courses={courses}
                   onRemoveCourse={handleRemoveCourse}

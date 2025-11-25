@@ -6,12 +6,6 @@ interface CourseListProps {
   courses: Course[];
   onRemoveCourse: (courseId: string) => void;
 }
-const [setCourses] = useState<Course[]>([]);
-const handleClearAll = () => {
-    if (window.confirm("Are you sure you want to remove all courses?")) {
-      setCourses([]);
-    }
-  };
 
 export const CourseList: React.FC<CourseListProps> = ({
   courses,
@@ -66,16 +60,6 @@ export const CourseList: React.FC<CourseListProps> = ({
   return (
     <div className="bg-base-100 p-6 rounded-lg shadow-md">
       <div className="flex justify-between items-center mb-4">
-        {courses.length > 0 && (
-                  <div className="flex justify-end">
-                    <button
-                      onClick={handleClearAll}
-                      className="btn btn-error btn-sm text-white"
-                    >
-                      Clear All Courses
-                    </button>
-                  </div>
-                )}
         <h2 className="text-xl font-semibold text-base-content">
           Course Schedule
         </h2>

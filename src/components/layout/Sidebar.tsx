@@ -29,30 +29,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <div className="fixed left-0 top-0 h-full w-14 bg-base-300 flex flex-col items-center py-4 gap-4 shadow-lg z-50 border-r border-base-content/5">
-      {/* Import */}
-      <div className="tooltip tooltip-right" data-tip="Import Courses">
-        <button
-          onClick={() => handlePanelClick("import")}
-          className={getButtonClass("import")}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
-            />
-          </svg>
-        </button>
-      </div>
-
-      {/* Add Manually */}
+      {/* Add Course */}
       <div className="tooltip tooltip-right" data-tip="Add Course">
         <button
           onClick={() => handlePanelClick("add")}

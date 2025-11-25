@@ -184,14 +184,12 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                   Display 30 min slot
                 </span>
                 <div className="label-text-alt text-xs opacity-70">
-                  {settings.slotDuration === 30
-                    ? "30-minute time slots"
-                    : "60-minute time slots"}
+                  {"slots for better time resolution"}
                 </div>
               </div>
               <input
                 type="checkbox"
-                className="toggle toggle-accent"
+                className="checkbox checkbox-accent w-5 h-5"
                 checked={settings.slotDuration === 30}
                 onChange={(e) =>
                   handleSettingChange(
@@ -207,13 +205,13 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
             <label className="label w-full">
               <span className="label-text font-medium">Table Scale</span>
               <span className="label-text-alt">
-                {(settings.verticalScale / 100).toFixed(1)}x
+                {settings.verticalScale}%
               </span>
             </label>
             <input
               type="range"
               min="50"
-              max="150"
+              max="200"
               step="10"
               value={settings.verticalScale}
               onChange={(e) =>
@@ -222,9 +220,10 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
               className="range range-xs range-accent w-full"
             />
             <div className="w-full flex justify-between text-xs mt-1 opacity-70">
-              <span>0.5x</span>
-              <span>1.0x</span>
-              <span>1.5x</span>
+              <span>50%</span>
+              <span>100%</span>
+              <span>150%</span>
+              <span>200%</span>
             </div>
           </div>
 
@@ -235,7 +234,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
             </label>
             <input
               type="range"
-              min="50"
+              min="20"
               max="100"
               value={settings.width}
               onChange={(e) =>
@@ -244,8 +243,14 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
               className="range range-xs range-accent w-full"
             />
             <div className="w-full flex justify-between text-xs mt-1 opacity-70">
+              <span>20%</span>
+              <span></span>
+              <span></span>
               <span>50%</span>
-              <span>75%</span>
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
               <span>100%</span>
             </div>
           </div>
@@ -255,6 +260,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
       {/* View Options */}
       <div className="card bg-base-200 shadow-sm">
         <div className="card-body p-4">
+          {/* title */}
           <div className="card-title text-base flex items-center gap-2 mb-4">
             <svg
               className="w-4 h-4 text-success"
@@ -278,6 +284,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
             View Options
           </div>
 
+          {/* show weekends */}
           <div className="space-y-3">
             <div className="form-control">
               <label className="label flex items-center gap-4 cursor-pointer">
@@ -289,7 +296,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                 </div>
                 <input
                   type="checkbox"
-                  className="checkbox checkbox-accent w-5 h-5 py-0"
+                  className="checkbox checkbox-accent w-5 h-5"
                   checked={settings.showWeekends}
                   onChange={(e) =>
                     handleSettingChange("showWeekends", e.target.checked)
@@ -298,6 +305,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
               </label>
             </div>
 
+            {/* start with Sunday */}
             <div className="form-control">
               <label className="label flex items-center gap-4 cursor-pointer">
                 <div className="flex-1">
@@ -310,7 +318,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                 </div>
                 <input
                   type="checkbox"
-                  className="checkbox checkbox-accent w-5 h-5 py-0"
+                  className="checkbox checkbox-accent w-5 h-5"
                   checked={settings.startWithSunday}
                   onChange={(e) =>
                     handleSettingChange("startWithSunday", e.target.checked)
