@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useState } from "react";
 import type { Course } from "../../types/course";
 import type { TimetableSettings } from "../timetable/SettingsPanel";
-import { WeeklyTimetable } from "../timetable";
+import { TimetablePreview } from "./TimetablePreview";
 
 type ExportFormat = "png" | "jpg" | "svg";
 
@@ -163,12 +163,10 @@ export const ExportPreviewArea: React.FC<ExportPreviewAreaProps> = ({
   return (
     <div
       id="export-area"
-      className="card h-full w-full border-dotted border-primary border-2 flex flex-col items-center justify-center"
+      className="card min-h-full flex flex-1 flex-col "
       style={containerStyles}
     >
-      <div className="w-full h-full flex items-center justify-center p-4">
-        <WeeklyTimetable courses={courses} settings={settings} />
-      </div>
+      <TimetablePreview courses={courses} settings={settings} />
     </div>
   );
 };

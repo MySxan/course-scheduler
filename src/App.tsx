@@ -92,7 +92,7 @@ function App() {
                     View and customize your schedule layout
                   </p>
                 </div>
-                <div className="flex-1 flex justify-center items-center">
+                <div className="flex-1 flex min-w-full">
                   <WeeklyTimetable courses={courses} settings={settings} />
                 </div>
               </div>
@@ -113,7 +113,7 @@ function App() {
                     {courses.length} course{courses.length !== 1 ? "s" : ""}
                   </span>
                 </div>
-                <div className="flex-1 flex justify-center items-center">
+                <div className="flex-1">
                   <CourseList
                     courses={courses}
                     onRemoveCourse={handleRemoveCourse}
@@ -132,7 +132,7 @@ function App() {
                     Preview and download your timetable
                   </p>
                 </div>
-                <div className="flex-1 flex justify-center items-center">
+                <div className="flex-1 flex min-w-full">
                   <ExportPreviewArea courses={courses} settings={settings} />
                 </div>
               </div>

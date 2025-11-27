@@ -9,14 +9,14 @@ import {
   type TimetableCourse,
   type CoursesByDay,
 } from "../../lib/timetable";
-import type { TimetableSettings } from "./SettingsPanel";
+import type { TimetableSettings } from "../timetable/SettingsPanel";
 
-interface WeeklyTimetableProps {
+interface TimetablePreviewProps {
   courses: Course[];
   settings: TimetableSettings;
 }
 
-export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
+export const TimetablePreview: React.FC<TimetablePreviewProps> = ({
   courses,
   settings,
 }) => {
@@ -48,18 +48,19 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
   }, [timetableCourses]);
 
   const getCourseCardClasses = (course: TimetableCourse) => {
+    // Pure rendering - no hover or cursor effects
     const baseClasses =
-      "card card-compact shadow-sm absolute transition-all duration-200 hover:shadow-md cursor-pointer rounded-lg border-2 backdrop-blur-sm opacity-90";
+      "card card-compact shadow-sm absolute rounded-lg border-2 backdrop-blur-sm opacity-90";
 
     if (course.hasConflict) {
       if (course.conflictLevel > 1) {
-        return `${baseClasses} bg-error text-error-content border-error hover:bg-error/90 hover:scale-[1.02]`;
+        return `${baseClasses} bg-error text-error-content border-error`;
       } else {
-        return `${baseClasses} bg-warning text-warning-content border-warning hover:bg-warning/90 hover:scale-[1.02]`;
+        return `${baseClasses} bg-warning text-warning-content border-warning`;
       }
     }
 
-    return `${baseClasses} bg-primary text-primary-content border-primary hover:bg-primary/90 hover:scale-[1.02]`;
+    return `${baseClasses} bg-primary text-primary-content border-primary`;
   };
 
   const getCoursePosition = (
@@ -86,30 +87,11 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
 
   if (courses.length === 0) {
     return (
-      <div className="card flex flex-col flex-1 h-full justify-center items-center ">
+      <div className="card flex flex-col flex-1 justify-center items-center outline-dotted outline-primary outline-2 rounded-lg">
         <div className="flex-none card-body text-center -mt-16">
-          <div className="mx-auto w-12 h-12 bg-base-100 rounded-full flex items-center justify-center mb-3">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              className="h-6 w-6 text-base-content/40"
-            >
-              <path d="M8 2v4" />
-              <path d="m16 2v4" />
-              <rect width="18" height="18" x="3" y="4" rx="2" />
-              <path d="M3 10h18" />
-            </svg>
-          </div>
           <h3 className="text-lg font-bold">No courses in your schedule</h3>
           <p className="text-sm text-base-content/70">
-            Add courses to see your weekly schedule
+            Add courses to preview the export timetable
           </p>
         </div>
       </div>
@@ -117,9 +99,9 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
   }
 
   return (
-    <div className="card no-scr flex-1 overflow-hidden">
+    <div className="card no-scr flex-1">
       <div
-        className="grid gap-0 p-2 bg-base rounded-lg relative transition-all ease-out duration-20 w-fit"
+        className="grid gap-0 bg-base rounded-lg p-2 relative w-fit outline-dotted outline-primary outline-2"
         style={{
           width: `${settings.width}%`,
           gridTemplateColumns: `60px repeat(${visibleDays.length}, 1fr)`,
@@ -164,7 +146,7 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
           visibleDays.map((day, dayIndex) => (
             <div
               key={`${day}-${i}`}
-              className="relative border-b border-slate-400 "
+              className="relative border-b border-slate-400"
               style={{ gridColumn: dayIndex + 2, gridRow: i + 2 }}
             >
               {/* 30-min divider */}
@@ -197,7 +179,6 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
                   startHour,
                   settings.verticalScale / 120
                 )}
-                title={`${course.name}${course.section ? ` (${course.section})` : ""} - ${formatTime(course.startTime)} to ${formatTime(course.endTime)}${course.location ? ` at ${course.location}` : ""}`}
               >
                 <div className="card-body p-1">
                   <div className="text-lg font-bold leading-tight line-clamp-2">

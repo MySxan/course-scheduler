@@ -11,40 +11,6 @@ export const CourseList: React.FC<CourseListProps> = ({
   courses,
   onRemoveCourse,
 }) => {
-  if (courses.length === 0) {
-    return (
-      <div className="card">
-        <div className="card-body p-8 text-center -mt-16">
-          <div className="mx-auto w-12 h-12 bg-base-100 rounded-full flex items-center justify-center mb-3">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              className="h-6 w-6 text-base-content/40"
-            >
-              <path d="M3 5h.01" />
-              <path d="M3 12h.01" />
-              <path d="M3 19h.01" />
-              <path d="M8 5h13" />
-              <path d="M8 12h13" />
-              <path d="M8 19h13" />
-            </svg>
-          </div>
-          <h3 className="text-lg font-bold">No courses added yet</h3>
-          <p className="text-sm text-base-content/70">
-            Upload a CSV file or add courses manually to get started
-          </p>
-        </div>
-      </div>
-    );
-  }
-
   // Group courses by day of week (expand courses that occur on multiple days)
   const coursesByDay = courses.reduce(
     (acc, course) => {
@@ -74,7 +40,40 @@ export const CourseList: React.FC<CourseListProps> = ({
     "Sunday",
   ];
   const sortedDays = daysOrder.filter((day) => coursesByDay[day]);
-
+  
+  if (courses.length === 0) {
+    return (
+      <div className="card flex flex-col flex-1 h-full justify-center items-center">
+        <div className="flex-none card-body text-center -mt-16">
+          <div className="mx-auto w-12 h-12 bg-base-100 rounded-full flex items-center justify-center mb-3">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              className="h-6 w-6 text-base-content/40"
+            >
+              <path d="M3 5h.01" />
+              <path d="M3 12h.01" />
+              <path d="M3 19h.01" />
+              <path d="M8 5h13" />
+              <path d="M8 12h13" />
+              <path d="M8 19h13" />
+            </svg>
+          </div>
+          <h3 className="text-lg font-bold">No courses added yet</h3>
+          <p className="text-sm text-base-content/70">
+            Upload a CSV file or add courses manually to get started
+          </p>
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="card">
       <div className="space-y-6">
