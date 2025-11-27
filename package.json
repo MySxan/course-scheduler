@@ -12,6 +12,7 @@
   "dependencies": {
     "@types/papaparse": "^5.3.16",
     "daisyui": "^5.1.25",
+    "html-to-image": "^1.11.13",
     "papaparse": "^5.5.3",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",

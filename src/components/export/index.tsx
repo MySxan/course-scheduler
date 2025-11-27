@@ -2,6 +2,7 @@ import React, { useCallback, useMemo, useState } from "react";
 import type { Course } from "../../types/course";
 import type { TimetableSettings } from "../timetable/SettingsPanel";
 import { TimetablePreview } from "./TimetablePreview";
+import { toPng, toJpeg } from "html-to-image";
 
 type ExportFormat = "png" | "jpg" | "svg";
 
@@ -20,22 +21,47 @@ export const ExportControlPanel: React.FC<ExportControlPanelProps> = ({
   const [scale, setScale] = useState<number>(1);
   const [transparent, setTransparent] = useState<boolean>(true);
 
-  const handleDownload = useCallback(() => {
+  const handleDownload = useCallback(async () => {
     if (onDownload) {
       onDownload({ format, scale, transparent });
       return;
     }
-    // Fallback: print the export area for a basic export without dependencies
+
     const exportEl = document.getElementById("export-area");
     if (!exportEl) {
-      window.print();
+      console.error("Export area not found");
       return;
     }
-    const prevBg = exportEl.style.backgroundColor;
-    if (transparent) exportEl.style.backgroundColor = "transparent";
-    // Open print dialog focusing on export area
-    window.print();
-    exportEl.style.backgroundColor = prevBg;
+
+    try {
+      let dataUrl: string;
+      const pixelRatio = scale;
+      const backgroundColor = transparent ? "transparent" : "#ffffff";
+
+      if (format === "png") {
+        dataUrl = await toPng(exportEl, {
+          pixelRatio,
+          backgroundColor,
+        });
+      } else if (format === "jpg") {
+        dataUrl = await toJpeg(exportEl, {
+          pixelRatio,
+          backgroundColor: transparent ? "#ffffff" : backgroundColor, 
+        });
+      } else {
+        window.print();
+        return;
+      }
+
+      // Download the image
+      const link = document.createElement("a");
+      link.download = `schedule-${new Date().getTime()}.${format}`;
+      link.href = dataUrl;
+      link.click();
+    } catch (error) {
+      console.error("Error generating image:", error);
+      alert("Failed to export image. Please try again.");
+    }
   }, [format, scale, transparent, onDownload]);
 
   return (

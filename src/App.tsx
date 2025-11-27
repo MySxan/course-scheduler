@@ -70,13 +70,7 @@ function App() {
               </button>
             </div>
           )}
-          {activeTab === "export" && (
-            <ExportControlPanel
-              onDownload={({ format, scale, transparent }) => {
-                console.log("Export requested", { format, scale, transparent });
-              }}
-            />
-          )}
+          {activeTab === "export" && <ExportControlPanel />}
         </ContextualSidebar>
 
         {/* Main Content Area */}
