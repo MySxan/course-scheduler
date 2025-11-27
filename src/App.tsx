@@ -74,10 +74,10 @@ function App() {
         </ContextualSidebar>
 
         {/* Main Content Area */}
-        <main className="flex-1 p-8 overflow-y-auto no-scrollbar">
-          <div className="container mx-auto h-full">
+        <main className="flex flex-1 p-8 min-h-[calc(100vh-4rem)] overflow-y-auto no-scrollbar">
+          <div className="container mx-auto flex flex-col flex-1">
             {activeTab === "preview" && (
-              <div className="h-full flex flex-col">
+              <div className="flex flex-col flex-1">
                 <div className="mb-6">
                   <h1 className="text-2xl font-bold text-base-content">
                     Timetable Preview
@@ -86,12 +86,14 @@ function App() {
                     View and customize your schedule layout
                   </p>
                 </div>
-                <WeeklyTimetable courses={courses} settings={settings} />
+                <div className="flex-1 flex justify-center items-center">
+                  <WeeklyTimetable courses={courses} settings={settings} />
+                </div>
               </div>
             )}
 
             {activeTab === "courses" && (
-              <div className="h-full flex flex-col">
+              <div className="flex flex-col flex-1">
                 <div className="flex justify-between items-center">
                   <div className="mb-6">
                     <h1 className="text-2xl font-bold text-base-content">
@@ -105,15 +107,17 @@ function App() {
                     {courses.length} course{courses.length !== 1 ? "s" : ""}
                   </span>
                 </div>
-                <CourseList
-                  courses={courses}
-                  onRemoveCourse={handleRemoveCourse}
-                />
+                <div className="flex-1 flex justify-center items-center">
+                  <CourseList
+                    courses={courses}
+                    onRemoveCourse={handleRemoveCourse}
+                  />
+                </div>
               </div>
             )}
 
             {activeTab === "export" && (
-              <div className="h-full flex flex-col">
+              <div className="flex flex-col flex-1">
                 <div className="mb-6">
                   <h1 className="text-2xl font-bold text-base-content">
                     Export Schedule
@@ -122,7 +126,7 @@ function App() {
                     Preview and download your timetable
                   </p>
                 </div>
-                <div className="flex-1">
+                <div className="flex-1 flex justify-center items-center">
                   <ExportPreviewArea />
                 </div>
               </div>

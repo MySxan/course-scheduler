@@ -79,8 +79,8 @@ export const ExportControlPanel: React.FC = () => {
 
 export const ExportPreviewArea: React.FC = () => {
   return (
-    <div className="card border-dotted border-primary border-2 flex items-center justify-center">
-      <div className="card-body h-full p-8 flex flex-col items-center text-center">
+    <div className="card h-full w-full border-dotted border-primary border-2 flex flex-col items-center justify-center">
+      <div className="flex flex-col gap-2 items-center justify-center -mt-16">
         <h3 className="text-lg font-bold">Export Preview</h3>
         <p className="text-sm">A snapshot of your schedule will appear here</p>
       </div>

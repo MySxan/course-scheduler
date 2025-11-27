@@ -87,7 +87,7 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
   if (courses.length === 0) {
     return (
       <div className="card">
-        <div className="card-body p-8 text-center">
+        <div className="card-body p-8 text-center -mt-16">
           <div className="mx-auto w-12 h-12 bg-base-100 rounded-full flex items-center justify-center mb-3">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -107,9 +107,7 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
               <path d="M3 10h18" />
             </svg>
           </div>
-          <h3 className="text-lg font-bold">
-            No courses in your schedule
-          </h3>
+          <h3 className="text-lg font-bold">No courses in your schedule</h3>
           <p className="text-sm text-base-content/70">
             Add courses to see your weekly schedule
           </p>

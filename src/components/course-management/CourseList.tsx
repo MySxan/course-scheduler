@@ -14,7 +14,7 @@ export const CourseList: React.FC<CourseListProps> = ({
   if (courses.length === 0) {
     return (
       <div className="card">
-        <div className="card-body p-8 text-center">
+        <div className="card-body p-8 text-center -mt-16">
           <div className="mx-auto w-12 h-12 bg-base-100 rounded-full flex items-center justify-center mb-3">
             <svg
               xmlns="http://www.w3.org/2000/svg"
