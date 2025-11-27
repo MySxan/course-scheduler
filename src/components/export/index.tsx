@@ -35,7 +35,7 @@ export const ExportControlPanel: React.FC<ExportControlPanelProps> = ({
 
     try {
       let dataUrl: string;
-      const pixelRatio = scale;
+      const pixelRatio = scale * window.devicePixelRatio;
       const backgroundColor = transparent ? "transparent" : "#ffffff";
 
       if (format === "png") {
@@ -46,7 +46,7 @@ export const ExportControlPanel: React.FC<ExportControlPanelProps> = ({
       } else if (format === "jpg") {
         dataUrl = await toJpeg(exportEl, {
           pixelRatio,
-          backgroundColor: transparent ? "#ffffff" : backgroundColor, 
+          backgroundColor: transparent ? "#ffffff" : backgroundColor,
         });
       } else {
         window.print();
@@ -187,12 +187,14 @@ export const ExportPreviewArea: React.FC<ExportPreviewAreaProps> = ({
     []
   );
   return (
-    <div
-      id="export-area"
-      className="card min-h-full flex flex-1 flex-col "
-      style={containerStyles}
-    >
-      <TimetablePreview courses={courses} settings={settings} />
+    <div className="card min-h-full flex flex-1 flex-col outline-dotted outline-primary outline-2 rounded-lg">
+      <div
+        id="export-area"
+        className="flex flex-1 flex-col"
+        style={containerStyles}
+      >
+        <TimetablePreview courses={courses} settings={settings} />
+      </div>
     </div>
   );
 };

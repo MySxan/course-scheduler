@@ -87,7 +87,7 @@ export const TimetablePreview: React.FC<TimetablePreviewProps> = ({
 
   if (courses.length === 0) {
     return (
-      <div className="card flex flex-col flex-1 justify-center items-center outline-dotted outline-primary outline-2 rounded-lg">
+      <div className="card flex flex-col flex-1 justify-center items-center">
         <div className="flex-none card-body text-center -mt-16">
           <h3 className="text-lg font-bold">No courses in your schedule</h3>
           <p className="text-sm text-base-content/70">
@@ -101,7 +101,7 @@ export const TimetablePreview: React.FC<TimetablePreviewProps> = ({
   return (
     <div className="card no-scr flex-1">
       <div
-        className="grid gap-0 bg-base rounded-lg p-2 relative w-fit outline-dotted outline-primary outline-2"
+        className="grid gap-0 bg-base rounded-lg p-2 relative w-fit"
         style={{
           width: `${settings.width}%`,
           gridTemplateColumns: `60px repeat(${visibleDays.length}, 1fr)`,
