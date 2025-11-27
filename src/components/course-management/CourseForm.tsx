@@ -276,7 +276,7 @@ export const CourseForm: React.FC<CourseFormProps> = ({ onCourseAdded }) => {
           <button
             type="submit"
             disabled={isSubmitting}
-            className={`w-full px-6 py-2 rounded-md font-medium transition-colors ${
+            className={`btn btn-primary w-full px-6 py-2 rounded-md font-medium transition-colors ${
               isSubmitting
                 ? "bg-neutral/50 cursor-not-allowed"
                 : "bg-primary hover:bg-primary/90 focus:bg-primary/90"

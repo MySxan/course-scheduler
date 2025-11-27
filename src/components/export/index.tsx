@@ -8,16 +8,20 @@ export const ExportControlPanel: React.FC = () => {
           <div className="card-title text-base flex items-center gap-2">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="w-4 h-4 text-primary"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
-              viewBox="0 0 24 24"
-              strokeWidth={2}
-              strokeLinecap="round"
-              strokeLinejoin="round"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              className="w-4 h-4 text-primary"
             >
-              <path d="M13 21h8" />
-              <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
+              <path d="M14 17H5" />
+              <path d="M19 7h-9" />
+              <circle cx="17" cy="17" r="3" />
+              <circle cx="7" cy="7" r="3" />
             </svg>
             Export Settings
           </div>
@@ -72,7 +76,12 @@ export const ExportControlPanel: React.FC = () => {
           </div>
         </div>
       </div>
-      <button className="btn btn-primary w-full">Download Schedule</button>
+      <button
+        type="submit"
+        className="btn btn-primary w-full px-6 py-2 rounded-md font-medium transition-colors"
+      >
+        Download Schedule
+      </button>
     </div>
   );
 };
