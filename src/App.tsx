@@ -70,7 +70,13 @@ function App() {
               </button>
             </div>
           )}
-          {activeTab === "export" && <ExportControlPanel />}
+          {activeTab === "export" && (
+            <ExportControlPanel
+              onDownload={({ format, scale, transparent }) => {
+                console.log("Export requested", { format, scale, transparent });
+              }}
+            />
+          )}
         </ContextualSidebar>
 
         {/* Main Content Area */}
@@ -127,7 +133,7 @@ function App() {
                   </p>
                 </div>
                 <div className="flex-1 flex justify-center items-center">
-                  <ExportPreviewArea />
+                  <ExportPreviewArea courses={courses} settings={settings} />
                 </div>
               </div>
             )}
