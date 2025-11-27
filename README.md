@@ -1,73 +1,135 @@
-# React + TypeScript + Vite
+# Course Scheduler
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A web-based course scheduling application that helps students visualize and manage their class schedules. Create beautiful weekly timetables by adding courses manually or importing them from CSV files, then export your schedule as an image.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Visual Weekly Timetable** - See your entire week at a glance with a clean, organized grid view
+- **Manual Course Entry** - Add courses one by one with details like name, section, days, times, and location
+- **CSV Import** - Bulk import courses from CSV files for quick schedule setup
+- **Customizable Display** - Adjust time ranges, show/hide weekends, change week start day, and scale the timetable
+- **Export to Image** - Download your timetable as a PNG image to share or print
+- **Smart Time Range** - Automatically adjusts the displayed hours based on your courses
+- **Responsive Design** - Works on desktop and mobile devices
 
-## React Compiler
+## Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **React 19** - UI framework
+- **TypeScript** - Type-safe JavaScript
+- **Vite** - Fast build tool and dev server
+- **Tailwind CSS** - Utility-first CSS framework
+- **DaisyUI** - Component library for Tailwind CSS
+- **PapaParse** - CSV parsing library
+- **html-to-image** - Export timetable as image
 
-## Expanding the ESLint configuration
+## Getting Started
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Prerequisites
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- Node.js 18+ 
+- npm or pnpm
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### Installation
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/MySxan/course-scheduler.git
+   cd course-scheduler
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   # or
+   pnpm install
+   ```
+
+3. Start the development server:
+   ```bash
+   npm run dev
+   # or
+   pnpm dev
+   ```
+
+4. Open your browser and navigate to `http://localhost:5173`
+
+### Build for Production
+
+```bash
+npm run build
+# or
+pnpm build
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+The built files will be in the `dist` directory.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Usage
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Adding Courses Manually
+
+1. Navigate to the **Courses** tab
+2. Fill in the course form with:
+   - Course name (required)
+   - Section (optional)
+   - Days of the week
+   - Start and end times (24-hour format)
+   - Location (optional)
+3. Click **Add Course**
+
+### Importing from CSV
+
+1. Navigate to the **Courses** tab
+2. Click on the CSV upload area or drag and drop a CSV file
+3. Your courses will be imported automatically
+
+#### CSV Format
+
+The CSV file should have the following columns:
+
+| Column | Required | Description |
+|--------|----------|-------------|
+| `name` | Yes | Course name (e.g., "MATH 231") |
+| `section` | No | Course section (e.g., "A1") |
+| `day` | Yes | Day(s) of week - full name or abbreviation, comma-separated for multiple days |
+| `startTime` | Yes | Start time in 24-hour format (HH:mm) |
+| `endTime` | Yes | End time in 24-hour format (HH:mm) |
+| `location` | No | Room or building |
+
+**Example CSV:**
+```csv
+name,section,day,startTime,endTime,location
+MATH 231,AL,"Mon,Wed,Fri",09:00,10:30,Room A101
+PHY,B1,"Mon,Wed,Fri",14:00,16:00,Lab B205
+ENG 115,,Friday,11:00,12:30,Room C301
 ```
+
+**Supported day formats:**
+- Full names: Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday
+- Abbreviations: Mon, Tue, Wed, Thu, Fri, Sat, Sun
+
+### Customizing the Timetable
+
+In the **Preview** tab, you can adjust:
+
+- **Time Range** - Set custom start/end hours or use smart auto-detection
+- **Grid Settings** - Toggle 30-minute slots, adjust table scale and width
+- **View Options** - Show/hide weekends, start week on Sunday
+
+### Exporting Your Schedule
+
+1. Navigate to the **Export** tab
+2. Preview your timetable
+3. Click the download button to save as a PNG image
+
+## Scripts
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start development server |
+| `npm run build` | Build for production |
+| `npm run preview` | Preview production build |
+| `npm run lint` | Run ESLint |
+
+## License
+
+This project is open source and available under the [MIT License](LICENSE).
