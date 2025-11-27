@@ -10,4 +10,8 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+
+  .preview-hidden-outline {
+    outline: none;
+  }
 }

@@ -126,7 +126,7 @@ function App() {
                     Preview and download your timetable
                   </p>
                 </div>
-                <div className="flex-1 flex min-w-full">
+                <div className="flex-1 flex min-w-full ">
                   <ExportPreviewArea courses={courses} settings={settings} />
                 </div>
               </div>

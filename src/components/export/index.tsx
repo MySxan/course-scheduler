@@ -34,6 +34,8 @@ export const ExportControlPanel: React.FC<ExportControlPanelProps> = ({
     }
 
     try {
+      exportEl.classList.add("preview-hidden-outline");
+
       let dataUrl: string;
       const pixelRatio = scale * window.devicePixelRatio;
       const backgroundColor = transparent ? "transparent" : "#ffffff";
@@ -49,6 +51,7 @@ export const ExportControlPanel: React.FC<ExportControlPanelProps> = ({
           backgroundColor: transparent ? "#ffffff" : backgroundColor,
         });
       } else {
+        exportEl.classList.remove("preview-hidden-outline");
         window.print();
         return;
       }
@@ -58,9 +61,12 @@ export const ExportControlPanel: React.FC<ExportControlPanelProps> = ({
       link.download = `schedule-${new Date().getTime()}.${format}`;
       link.href = dataUrl;
       link.click();
+
+      exportEl.classList.remove("preview-hidden-outline");
     } catch (error) {
       console.error("Error generating image:", error);
       alert("Failed to export image. Please try again.");
+      exportEl.classList.remove("preview-hidden-outline");
     }
   }, [format, scale, transparent, onDownload]);
 
@@ -187,14 +193,8 @@ export const ExportPreviewArea: React.FC<ExportPreviewAreaProps> = ({
     []
   );
   return (
-    <div className="card min-h-full flex flex-1 flex-col outline-dotted outline-primary outline-2 rounded-lg">
-      <div
-        id="export-area"
-        className="flex flex-1 flex-col"
-        style={containerStyles}
-      >
-        <TimetablePreview courses={courses} settings={settings} />
-      </div>
+    <div className="flex flex-1 flex-col" style={containerStyles}>
+      <TimetablePreview courses={courses} settings={settings} />
     </div>
   );
 };
