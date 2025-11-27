@@ -170,7 +170,7 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
               {/* 30-min divider */}
               {settings.slotDuration === 30 && (
                 <div
-                  className="absolute w-full border-t border-slate-200"
+                  className="absolute w-full border-t border-slate-400 opacity-30"
                   style={{ top: "50%", left: 0 }}
                 />
               )}

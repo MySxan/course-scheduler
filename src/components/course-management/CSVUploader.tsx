@@ -265,7 +265,7 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
             accept=".csv"
             onChange={handleFileUpload}
             disabled={isLoading}
-            className="file:mr-4 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 file:cursor-pointer cursor-pointer"
+            className="file:mr-4 file:py-2 file:px-3 file:rounded-md file:border-0 file:text-sm file:text-slate-50 file:bg-primary file:text-primary file:transition-all hover:file:bg-primary/10 duration-100 file:cursor-pointer cursor-pointer"
           />
         </div>
 
@@ -277,13 +277,13 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
         )}
 
         {error && (
-          <div className="p-3 bg-error/10 border border-error/20 rounded-md">
+          <div className="p-3 border border-error rounded-md">
             <p className="text-error text-sm whitespace-pre-line">{error}</p>
           </div>
         )}
 
         {success && (
-          <div className="p-3 bg-success/10 border border-success/20 rounded-md">
+          <div className="p-3 border border-success rounded-md">
             <p className="text-success text-sm">{success}</p>
           </div>
         )}

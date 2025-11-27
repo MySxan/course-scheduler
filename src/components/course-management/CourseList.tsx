@@ -84,7 +84,7 @@ export const CourseList: React.FC<CourseListProps> = ({
               {coursesByDay[day].map((course) => (
                 <div
                   key={course.id}
-                  className="flex items-center justify-between p-3 bg-base-200 rounded-md border"
+                  className="flex items-center justify-between p-3 bg-base-200 rounded-md border border-base-300 hover:bg-base-300 transition"
                 >
                   <div className="flex-1">
                     <div className="flex items-center gap-4 flex-wrap">

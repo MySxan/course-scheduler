@@ -101,7 +101,7 @@ export const ExportControlPanel: React.FC<ExportControlPanelProps> = ({
               <span className="label-text">Format</span>
             </label>
             <select
-              className="select inline border-base-300 rounded-md w-full"
+              className="select inline border-base-300 rounded-md w-full focus:outline-primary focus-within:outline-primary"
               value={format}
               onChange={(e) => setFormat(e.target.value as ExportFormat)}
             >
@@ -116,11 +116,11 @@ export const ExportControlPanel: React.FC<ExportControlPanelProps> = ({
             <label className="label mb-1">
               <span className="label-text">Resolution</span>
             </label>
-            <div className="join w-full gap-rounded-full ">
+            <div className="join flex-1 flex w-full gap-0 rounded-lg">
               <button
                 type="button"
-                className={`join-item font-normal py-1.5 rounded-md border flex-1 transition-colors ${
-                  scale === 1 ? "bg-primary/20 border-primary" : ""
+                className={`btn joined-item font-normal py-1.5 rounded-l-md rounded-r-none border flex-1 transition-colors ${
+                  scale === 1 ? "bg-primary-content border-primary shadow-primary shadow-[inset_0_0_0_1px] text-primary" : ""
                 }`}
                 onClick={() => setScale(1)}
               >
@@ -128,8 +128,8 @@ export const ExportControlPanel: React.FC<ExportControlPanelProps> = ({
               </button>
               <button
                 type="button"
-                className={`join-item font-normal py-1.5 rounded-md border flex-1 transition-colors ${
-                  scale === 2 ? "bg-primary/20 border-primary" : ""
+                className={`btn joined-item rounded-none font-normal py-1.5 border flex-1 transition-colors ${
+                  scale === 2 ? "bg-primary-content border-primary shadow-primary shadow-[inset_0_0_0_1px] text-primary" : ""
                 }`}
                 onClick={() => setScale(2)}
               >
@@ -137,8 +137,8 @@ export const ExportControlPanel: React.FC<ExportControlPanelProps> = ({
               </button>
               <button
                 type="button"
-                className={`join-item font-normal py-1.5 rounded-md border flex-1 transition-colors ${
-                  scale === 4 ? "bg-primary/20 border-primary" : ""
+                className={`btn joined-item rounded-r-md rounded-l-none font-normal py-1.5 border flex-1 transition-colors ${
+                  scale === 4 ? "bg-primary-content border-primary shadow-primary shadow-[inset_0_0_0_1px] text-primary" : ""
                 }`}
                 onClick={() => setScale(4)}
               >
@@ -160,7 +160,7 @@ export const ExportControlPanel: React.FC<ExportControlPanelProps> = ({
               </div>
               <input
                 type="checkbox"
-                className="toggle toggle-primary"
+                className="toggle toggle-primary shadow-none before:shadow-none after:shadow-none bg-transparent"
                 checked={transparent}
                 onChange={(e) => setTransparent(e.target.checked)}
               />
@@ -170,7 +170,7 @@ export const ExportControlPanel: React.FC<ExportControlPanelProps> = ({
       </div>
       <button
         type="submit"
-        className="btn btn-primary w-full px-6 py-2 rounded-md font-medium transition-colors"
+        className="btn btn-primary shadow-none w-full px-6 py-2 rounded-md font-medium transition-colors"
         onClick={handleDownload}
       >
         Download Schedule

@@ -137,7 +137,7 @@ export const CourseForm: React.FC<CourseFormProps> = ({ onCourseAdded }) => {
               value={formData.name}
               onChange={(e) => handleInputChange("name", e.target.value)}
               placeholder="e.g. CHEM 101"
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary ${
+              className={`input w-full px-3 py-2 border rounded-md focus:outline-primary ${
                 errors.name ? "border-error bg-error/10" : "border-base-300"
               }`}
             />
@@ -157,7 +157,7 @@ export const CourseForm: React.FC<CourseFormProps> = ({ onCourseAdded }) => {
               value={formData.section}
               onChange={(e) => handleInputChange("section", e.target.value)}
               placeholder="e.g. Y19"
-              className="w-full px-3 py-2 border border-base-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+              className="input w-full px-3 py-2 border border-base-300 rounded-md focus:outline-primary"
             />
           </div>
         </div>
@@ -196,11 +196,11 @@ export const CourseForm: React.FC<CourseFormProps> = ({ onCourseAdded }) => {
                       });
                     }
                   }}
-                  className={`font-normal py-1.5 rounded-md flex-1 border transition-colors
+                  className={`btn w-8 font-normal py-1.5 rounded-md flex-1 transition-colors
                   ${
                     isSelected
-                      ? "bg-primary-content text-primary border-primary font-medium"
-                      : "bg-base-100 text-base-content border-base-300 hover:bg-base-200"
+                      ? "bg-primary-content text-primary shadow-[inset_0_0_0_1px] border-primary font-medium"
+                      : "bg-base-100 text-base-content hover:bg-base-200"
                   }`}
                 >
                   {day.slice(0, 2)}
@@ -225,7 +225,7 @@ export const CourseForm: React.FC<CourseFormProps> = ({ onCourseAdded }) => {
               type="time"
               value={formData.startTime}
               onChange={(e) => handleInputChange("startTime", e.target.value)}
-              className={`w-full pl-3 pr-2 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary ${
+              className={`input w-full px-3 py-2 border rounded-md focus:outline-primary ${
                 errors.startTime
                   ? "border-error bg-error/10"
                   : "border-base-300"
@@ -246,7 +246,7 @@ export const CourseForm: React.FC<CourseFormProps> = ({ onCourseAdded }) => {
               type="time"
               value={formData.endTime}
               onChange={(e) => handleInputChange("endTime", e.target.value)}
-              className={`w-full pl-3 pr-2 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary ${
+              className={`input w-full px-3 py-2 border rounded-md focus:outline-primary ${
                 errors.endTime ? "border-error bg-error/10" : "border-base-300"
               }`}
             />
@@ -267,7 +267,7 @@ export const CourseForm: React.FC<CourseFormProps> = ({ onCourseAdded }) => {
             value={formData.location}
             onChange={(e) => handleInputChange("location", e.target.value)}
             placeholder="e.g., Lincoln Hall 1019, Chem Lab 205"
-            className="w-full px-3 py-2 border border-base-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+            className="input w-full px-3 py-2 border rounded-md focus:outline-primary border-base-300"
           />
         </div>
 
@@ -276,10 +276,10 @@ export const CourseForm: React.FC<CourseFormProps> = ({ onCourseAdded }) => {
           <button
             type="submit"
             disabled={isSubmitting}
-            className={`btn btn-primary w-full px-6 py-2 rounded-md font-medium transition-colors ${
+            className={`btn btn-primary shadow-none w-full px-6 py-2 rounded-md font-medium transition-colors ${
               isSubmitting
-                ? "bg-neutral/50 cursor-not-allowed"
-                : "bg-primary hover:bg-primary/90 focus:bg-primary/90"
+                ? "bg-neutral cursor-not-allowed"
+                : "btn-primary shadow-none"
             } text-primary-content focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2`}
           >
             {isSubmitting ? "Adding..." : "Add Course"}

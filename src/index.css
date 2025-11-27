@@ -14,4 +14,21 @@
   .preview-hidden-outline {
     outline: none;
   }
+
+  .checkbox,
+  .checkbox:checked,
+  .select:focus-within,
+  .input:focus,
+  .input,
+  .toggle,
+  .toggle:before,
+  .toggle:after {
+    box-shadow: none;
+  }
+
+  .range::-webkit-slider-thumb {
+    box-shadow:
+      -1000px 0 0px 992px currentColor,
+      0 0 0 5px white inset;
+  }
 }
