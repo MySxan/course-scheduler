@@ -7,6 +7,7 @@ import { WeeklyTimetable } from "./components/timetable";
 import { TopNav, type TabType } from "./components/layout/TopNav";
 import { ContextualSidebar } from "./components/layout/ContextualSidebar";
 import { ExportControlPanel, ExportPreviewArea } from "./components/export";
+import { StyleSidebar, StylePreviewGrid } from "./components/style";
 import {
   SettingsPanel,
   type TimetableSettings,
@@ -71,6 +72,7 @@ function App() {
             </div>
           )}
           {activeTab === "export" && <ExportControlPanel />}
+          {activeTab === "style" && <StyleSidebar />}
         </ContextualSidebar>
 
         {/* Main Content Area */}
@@ -128,6 +130,22 @@ function App() {
                 </div>
                 <div className="flex-1 flex min-w-full ">
                   <ExportPreviewArea courses={courses} settings={settings} />
+                </div>
+              </div>
+            )}
+
+            {activeTab === "style" && (
+              <div className="flex flex-col flex-1">
+                <div className="mb-6">
+                  <h1 className="text-2xl font-bold text-base-content">
+                    Style System
+                  </h1>
+                  <p className="text-base-content/70">
+                    Adjust global styles and preview multiple card variants
+                  </p>
+                </div>
+                <div className="flex-1 flex min-w-full">
+                  <StylePreviewGrid />
                 </div>
               </div>
             )}
