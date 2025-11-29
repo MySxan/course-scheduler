@@ -7,7 +7,7 @@ import { WeeklyTimetable } from "./components/timetable";
 import { TopNav, type TabType } from "./components/layout/TopNav";
 import { ContextualSidebar } from "./components/layout/ContextualSidebar";
 import { ExportControlPanel, ExportPreviewArea } from "./components/export";
-import { StyleSidebar, StylePreviewGrid } from "./components/style";
+import { StyleSidebar, StylePreviewGrid, CategoryBar, type StyleCategory } from "./components/style";
 import {
   SettingsPanel,
   type TimetableSettings,
@@ -16,6 +16,7 @@ import {
 function App() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [activeTab, setActiveTab] = useState<TabType>("preview");
+  const [activeStyleCategory, setActiveStyleCategory] = useState<StyleCategory>("typography");
   const [settings, setSettings] = useState<TimetableSettings>({
     showWeekends: true,
     startWithSunday: false,
@@ -52,6 +53,14 @@ function App() {
       <TopNav activeTab={activeTab} onTabChange={setActiveTab} />
 
       <div className="flex flex-1 items-start">
+        {/* Category Bar*/}
+        {activeTab === "style" && (
+          <CategoryBar
+            activeCategory={activeStyleCategory}
+            onCategoryChange={setActiveStyleCategory}
+          />
+        )}
+
         {/* Contextual Sidebar */}
         <ContextualSidebar activeTab={activeTab}>
           {activeTab === "preview" && (
@@ -72,7 +81,7 @@ function App() {
             </div>
           )}
           {activeTab === "export" && <ExportControlPanel />}
-          {activeTab === "style" && <StyleSidebar />}
+          {activeTab === "style" && <StyleSidebar activeCategory={activeStyleCategory} />}
         </ContextualSidebar>
 
         {/* Main Content Area */}
