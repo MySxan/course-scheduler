@@ -34,7 +34,7 @@ export const CategoryBar: React.FC<CategoryBarProps> = ({
           stroke-width="2"
           stroke-linecap="round"
           stroke-linejoin="round"
-          className="lucide lucide-type-icon lucide-type"
+          className="lucide lucide-type-icon lucide-type p-0.5"
         >
           <path d="M12 4v16" />
           <path d="M4 7V5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v2" />
@@ -56,7 +56,7 @@ export const CategoryBar: React.FC<CategoryBarProps> = ({
           stroke-width="2"
           stroke-linecap="round"
           stroke-linejoin="round"
-          className="lucide lucide-panel-top-dashed-icon lucide-panel-top-dashed"
+          className="lucide lucide-panel-top-dashed-icon lucide-panel-top-dashed p-0.5"
         >
           <rect width="18" height="18" x="3" y="3" rx="2" />
           <path d="M14 9h1" />
@@ -80,7 +80,7 @@ export const CategoryBar: React.FC<CategoryBarProps> = ({
           stroke-width="2"
           stroke-linecap="round"
           stroke-linejoin="round"
-          className="lucide lucide-eye-off-icon lucide-eye-off"
+          className="lucide lucide-eye-off-icon lucide-eye-off p-0.5"
         >
           <path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49" />
           <path d="M14.084 14.158a3 3 0 0 1-4.242-4.242" />
@@ -103,7 +103,7 @@ export const CategoryBar: React.FC<CategoryBarProps> = ({
           stroke-width="2"
           stroke-linecap="round"
           stroke-linejoin="round"
-          className="lucide lucide-palette-icon lucide-palette"
+          className="lucide lucide-palette-icon lucide-palette p-0.5"
         >
           <path d="M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z" />
           <circle cx="13.5" cy="6.5" r=".5" fill="currentColor" />

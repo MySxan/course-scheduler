@@ -20,7 +20,7 @@ import {
 
 function App() {
   const [courses, setCourses] = useState<Course[]>([]);
-  const [activeTab, setActiveTab] = useState<TabType>("preview");
+  const [activeTab, setActiveTab] = useState<TabType>("courses");
   const [activeStyleCategory, setActiveStyleCategory] =
     useState<StyleCategory>("typography");
   const [settings, setSettings] = useState<TimetableSettings>({
