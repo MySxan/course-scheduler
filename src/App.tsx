@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Course } from "./types/course";
 import { CSVUploader } from "./components/course-management";
 import { CourseForm } from "./components/course-management";
@@ -7,7 +7,12 @@ import { WeeklyTimetable } from "./components/timetable";
 import { TopNav, type TabType } from "./components/layout/TopNav";
 import { ContextualSidebar } from "./components/layout/ContextualSidebar";
 import { ExportControlPanel, ExportPreviewArea } from "./components/export";
-import { StyleSidebar, StylePreviewGrid, CategoryBar, type StyleCategory } from "./components/style";
+import {
+  StyleSidebar,
+  StylePreviewGrid,
+  CategoryBar,
+  type StyleCategory,
+} from "./components/style";
 import {
   SettingsPanel,
   type TimetableSettings,
@@ -16,7 +21,8 @@ import {
 function App() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [activeTab, setActiveTab] = useState<TabType>("preview");
-  const [activeStyleCategory, setActiveStyleCategory] = useState<StyleCategory>("typography");
+  const [activeStyleCategory, setActiveStyleCategory] =
+    useState<StyleCategory>("typography");
   const [settings, setSettings] = useState<TimetableSettings>({
     showWeekends: true,
     startWithSunday: false,
@@ -27,6 +33,16 @@ function App() {
     verticalScale: 100,
     width: 100,
   });
+
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (courses.length > 0) {
+        e.preventDefault();
+      }
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [courses]);
 
   const handleCoursesFromCSV = (newCourses: Course[]) => {
     setCourses((prevCourses) => [...prevCourses, ...newCourses]);
@@ -48,11 +64,31 @@ function App() {
     }
   };
 
-  return (
-    <div className="min-h-screen bg-base-200 flex flex-col">
-      <TopNav activeTab={activeTab} onTabChange={setActiveTab} />
+  const handleLogoClick = () => {
+    if (courses.length > 0) {
+      if (
+        window.confirm("Reloading will discard your timetable edits. Continue?")
+      ) {
+        window.location.reload();
+      }
+    } else {
+      window.location.reload();
+    }
+  };
 
-      <div className="flex flex-1 items-start">
+  return (
+    <div className="h-screen bg-base-200 flex flex-col overflow-hidden">
+      {/* Fixed height header - must not expand */}
+      <header className="h-16 flex-none">
+        <TopNav
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+          onLogoClick={handleLogoClick}
+        />
+      </header>
+
+      {/* Main layout area - fills remaining space */}
+      <div className="flex-1 flex overflow-hidden">
         {/* Category Bar*/}
         {activeTab === "style" && (
           <CategoryBar
@@ -81,11 +117,13 @@ function App() {
             </div>
           )}
           {activeTab === "export" && <ExportControlPanel />}
-          {activeTab === "style" && <StyleSidebar activeCategory={activeStyleCategory} />}
+          {activeTab === "style" && (
+            <StyleSidebar activeCategory={activeStyleCategory} />
+          )}
         </ContextualSidebar>
 
         {/* Main Content Area */}
-        <main className="flex flex-1 p-8 min-h-[calc(100vh-4rem)] overflow-y-auto no-scrollbar">
+        <main className="flex flex-1 p-8 overflow-y-auto no-scrollbar">
           <div className="container mx-auto flex flex-col flex-1">
             {activeTab === "preview" && (
               <div className="flex flex-col flex-1">

@@ -5,9 +5,14 @@ export type TabType = "preview" | "courses" | "export" | "style";
 interface TopNavProps {
   activeTab: TabType;
   onTabChange: (tab: TabType) => void;
+  onLogoClick?: () => void;
 }
 
-export const TopNav: React.FC<TopNavProps> = ({ activeTab, onTabChange }) => {
+export const TopNav: React.FC<TopNavProps> = ({
+  activeTab,
+  onTabChange,
+  onLogoClick,
+}) => {
   const tabs: { id: TabType; label: string; icon: React.ReactNode }[] = [
     {
       id: "courses",
@@ -98,9 +103,12 @@ export const TopNav: React.FC<TopNavProps> = ({ activeTab, onTabChange }) => {
   ];
 
   return (
-    <div className="bg-base-100 border-b border-base-200 px-4 sticky top-0 z-50 flex items-center h-16">
+    <div className="bg-base-100 border-b border-base-200 px-4 h-full flex items-center">
       <div className="flex-1 flex items-center">
-        <a className="btn btn-ghost hover:bg-transparent hover:shadow-none hover:border-transparent text-xl gap-2 px-2">
+        <button
+          onClick={onLogoClick}
+          className="btn btn-ghost hover:bg-transparent hover:shadow-none hover:border-transparent text-xl gap-2 px-2"
+        >
           <span className="text-primary">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -117,8 +125,8 @@ export const TopNav: React.FC<TopNavProps> = ({ activeTab, onTabChange }) => {
               />
             </svg>
           </span>
-          Course Scheduler
-        </a>
+          <h1>Course Scheduler</h1>
+        </button>
       </div>
       <div className="flex-none h-full">
         <div className="flex h-full gap-1">

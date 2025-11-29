@@ -116,7 +116,7 @@ export const CategoryBar: React.FC<CategoryBarProps> = ({
   ];
 
   return (
-    <div className="w-48 bg-base-100 border-r border-base-200 h-[calc(100vh-64px)] flex flex-col sticky top-16 overflow-hidden">
+    <div className="w-48 flex-none bg-base-100 border-r border-base-200 flex flex-col overflow-hidden">
       <div className="flex-1 flex flex-col gap-2 p-2">
         {categories.map((category) => (
           <button
