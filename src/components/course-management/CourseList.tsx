@@ -66,7 +66,7 @@ export const CourseList: React.FC<CourseListProps> = ({
               <path d="M8 19h13" />
             </svg>
           </div>
-          <h3 className="text-lg font-bold">No courses added yet</h3>
+          <h3 className="text-lg font-bold">No courses in your schedule</h3>
           <p className="text-sm text-base-content/70">
             Upload a CSV file or add courses manually to get started
           </p>

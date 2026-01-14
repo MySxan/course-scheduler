@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import type { StyleCategory } from "./CategoryBar";
 
 interface StyleSidebarProps {
@@ -8,6 +8,10 @@ interface StyleSidebarProps {
 export const StyleSidebar: React.FC<StyleSidebarProps> = ({
   activeCategory,
 }) => {
+  const [capitalization, setCapitalization] = useState<
+    "none" | "upper" | "title" | "lower"
+  >("none");
+
   return (
     <div className="flex flex-col gap-4">
       {activeCategory === "typography" && (
@@ -248,25 +252,45 @@ export const StyleSidebar: React.FC<StyleSidebarProps> = ({
                 <div className="join flex-1 flex w-full gap-0 rounded-lg">
                   <button
                     type="button"
-                    className={`btn joined-item font-normal py-1.5 rounded-l-md rounded-r-none border flex-1 transition-colors `}
+                    className={`btn joined-item font-normal py-1.5 rounded-l-md rounded-r-none border flex-1 transition-colors ${
+                      capitalization === "none"
+                        ? "bg-primary-content border-primary shadow-primary shadow-[inset_0_0_0_1px] text-primary"
+                        : ""
+                    }`}
+                    onClick={() => setCapitalization("none")}
                   >
                     -
                   </button>
                   <button
                     type="button"
-                    className={`btn joined-item font-normal py-1.5 rounded-l-md rounded-r-none border flex-1 transition-colors `}
+                    className={`btn joined-item font-normal py-1.5 rounded-l-md rounded-r-none border flex-1 transition-colors ${
+                      capitalization === "upper"
+                        ? "bg-primary-content border-primary shadow-primary shadow-[inset_0_0_0_1px] text-primary"
+                        : ""
+                    }`}
+                    onClick={() => setCapitalization("upper")}
                   >
                     ABC
                   </button>
                   <button
                     type="button"
-                    className={`btn joined-item rounded-none font-normal py-1.5 border flex-1 transition-colors`}
+                    className={`btn joined-item rounded-none font-normal py-1.5 border flex-1 transition-colors ${
+                      capitalization === "title"
+                        ? "bg-primary-content border-primary shadow-primary shadow-[inset_0_0_0_1px] text-primary"
+                        : ""
+                    }`}
+                    onClick={() => setCapitalization("title")}
                   >
                     Abc
                   </button>
                   <button
                     type="button"
-                    className={`btn joined-item rounded-r-md rounded-l-none font-normal py-1.5 border flex-1 transition-colors `}
+                    className={`btn joined-item rounded-r-md rounded-l-none font-normal py-1.5 border flex-1 transition-colors ${
+                      capitalization === "lower"
+                        ? "bg-primary-content border-primary shadow-primary shadow-[inset_0_0_0_1px] text-primary"
+                        : ""
+                    }`}
+                    onClick={() => setCapitalization("lower")}
                   >
                     abc
                   </button>
