@@ -31,9 +31,9 @@ export const CategoryBar: React.FC<CategoryBarProps> = ({
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
           className="lucide lucide-type-icon lucide-type p-0.5"
         >
           <path d="M12 4v16" />
@@ -53,9 +53,9 @@ export const CategoryBar: React.FC<CategoryBarProps> = ({
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
           className="lucide lucide-panel-top-dashed-icon lucide-panel-top-dashed p-0.5"
         >
           <rect width="18" height="18" x="3" y="3" rx="2" />
@@ -77,9 +77,9 @@ export const CategoryBar: React.FC<CategoryBarProps> = ({
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
           className="lucide lucide-eye-off-icon lucide-eye-off p-0.5"
         >
           <path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49" />
@@ -100,9 +100,9 @@ export const CategoryBar: React.FC<CategoryBarProps> = ({
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
           className="lucide lucide-palette-icon lucide-palette p-0.5"
         >
           <path d="M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z" />
@@ -139,3 +139,4 @@ export const CategoryBar: React.FC<CategoryBarProps> = ({
     </div>
   );
 };
+

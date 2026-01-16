@@ -163,8 +163,12 @@ export const CourseForm: React.FC<CourseFormProps> = ({ onCourseAdded }) => {
         </div>
 
         {/* Days of Week */}
-        <div className="form-control">
-          <label htmlFor="dayOfWeek" className="label mb-1">
+        <div
+          className="form-control"
+          role="group"
+          aria-labelledby="dayOfWeekLabel"
+        >
+          <label id="dayOfWeekLabel" className="label mb-1">
             Day of Week
           </label>
           <div className="flex flex-wrap gap-2">

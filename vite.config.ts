@@ -5,6 +5,7 @@ import autoprefixer from "autoprefixer";
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: "/course-scheduler/",
   plugins: [react()],
   css: {
     postcss: {

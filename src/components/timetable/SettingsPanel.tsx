@@ -91,7 +91,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                     if (newStartHour >= settings.endHour) {
                       handleSettingChange(
                         "endHour",
-                        Math.min(newStartHour + 1, 22)
+                        Math.min(newStartHour + 1, 23)
                       );
                     }
                     handleSettingChange("startHour", newStartHour);
@@ -101,7 +101,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                     const isDisabled =
                       !settings.dynamicTimeRange &&
                       i >= settings.endHour &&
-                      settings.endHour === 22;
+                      settings.endHour === 23;
                     return (
                       <option key={i} value={i} disabled={isDisabled}>
                         {i.toString().padStart(2, "0")}:00
@@ -138,7 +138,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                     handleSettingChange("endHour", newEndHour);
                   }}
                 >
-                  {Array.from({ length: 23 }, (_, i) => {
+                  {Array.from({ length: 24 }, (_, i) => {
                     const displayHour = i + 1;
                     const isDisabled =
                       !settings.dynamicTimeRange && i <= settings.startHour;

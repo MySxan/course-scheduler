@@ -53,9 +53,9 @@ export const CourseList: React.FC<CourseListProps> = ({
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
               className="h-6 w-6 text-base-content/40"
             >
               <path d="M3 5h.01" />
@@ -121,7 +121,7 @@ export const CourseList: React.FC<CourseListProps> = ({
 
                       {/* Location Tag */}
                       {course.location && (
-                        <span className="text-sm text-neutral-content bg-neutral px-2 py-1 rounded-md">
+                        <span className="text-sm text-primary text-opacity-70 py-1 rounded-md">
                           {course.location}
                         </span>
                       )}
@@ -140,9 +140,9 @@ export const CourseList: React.FC<CourseListProps> = ({
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
                       className="w-4 h-4"
                     >
                       <path d="M3 6h18" />

@@ -71,8 +71,12 @@ export const generateAllTimeSlots = (
     }
   }
   return slots;
-}; /**
- * Calculate dynamic time range based on courses - floor to nearest full hour (min) and ceil to nearest full hour (max)
+};
+
+/**
+ * Calculate dynamic time range based on courses.
+ * Floors the earliest start to the nearest full hour and ceils the latest end.
+ * The UI renders an extra label row at endHour + 1, so endHour is one hour earlier.
  */
 export const calculateTimeRange = (courses: Course[]): TimeRange => {
   if (courses.length === 0) {
@@ -84,12 +88,11 @@ export const calculateTimeRange = (courses: Course[]): TimeRange => {
 
   courses.forEach((course) => {
     const startHour = parseInt(course.startTime.split(":")[0]);
-    const startMinutes = parseInt(course.startTime.split(":")[1]);
     const endHour = parseInt(course.endTime.split(":")[0]);
     const endMinutes = parseInt(course.endTime.split(":")[1]);
 
     // Floor start time to nearest full hour
-    const flooredStart = startMinutes > 0 ? startHour : startHour;
+    const flooredStart = startHour;
     // Ceil end time to nearest full hour
     const ceiledEnd = endMinutes > 0 ? endHour + 1 : endHour;
 
@@ -97,9 +100,12 @@ export const calculateTimeRange = (courses: Course[]): TimeRange => {
     latestHour = Math.max(latestHour, ceiledEnd);
   });
 
+  const startHour = Math.max(0, earliestHour);
+  const endHour = Math.min(23, latestHour - 1);
+
   return {
-    startHour: Math.max(0, earliestHour - 1),
-    endHour: Math.min(23, latestHour),
+    startHour,
+    endHour: Math.max(startHour, endHour),
   };
 };
 

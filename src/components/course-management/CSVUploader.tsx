@@ -259,8 +259,10 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
         </div>
 
         <div className="form-control">
+          <label htmlFor="csvFile"></label>
           <input
             ref={fileInputRef}
+            id="csvFile"
             type="file"
             accept=".csv"
             onChange={handleFileUpload}
@@ -288,8 +290,14 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
           </div>
         )}
 
-        <div className="text-base-content/70">
-          <label className="label mb-2">CSV Format Requirements:</label>
+        <div
+          className="text-base-content/70"
+          role="group"
+          aria-labelledby="csvFormatLabel"
+        >
+          <p id="csvFormatLabel" className="label mb-2">
+            CSV Format Requirements:
+          </p>
           <ul className="list-disc list-inside space-y-2 opacity-50 text-sm">
             <li>
               Headers: name, section (optional), day, startTime, endTime,

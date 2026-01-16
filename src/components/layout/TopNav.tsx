@@ -123,13 +123,17 @@ export const TopNav: React.FC<TopNavProps> = ({
   return (
     <div className="bg-base-100 border-b border-base-200 px-4 h-full flex items-center">
       <div className="flex-1 flex items-center">
-        <button
+        <span
           onClick={onLogoClick}
-          className="btn btn-ghost hover:bg-transparent hover:shadow-none hover:border-transparent text-xl gap-3 px-1"
+          className="flex text-xl gap-3 px-1 cursor-pointer font-bold items-center select-none"
         >
-          <img src="/icon-192.png" alt="Course Scheduler" className="h-8 w-8" />
+          <img
+            src={`${import.meta.env.BASE_URL}icon-192.png`}
+            alt="Course Scheduler"
+            className="h-8 w-8"
+          />
           <h1>Course Scheduler</h1>
-        </button>
+        </span>
       </div>
       <div className="flex-none h-full">
         <div className="relative flex h-full">

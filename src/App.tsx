@@ -24,7 +24,7 @@ function App() {
   const [activeStyleCategory, setActiveStyleCategory] =
     useState<StyleCategory>("typography");
   const [settings, setSettings] = useState<TimetableSettings>({
-    showWeekends: true,
+    showWeekends: false,
     startWithSunday: false,
     dynamicTimeRange: true,
     startHour: 7,
@@ -123,12 +123,12 @@ function App() {
         </ContextualSidebar>
 
         {/* Main Content Area */}
-        <main className="flex flex-1 p-8 overflow-y-auto no-scrollbar">
+        <main className="flex flex-1 p-8 overflow-y-auto no-scrollbar mb-8">
           <div className="container mx-auto flex flex-col flex-1">
             {activeTab === "preview" && (
               <div className="flex flex-col flex-1">
                 <div className="mb-6">
-                  <h1 className="text-2xl font-bold text-base-content">
+                  <h1 className="text-2xl font-bold text-base-content mb-1">
                     Timetable Preview
                   </h1>
                   <p className="text-base-content/70">
@@ -145,7 +145,7 @@ function App() {
               <div className="flex flex-col flex-1 ">
                 <div className="flex justify-between items-baseline mb-6">
                   <div>
-                    <h1 className="text-2xl font-bold text-base-content">
+                    <h1 className="text-2xl font-bold text-base-content mb-1">
                       Course List
                     </h1>
                     <p className="text-base-content/70">
@@ -168,7 +168,7 @@ function App() {
             {activeTab === "export" && (
               <div className="flex flex-col flex-1">
                 <div className="mb-6">
-                  <h1 className="text-2xl font-bold text-base-content">
+                  <h1 className="text-2xl font-bold text-base-content mb-1">
                     Export Schedule
                   </h1>
                   <p className="text-base-content/70">
@@ -184,7 +184,7 @@ function App() {
             {activeTab === "style" && (
               <div className="flex flex-col flex-1">
                 <div className="mb-6">
-                  <h1 className="text-2xl font-bold text-base-content">
+                  <h1 className="text-2xl font-bold text-base-content mb-1">
                     Style System
                   </h1>
                   <p className="text-base-content/70">
