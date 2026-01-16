@@ -40,7 +40,7 @@ export const CourseList: React.FC<CourseListProps> = ({
     "Sunday",
   ];
   const sortedDays = daysOrder.filter((day) => coursesByDay[day]);
-  
+
   if (courses.length === 0) {
     return (
       <div className="card flex flex-col flex-1 h-full justify-center items-center">
@@ -87,7 +87,7 @@ export const CourseList: React.FC<CourseListProps> = ({
                   className="flex items-center justify-between p-3 bg-base-200 rounded-md border border-base-300 hover:bg-base-300 transition"
                 >
                   <div className="flex-1">
-                    <div className="flex items-center gap-4 flex-wrap">
+                    <div className="flex items-center gap-x-4 gap-y-1 flex-wrap">
                       <h4 className="font-bold text-base-content">
                         {course.name}
                         {course.section && (
@@ -104,11 +104,11 @@ export const CourseList: React.FC<CourseListProps> = ({
                       </span>
 
                       {/* Days of Week Tags */}
-                      <div className="flex gap-1 flex-wrap">
+                      <div className="flex gap-2 flex-wrap">
                         {course.daysOfWeek.map((courseDay) => (
                           <span
                             key={courseDay}
-                            className={`text-xs px-2 py-1 rounded ${
+                            className={`text-sm px-2 py-1 rounded ${
                               courseDay === day
                                 ? "bg-primary/20 text-primary font-medium"
                                 : "bg-base-200 text-base-content/60"
@@ -121,7 +121,7 @@ export const CourseList: React.FC<CourseListProps> = ({
 
                       {/* Location Tag */}
                       {course.location && (
-                        <span className="text-sm text-neutral-content bg-neutral px-2 py-1 rounded">
+                        <span className="text-sm text-neutral-content bg-neutral px-2 py-1 rounded-md">
                           {course.location}
                         </span>
                       )}

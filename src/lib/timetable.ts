@@ -6,12 +6,12 @@ export interface TimeSlot {
   hour: number;
   minute: number;
   label: string;
-  value: string; 
+  value: string;
 }
 
 export interface TimetableCourse extends Course {
   startSlot: number;
-  duration: number; 
+  duration: number;
   hasConflict: boolean;
   conflictLevel: number; // number of overlapping courses
 }

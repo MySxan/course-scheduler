@@ -110,7 +110,7 @@ export const StyleSidebar: React.FC<StyleSidebarProps> = ({
                   <label className="label mb-1">
                     <span className="label-text">Title Weight</span>
                   </label>
-                  <select className="select select-md border-base-300 focus:outline-primary">
+                  <select className="select inline border-base-300 rounded-md w-full focus:outline-primary focus-within:outline-primary">
                     <option value="300">Light (300)</option>
                     <option value="400">Regular (400)</option>
                     <option value="500">Medium (500)</option>
@@ -127,7 +127,7 @@ export const StyleSidebar: React.FC<StyleSidebarProps> = ({
                   <label className="label mb-1">
                     <span className="label-text">Content Weight</span>
                   </label>
-                  <select className="select select-md border-base-300 focus:outline-primary">
+                  <select className="select inline border-base-300 rounded-md w-full focus:outline-primary focus-within:outline-primary">
                     <option value="300">Light (300)</option>
                     <option value="400" selected>
                       Regular (400)
@@ -263,7 +263,7 @@ export const StyleSidebar: React.FC<StyleSidebarProps> = ({
                   </button>
                   <button
                     type="button"
-                    className={`btn joined-item font-normal py-1.5 rounded-l-md rounded-r-none border flex-1 transition-colors ${
+                    className={`btn joined-item rounded-none font-normal py-1.5 border flex-1 transition-colors ${
                       capitalization === "upper"
                         ? "bg-primary-content border-primary shadow-primary shadow-[inset_0_0_0_1px] text-primary"
                         : ""

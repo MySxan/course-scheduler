@@ -120,7 +120,9 @@ export const ExportControlPanel: React.FC<ExportControlPanelProps> = ({
               <button
                 type="button"
                 className={`btn joined-item font-normal py-1.5 rounded-l-md rounded-r-none border flex-1 transition-colors ${
-                  scale === 1 ? "bg-primary-content border-primary shadow-primary shadow-[inset_0_0_0_1px] text-primary" : ""
+                  scale === 1
+                    ? "bg-primary-content border-primary shadow-primary shadow-[inset_0_0_0_1px] text-primary"
+                    : ""
                 }`}
                 onClick={() => setScale(1)}
               >
@@ -129,7 +131,9 @@ export const ExportControlPanel: React.FC<ExportControlPanelProps> = ({
               <button
                 type="button"
                 className={`btn joined-item rounded-none font-normal py-1.5 border flex-1 transition-colors ${
-                  scale === 2 ? "bg-primary-content border-primary shadow-primary shadow-[inset_0_0_0_1px] text-primary" : ""
+                  scale === 2
+                    ? "bg-primary-content border-primary shadow-primary shadow-[inset_0_0_0_1px] text-primary"
+                    : ""
                 }`}
                 onClick={() => setScale(2)}
               >
@@ -138,7 +142,9 @@ export const ExportControlPanel: React.FC<ExportControlPanelProps> = ({
               <button
                 type="button"
                 className={`btn joined-item rounded-r-md rounded-l-none font-normal py-1.5 border flex-1 transition-colors ${
-                  scale === 4 ? "bg-primary-content border-primary shadow-primary shadow-[inset_0_0_0_1px] text-primary" : ""
+                  scale === 4
+                    ? "bg-primary-content border-primary shadow-primary shadow-[inset_0_0_0_1px] text-primary"
+                    : ""
                 }`}
                 onClick={() => setScale(4)}
               >

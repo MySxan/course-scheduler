@@ -1,0 +1,30 @@
+{
+  "name": "Course Scheduler",
+  "short_name": "Course Scheduler",
+  "description": "Plan, organize, and export your course schedule.",
+  "start_url": "/course-scheduler/",
+  "scope": "/course-scheduler/",
+  "display": "standalone",
+  "theme_color": "#0D9488",
+  "background_color": "#F0FDFA",
+  "icons": [
+    {
+      "src": "/course-scheduler/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/course-scheduler/icon-192-maskable.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/course-scheduler/icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

@@ -280,7 +280,7 @@ export const CourseForm: React.FC<CourseFormProps> = ({ onCourseAdded }) => {
               isSubmitting
                 ? "bg-neutral cursor-not-allowed"
                 : "btn-primary shadow-none"
-            } text-primary-content focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2`}
+            } text-primary-content`}
           >
             {isSubmitting ? "Adding..." : "Add Course"}
           </button>

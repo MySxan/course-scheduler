@@ -13,7 +13,9 @@ export const TopNav: React.FC<TopNavProps> = ({
   onTabChange,
   onLogoClick,
 }) => {
-  const tabs = React.useMemo<{ id: TabType; label: string; icon: React.ReactNode }[]>(
+  const tabs = React.useMemo<
+    { id: TabType; label: string; icon: React.ReactNode }[]
+  >(
     () => [
       {
         id: "courses",
@@ -123,24 +125,9 @@ export const TopNav: React.FC<TopNavProps> = ({
       <div className="flex-1 flex items-center">
         <button
           onClick={onLogoClick}
-          className="btn btn-ghost hover:bg-transparent hover:shadow-none hover:border-transparent text-xl gap-2 px-2"
+          className="btn btn-ghost hover:bg-transparent hover:shadow-none hover:border-transparent text-xl gap-3 px-1"
         >
-          <span className="text-primary">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-8 w-8"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-          </span>
+          <img src="/icon-192.png" alt="Course Scheduler" className="h-8 w-8" />
           <h1>Course Scheduler</h1>
         </button>
       </div>

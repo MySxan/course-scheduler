@@ -10,6 +10,11 @@
     margin: 0;
     padding: 0;
   }
+
+  [data-theme="cupcake"] {
+    --color-primary: #0d9488;
+    --color-primary-content: #f0fdfa;
+  }
 }
 
 @layer utilities {
@@ -36,9 +41,30 @@
     box-shadow: none;
   }
 
+  .checkbox {
+    border-radius: 0.3rem;
+  }
+
   .range::-webkit-slider-thumb {
     box-shadow:
       -1000px 0 0px 992px currentColor,
       0 0 0 5px white inset;
+  }
+
+  .toggle-primary:not(:checked):not([aria-checked="true"]) {
+    --input-color: var(--color-primary);
+    background-color: var(--color-base-100);
+  }
+
+  .toggle-primary:checked,
+  .toggle-primary[aria-checked="true"],
+  .toggle-primary:has(> input:checked) {
+    background-color: var(--color-primary);
+  }
+
+  .toggle-primary:checked::before,
+  .toggle-primary[aria-checked="true"]::before,
+  .toggle-primary:has(> input:checked)::before {
+    background-color: var(--color-base-100);
   }
 }

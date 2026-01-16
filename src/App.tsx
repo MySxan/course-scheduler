@@ -106,7 +106,7 @@ function App() {
             <div className="flex flex-col gap-4">
               <CourseForm onCourseAdded={handleCourseAdded} />
               <CSVUploader onCoursesLoaded={handleCoursesFromCSV} />
-              <div className="divider"></div>
+              <div className="divider my-0"></div>
               <button
                 onClick={handleClearAll}
                 className="btn btn-error btn-outline w-full"
@@ -142,9 +142,9 @@ function App() {
             )}
 
             {activeTab === "courses" && (
-              <div className="flex flex-col flex-1">
-                <div className="flex justify-between items-center">
-                  <div className="mb-6">
+              <div className="flex flex-col flex-1 ">
+                <div className="flex justify-between items-baseline mb-6">
+                  <div>
                     <h1 className="text-2xl font-bold text-base-content">
                       Course List
                     </h1>
@@ -152,7 +152,7 @@ function App() {
                       Manage your enrolled courses
                     </p>
                   </div>
-                  <span className="badge badge-neutral p-4">
+                  <span className="text-sm text-neutral-content bg-primary px-3 py-1 rounded-md">
                     {courses.length} course{courses.length !== 1 ? "s" : ""}
                   </span>
                 </div>

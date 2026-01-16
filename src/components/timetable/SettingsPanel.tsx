@@ -81,7 +81,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                 </label>
                 <select
                   id="startHour"
-                  className={`select select-sm select-bordered rounded-md w-full ${
+                  className={`select select-sm inline border-base-300 select-bordered rounded-md w-full focus:outline-primary focus-within:outline-primary ${
                     settings.dynamicTimeRange ? "select-disabled" : ""
                   }`}
                   value={settings.startHour}
@@ -117,7 +117,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                 </label>
                 <select
                   id="endHour"
-                  className={`select select-sm select-bordered rounded-md w-full ${
+                  className={`select select-sm inline border-base-300 select-bordered rounded-md w-full focus:outline-primary focus-within:outline-primary ${
                     settings.dynamicTimeRange ? "select-disabled" : ""
                   } ${
                     !settings.dynamicTimeRange &&
