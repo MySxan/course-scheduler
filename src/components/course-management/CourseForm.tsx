@@ -280,7 +280,7 @@ export const CourseForm: React.FC<CourseFormProps> = ({ onCourseAdded }) => {
           <button
             type="submit"
             disabled={isSubmitting}
-            className={`btn btn-primary shadow-none w-full px-6 py-2 rounded-md font-medium transition-colors ${
+            className={`btn btn-primary shadow-none w-full px-6 py-2 rounded-md font-semibold transition-colors ${
               isSubmitting
                 ? "bg-neutral cursor-not-allowed"
                 : "btn-primary shadow-none"

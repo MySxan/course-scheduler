@@ -20,6 +20,8 @@
   [data-theme="cupcake"] {
     --color-primary: #0d9488;
     --color-primary-content: #f0fdfa;
+    --color-error: #e82e86;
+    --color-error-content: #fff5fa;
   }
 }
 

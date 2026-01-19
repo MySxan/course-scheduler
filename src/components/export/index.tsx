@@ -122,7 +122,7 @@ export const ExportControlPanel: React.FC<ExportControlPanelProps> = ({
                 className={`btn joined-item font-normal py-1.5 rounded-l-md rounded-r-none border flex-1 transition-colors ${
                   scale === 1
                     ? "bg-primary-content border-primary shadow-primary shadow-[inset_0_0_0_1px] text-primary"
-                    : ""
+                    : "bg-base-100"
                 }`}
                 onClick={() => setScale(1)}
               >
@@ -133,7 +133,7 @@ export const ExportControlPanel: React.FC<ExportControlPanelProps> = ({
                 className={`btn joined-item rounded-none font-normal py-1.5 border flex-1 transition-colors ${
                   scale === 2
                     ? "bg-primary-content border-primary shadow-primary shadow-[inset_0_0_0_1px] text-primary"
-                    : ""
+                    : "bg-base-100"
                 }`}
                 onClick={() => setScale(2)}
               >
@@ -144,7 +144,7 @@ export const ExportControlPanel: React.FC<ExportControlPanelProps> = ({
                 className={`btn joined-item rounded-r-md rounded-l-none font-normal py-1.5 border flex-1 transition-colors ${
                   scale === 4
                     ? "bg-primary-content border-primary shadow-primary shadow-[inset_0_0_0_1px] text-primary"
-                    : ""
+                    : "bg-base-100"
                 }`}
                 onClick={() => setScale(4)}
               >
@@ -176,7 +176,7 @@ export const ExportControlPanel: React.FC<ExportControlPanelProps> = ({
       </div>
       <button
         type="submit"
-        className="btn btn-primary shadow-none w-full px-6 py-2 rounded-md font-medium transition-colors"
+        className="btn btn-primary shadow-none w-full px-6 py-2 rounded-md font-semibold transition-colors"
         onClick={handleDownload}
       >
         Download Schedule

@@ -2,18 +2,61 @@ import React, { useRef, useState } from "react";
 import Papa from "papaparse";
 import type { Course, CSVRow, DaysOfWeek } from "../../types/course";
 import { generateId } from "../../lib/utils";
+import { ConfirmDialog } from "../ui/ConfirmDialog";
 
 interface CSVUploaderProps {
   onCoursesLoaded: (courses: Course[]) => void;
+}
+
+interface PreviewRow extends Course {
+  rowNumber: number;
+  error?: string;
+  rawDay: string;
+  rawStartTime: string;
+  rawEndTime: string;
+  rawSection: string;
+  rawLocation: string;
 }
 
 export const CSVUploader: React.FC<CSVUploaderProps> = ({
   onCoursesLoaded,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const [isPanelOpen, setIsPanelOpen] = useState(false);
+  const [, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [previewCourses, setPreviewCourses] = useState<PreviewRow[] | null>(
+    null
+  );
+  const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
+  const [confirmMode, setConfirmMode] = useState<"replace" | "close">(
+    "replace"
+  );
+  const [tooltip, setTooltip] = useState<{
+    text: string;
+    x: number;
+    y: number;
+    visible: boolean;
+  }>({ text: "", x: 0, y: 0, visible: false });
+
+  const resetFileInput = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+    setSelectedFileName(null);
+  };
+
+  const normalizeTime = (time: string): string => {
+    const trimmed = time.trim().replace("\uFF1A", ":");
+    if (/^\d{3,4}$/.test(trimmed)) {
+      const padded = trimmed.padStart(4, "0");
+      return `${padded.slice(0, 2)}:${padded.slice(2)}`;
+    }
+    return trimmed;
+  };
 
   const validateTime = (time: string): boolean => {
     const timeRegex = /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/;
@@ -25,34 +68,46 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
     const dayMap: Record<string, DaysOfWeek> = {
       monday: "Monday",
       mon: "Monday",
+      mo: "Monday",
+      m: "Monday",
       tuesday: "Tuesday",
       tue: "Tuesday",
+      tu: "Tuesday",
       wednesday: "Wednesday",
       wed: "Wednesday",
+      we: "Wednesday",
+      w: "Wednesday",
       thursday: "Thursday",
       thu: "Thursday",
+      th: "Thursday",
+      thurs: "Thursday",
       friday: "Friday",
       fri: "Friday",
+      fr: "Friday",
+      f: "Friday",
       saturday: "Saturday",
       sat: "Saturday",
+      sa: "Saturday",
       sunday: "Sunday",
       sun: "Sunday",
+      su: "Sunday",
     };
     return dayMap[normalizedDay] || null;
   };
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
+  const parseFile = (file: File) => {
+    setSelectedFileName(file.name);
 
     if (file.type !== "text/csv" && !file.name.endsWith(".csv")) {
       setError("Please select a valid CSV file");
+      resetFileInput();
+      setPreviewCourses(null);
       return;
     }
 
-    setIsLoading(true);
     setError(null);
     setSuccess(null);
+    setPreviewCourses(null);
 
     Papa.parse<CSVRow>(file, {
       header: true,
@@ -91,126 +146,264 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
         }
       },
       complete: (results) => {
-        setIsLoading(false);
-
         if (results.errors.length > 0) {
           setError(`CSV parsing error: ${results.errors[0].message}`);
+          resetFileInput();
           return;
         }
 
         const validCourses: Course[] = [];
+        const previewRows: PreviewRow[] = [];
         const errors: string[] = [];
+        const seenRows = new Set<string>();
 
         results.data.forEach((row, index) => {
           const rowNumber = index + 2; // +2 because index starts at 0 and we skip header
+          const rowErrors: string[] = [];
+          const rowErrorSet = new Set<string>();
+          const rawName = row.name?.trim() || "";
+          const rawDay = row.day?.trim() || "";
+          const rawStart = row.startTime?.trim() || "";
+          const rawEnd = row.endTime?.trim() || "";
+          const rawSection = row.section?.trim() || "";
+          const rawLocation = row.location?.trim() || "";
+
+          const addRowError = (message: string) => {
+            if (rowErrorSet.has(message)) return;
+            rowErrorSet.add(message);
+            rowErrors.push(message);
+          };
 
           // Validate required fields
-          if (!row.name?.trim()) {
-            errors.push(`Row ${rowNumber}: Course name is required`);
-            return;
+          if (!rawName) {
+            addRowError("Course name is required");
           }
 
-          if (!row.day?.trim()) {
-            errors.push(`Row ${rowNumber}: Day of week is required`);
-            return;
+          if (!rawDay) {
+            addRowError("Day of week is required");
           }
 
-          if (!row.startTime?.trim()) {
-            errors.push(`Row ${rowNumber}: Start time is required`);
-            return;
+          if (!rawStart) {
+            addRowError("Start time is required");
           }
 
-          if (!row.endTime?.trim()) {
-            errors.push(`Row ${rowNumber}: End time is required`);
-            return;
+          if (!rawEnd) {
+            addRowError("End time is required");
           }
 
           // Validate day(s) of week - handle single day or comma-separated days
-          const dayStrings = row.day.split(",").map((d) => d.trim());
+          const dayStrings = rawDay
+            ? rawDay.split(",").map((d) => d.trim())
+            : [];
           const daysOfWeek: DaysOfWeek[] = [];
 
           for (const dayStr of dayStrings) {
             const dayOfWeek = normalizeDay(dayStr);
             if (!dayOfWeek) {
-              errors.push(`Row ${rowNumber}: Invalid day of week "${dayStr}"`);
-              return;
+              addRowError(`Invalid day of week "${dayStr}"`);
+              continue;
             }
             if (!daysOfWeek.includes(dayOfWeek)) {
               daysOfWeek.push(dayOfWeek);
             }
           }
 
-          if (daysOfWeek.length === 0) {
-            errors.push(`Row ${rowNumber}: No valid days of week found`);
-            return;
-          }
-
           // Validate time format
-          const startTime = row.startTime.trim();
-          const endTime = row.endTime.trim();
+          const startTime = normalizeTime(rawStart);
+          const endTime = normalizeTime(rawEnd);
 
-          if (!validateTime(startTime)) {
-            errors.push(
-              `Row ${rowNumber}: Invalid start time format "${startTime}". Use HH:mm format`
-            );
-            return;
+          if (!validateTime(startTime) && startTime) {
+            addRowError(`Invalid start time format "${startTime}"`);
           }
 
-          if (!validateTime(endTime)) {
-            errors.push(
-              `Row ${rowNumber}: Invalid end time format "${endTime}". Use HH:mm format`
-            );
-            return;
+          if (!validateTime(endTime) && endTime) {
+            addRowError(`Invalid end time format "${endTime}"`);
           }
 
           // Validate that end time is after start time
-          const [startHour, startMin] = startTime.split(":").map(Number);
-          const [endHour, endMin] = endTime.split(":").map(Number);
-          const startMinutes = startHour * 60 + startMin;
-          const endMinutes = endHour * 60 + endMin;
+          if (validateTime(startTime) && validateTime(endTime)) {
+            const [startHour, startMin] = startTime.split(":").map(Number);
+            const [endHour, endMin] = endTime.split(":").map(Number);
+            const startMinutes = startHour * 60 + startMin;
+            const endMinutes = endHour * 60 + endMin;
 
-          if (endMinutes <= startMinutes) {
-            errors.push(`Row ${rowNumber}: End time must be after start time`);
-            return;
+            if (endMinutes <= startMinutes) {
+              addRowError("End time must be after start time");
+            }
           }
 
-          // Create valid course
-          validCourses.push({
+          const previewRow: PreviewRow = {
             id: generateId(),
-            name: row.name.trim(),
-            section: row.section?.trim() || undefined,
+            rowNumber,
+            name: rawName || "",
+            section: rawSection || undefined,
             daysOfWeek,
             startTime,
             endTime,
-            location: row.location?.trim() || undefined,
-          });
+            location: rawLocation || undefined,
+            error: rowErrors.length > 0 ? rowErrors.join("; ") : undefined,
+            rawDay,
+            rawStartTime: rawStart,
+            rawEndTime: rawEnd,
+            rawSection,
+            rawLocation,
+          };
+
+          const dedupeKey = [
+            rawName.toLowerCase(),
+            rawSection.toLowerCase(),
+            rawDay.toLowerCase(),
+            startTime.toLowerCase(),
+            endTime.toLowerCase(),
+            rawLocation.toLowerCase(),
+          ].join("|");
+
+          if (seenRows.has(dedupeKey)) {
+            return;
+          }
+
+          seenRows.add(dedupeKey);
+
+          if (rowErrors.length > 0) {
+            errors.push(`Row ${rowNumber}: ${rowErrors.join("; ")}`);
+          } else {
+            validCourses.push({
+              id: previewRow.id,
+              name: rawName,
+              section: previewRow.section,
+              daysOfWeek,
+              startTime,
+              endTime,
+              location: previewRow.location,
+            });
+          }
+
+          previewRows.push(previewRow);
         });
 
         if (errors.length > 0) {
-          setError(
-            `Found ${errors.length} error(s):\n${errors.slice(0, 5).join("\n")}${errors.length > 5 ? "\n...and more" : ""}`
-          );
-          return;
+          setError(null);
         }
 
-        if (validCourses.length === 0) {
+        if (validCourses.length === 0 && errors.length === 0) {
           setError("No valid courses found in the CSV file");
-          return;
+          resetFileInput();
         }
 
-        onCoursesLoaded(validCourses);
-        setSuccess(`Successfully imported ${validCourses.length} course(s)`);
-
-        // Clear the file input
-        if (fileInputRef.current) {
-          fileInputRef.current.value = "";
-        }
+        setPreviewCourses(previewRows);
       },
-      error: (error) => {
-        setIsLoading(false);
-        setError(`Failed to parse CSV: ${error.message}`);
+      error: (parseError) => {
+        setError(`Failed to parse CSV: ${parseError.message}`);
+        resetFileInput();
       },
     });
+  };
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (previewCourses && previewCourses.length > 0) {
+      setPendingFile(file);
+      setConfirmMode("replace");
+      setIsConfirmOpen(true);
+      return;
+    }
+
+    parseFile(file);
+  };
+
+  const handleImport = () => {
+    if (!previewCourses || previewCourses.length === 0) {
+      return;
+    }
+    const importableCourses = previewCourses.filter((row) => !row.error);
+    if (importableCourses.length === 0) {
+      setError("Please fix errors before importing.");
+      return;
+    }
+    onCoursesLoaded(importableCourses);
+    setSuccess(`Successfully imported ${importableCourses.length} course(s)!`);
+    setPreviewCourses(null);
+    setIsPanelOpen(false);
+    resetFileInput();
+  };
+
+  const handleDeleteRow = (id: string) => {
+    setPreviewCourses((prev) => {
+      if (!prev) return prev;
+      const next = prev.filter((row) => row.id !== id);
+      if (next.length === 0) {
+        resetFileInput();
+      }
+      return next;
+    });
+  };
+
+  const handleClosePanel = () => {
+    if (previewCourses && previewCourses.length > 0) {
+      setConfirmMode("close");
+      setIsConfirmOpen(true);
+      return;
+    }
+    setIsPanelOpen(false);
+    setError(null);
+    setPreviewCourses(null);
+  };
+
+  const getCellErrorClass = (
+    course: PreviewRow,
+    field: "name" | "day" | "time" | "location"
+  ) => {
+    if (!course.error) return "";
+    const errorText = course.error.toLowerCase();
+
+    if (field === "name" && errorText.includes("name")) {
+      return "!text-error";
+    }
+    if (field === "day" && errorText.includes("day")) {
+      return "!text-error";
+    }
+    if (
+      field === "time" &&
+      (errorText.includes("start time") ||
+        errorText.includes("end time") ||
+        errorText.includes("time"))
+    ) {
+      return "!text-error";
+    }
+    if (field === "location" && errorText.includes("location")) {
+      return "!text-error";
+    }
+
+    return "";
+  };
+
+  const showErrorTooltip = (
+    event: React.MouseEvent<HTMLElement>,
+    text: string
+  ) => {
+    if (!panelRef.current) return;
+    const panelRect = panelRef.current.getBoundingClientRect();
+    const cellRect = (
+      event.currentTarget as HTMLElement
+    ).getBoundingClientRect();
+    const x = cellRect.left - panelRect.left + cellRect.width / 2;
+    const y = cellRect.top - panelRect.top - 8;
+
+    setTooltip({
+      text,
+      x,
+      y,
+      visible: true,
+    });
+  };
+
+  const hideTooltip = () => {
+    setTooltip((prev) => ({
+      ...prev,
+      visible: false,
+    }));
   };
 
   const downloadSampleCSV = () => {
@@ -239,7 +432,7 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
 
   return (
     <div className="card bg-base-200 shadow-sm">
-      <div className="card-body p-4 space-y-2">
+      <div className="card-body p-4 space-y-3">
         <div className="card-title text-base flex items-center gap-2">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -255,69 +448,355 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
             <path d="m8 11 4 4 4-4" />
             <path d="M8 5H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-4" />
           </svg>
-          Add Courses from CSV
+          Add Courses from File
         </div>
 
-        <div className="form-control">
-          <label htmlFor="csvFile"></label>
-          <input
-            ref={fileInputRef}
-            id="csvFile"
-            type="file"
-            accept=".csv"
-            onChange={handleFileUpload}
-            disabled={isLoading}
-            className="file:mr-4 file:py-2 file:px-3 file:rounded-md file:border-0 file:text-sm file:text-slate-50 file:bg-primary file:transition-all file:hover:brightness-90 duration-100 file:cursor-pointer cursor-pointer"
-          />
-        </div>
-
-        {isLoading && (
-          <div className="flex items-center gap-2 text-primary">
-            <div className="animate-spin rounded-full h-4 w-4 border-2 border-primary border-t-transparent"></div>
-            <span>Processing CSV file...</span>
-          </div>
-        )}
-
-        {error && (
-          <div className="p-3 border border-error rounded-md">
-            <p className="text-error text-sm whitespace-pre-line">{error}</p>
-          </div>
-        )}
+        <button
+          type="button"
+          className="btn btn-primary shadow-none w-full px-6 py-2 rounded-md font-semibold transition-colors"
+          onClick={() => setIsPanelOpen(true)}
+        >
+          Open Upload Panel
+        </button>
 
         {success && (
-          <div className="p-3 border border-success rounded-md">
+          <div className="py-2 px-3 border border-success rounded-md">
             <p className="text-success text-sm">{success}</p>
           </div>
         )}
-
-        <div
-          className="text-base-content/70"
-          role="group"
-          aria-labelledby="csvFormatLabel"
-        >
-          <p id="csvFormatLabel" className="label mb-2">
-            CSV Format Requirements:
-          </p>
-          <ul className="list-disc list-inside space-y-2 opacity-50 text-sm">
-            <li>
-              Headers: name, section (optional), day, startTime, endTime,
-              location (optional)
-            </li>
-            <li>
-              Day: Full day name (Monday) or abbreviation (Mon). Use
-              comma-separated for multiple days (Monday,Wednesday,Friday)
-            </li>
-            <li>Time: 24-hour format (HH:mm) like 09:00 or 14:30</li>
-            <li>End time must be after start time</li>
-          </ul>
-        </div>
-        <button
-          onClick={downloadSampleCSV}
-          className="text-left text-sm text-primary hover:text-primary/80 underline"
-        >
-          Download Sample CSV
-        </button>
       </div>
+
+      {isPanelOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="uploadPanelTitle"
+        >
+          <div
+            ref={panelRef}
+            className="card bg-base-100 w-full max-w-3xl h-[90vh] shadow-xl overflow-hidden relative"
+          >
+            <div className="card-body p-6 flex h-full flex-col gap-5">
+              <div className="flex items-center gap-3" id="uploadPanelTitle">
+                <span className="text-primary">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M12 3v12" />
+                    <path d="m8 11 4 4 4-4" />
+                    <path d="M8 5H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-4" />
+                  </svg>
+                </span>
+                <div className="text-xl font-bold">Upload Courses</div>
+              </div>
+
+              <div className="flex-1 min-h-0 flex flex-col">
+                <div className="flex items-center justify-between">
+                  <label className="text-base font-semibold">
+                    Format Requirements
+                  </label>
+                  <button
+                    onClick={downloadSampleCSV}
+                    className="label text-primary hover:text-primary/80 underline"
+                  >
+                    Download Sample CSV
+                  </button>
+                </div>
+
+                <div
+                  className="label mt-2 mb-4 border border-dashed border-base-300 rounded-md p-4 text-sm"
+                  role="group"
+                  aria-labelledby="csvFormatLabel"
+                >
+                  <p id="csvFormatLabel" className="sr-only">
+                    CSV Format Requirements
+                  </p>
+                  <ul className="list-disc list-inside space-y-2">
+                    <li>
+                      Headers: name, section (optional), day, startTime,
+                      endTime, location (optional)
+                    </li>
+                    <li>
+                      Day: Monday/Mon/M/W/Tu/Th/F/Sa/Su, comma-separated for
+                      multiple days
+                    </li>
+                    <li>Time: HH:mm, HHmm, or HMM (e.g. 09:00, 0900, 900)</li>
+                    <li>End time must be after start time</li>
+                  </ul>
+                </div>
+
+                <div className="flex-1 min-h-0">
+                  {previewCourses && previewCourses.length > 0 ? (
+                    <div className="border border-base-200 rounded-md h-full overflow-auto">
+                      <table className="table table-sm w-full text-sm">
+                        <thead>
+                          <tr>
+                            <th>name</th>
+                            <th>section*</th>
+                            <th>day</th>
+                            <th>time</th>
+                            <th>location*</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {previewCourses.map((course) => {
+                            const nameErrorClass = getCellErrorClass(
+                              course,
+                              "name"
+                            );
+                            const dayErrorClass = getCellErrorClass(
+                              course,
+                              "day"
+                            );
+                            const timeErrorClass = getCellErrorClass(
+                              course,
+                              "time"
+                            );
+                            const locationErrorClass = getCellErrorClass(
+                              course,
+                              "location"
+                            );
+                            const rowErrorClass = course.error
+                              ? "bg-error/5"
+                              : "";
+
+                            return (
+                              <tr
+                                key={course.id}
+                                className={
+                                  course.error
+                                    ? "group relative bg-error/5"
+                                    : "group"
+                                }
+                              >
+                                <td
+                                  className={`truncate max-w-[160px] ${rowErrorClass} ${nameErrorClass}`}
+                                  onMouseEnter={(event) => {
+                                    if (course.error && nameErrorClass) {
+                                      showErrorTooltip(event, course.error);
+                                    }
+                                  }}
+                                  onMouseLeave={hideTooltip}
+                                >
+                                  {course.name}
+                                </td>
+                                <td
+                                  className={`truncate max-w-[120px] ${rowErrorClass}`}
+                                >
+                                  {course.rawSection || course.section || "-"}
+                                </td>
+                                <td
+                                  className={`truncate max-w-[160px] ${rowErrorClass} ${dayErrorClass}`}
+                                  onMouseEnter={(event) => {
+                                    if (course.error && dayErrorClass) {
+                                      showErrorTooltip(event, course.error);
+                                    }
+                                  }}
+                                  onMouseLeave={hideTooltip}
+                                >
+                                  {course.rawDay ||
+                                    course.daysOfWeek
+                                      .map((day) => day.slice(0, 3))
+                                      .join(", ")}
+                                </td>
+                                <td
+                                  className={`${rowErrorClass} ${timeErrorClass}`}
+                                  onMouseEnter={(event) => {
+                                    if (course.error && timeErrorClass) {
+                                      showErrorTooltip(event, course.error);
+                                    }
+                                  }}
+                                  onMouseLeave={hideTooltip}
+                                >
+                                  {course.rawStartTime || course.startTime} -{" "}
+                                  {course.rawEndTime || course.endTime}
+                                </td>
+                                <td
+                                  className={`truncate max-w-[200px] ${rowErrorClass} ${locationErrorClass}`}
+                                  onMouseEnter={(event) => {
+                                    if (course.error && locationErrorClass) {
+                                      showErrorTooltip(event, course.error);
+                                    }
+                                  }}
+                                  onMouseLeave={hideTooltip}
+                                >
+                                  {course.rawLocation || course.location || "-"}
+                                </td>
+                                <td
+                                  className={`text-right p-2 ${rowErrorClass}`}
+                                >
+                                  <div className="inline-flex items-center gap-2">
+                                    <button
+                                      type="button"
+                                      className="btn btn-ghost btn-xs shadow-none px-1 hover:bg-primary/10 hover:border-primary hover:text-primary"
+                                      aria-label="Edit course"
+                                      title="Edit"
+                                    >
+                                      <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        className="h-3.5 w-3.5"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                        strokeWidth={2}
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                      >
+                                        <path d="M13 21h8" />
+                                        <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
+                                      </svg>
+                                    </button>
+                                    <button
+                                      type="button"
+                                      className="btn btn-ghost btn-xs shadow-none px-1 hover:bg-error/10 hover:border-error hover:text-error"
+                                      aria-label="Delete course"
+                                      title="Delete"
+                                      onClick={() => handleDeleteRow(course.id)}
+                                    >
+                                      <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        className="h-3.5 w-3.5"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                        strokeWidth={2}
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                      >
+                                        <path d="M3 6h18" />
+                                        <path d="M8 6V4h8v2" />
+                                        <path d="M10 11v6" />
+                                        <path d="M14 11v6" />
+                                        <path d="M5 6l1 14a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-14" />
+                                      </svg>
+                                    </button>
+                                  </div>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  ) : (
+                    <div className="border border-base-200 rounded-md h-full flex items-center justify-center text-sm text-base-content/60">
+                      Upload a file to preview parsed courses.
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="mt-auto flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <label
+                    htmlFor="csvFile"
+                    className="btn btn-primary shadow-none"
+                  >
+                    Choose File
+                  </label>
+                  <input
+                    ref={fileInputRef}
+                    id="csvFile"
+                    type="file"
+                    accept=".csv"
+                    onChange={handleFileUpload}
+                    onClick={() => {
+                      if (fileInputRef.current) {
+                        fileInputRef.current.value = "";
+                      }
+                    }}
+                    className="hidden"
+                  />
+                  <span className="text-sm text-base-content/70 truncate">
+                    {selectedFileName ?? "No file selected"}
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <button
+                    type="button"
+                    className="btn  shadow-none"
+                    onClick={handleClosePanel}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-primary shadow-none"
+                    onClick={handleImport}
+                    disabled={
+                      !previewCourses ||
+                      previewCourses.length === 0 ||
+                      previewCourses.every((course) => course.error)
+                    }
+                  >
+                    {previewCourses && previewCourses.length > 0
+                      ? `Import ${
+                          previewCourses.filter((course) => !course.error)
+                            .length
+                        } Courses`
+                      : "Import Courses"}
+                  </button>
+                </div>
+              </div>
+            </div>
+            {tooltip.visible && (
+              <div
+                className="absolute z-50 rounded-md border border-error bg-error-50 px-3 py-2 text-xs text-error pointer-events-none"
+                style={{
+                  left: tooltip.x,
+                  top: tooltip.y,
+                  transform: "translate(-50%, -100%)",
+                }}
+              >
+                {tooltip.text}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+      <ConfirmDialog
+        isOpen={isConfirmOpen}
+        title={
+          confirmMode === "replace"
+            ? "Replace current preview"
+            : "Close upload panel"
+        }
+        description={
+          confirmMode === "replace"
+            ? "Uploading a new file will clear the current preview list. Continue?"
+            : "Closing the panel will clear the current preview list. Continue?"
+        }
+        confirmLabel={confirmMode === "replace" ? "Replace" : "Close"}
+        cancelLabel="Keep"
+        onCancel={() => {
+          setPendingFile(null);
+          setIsConfirmOpen(false);
+          if (confirmMode === "replace") {
+            resetFileInput();
+          }
+        }}
+        onConfirm={() => {
+          if (confirmMode === "replace" && pendingFile) {
+            parseFile(pendingFile);
+          }
+          if (confirmMode === "close") {
+            setIsPanelOpen(false);
+            setError(null);
+            setPreviewCourses(null);
+          }
+          setPendingFile(null);
+          setIsConfirmOpen(false);
+        }}
+      />
     </div>
   );
 };

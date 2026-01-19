@@ -106,10 +106,10 @@ function App() {
             <div className="flex flex-col gap-4">
               <CourseForm onCourseAdded={handleCourseAdded} />
               <CSVUploader onCoursesLoaded={handleCoursesFromCSV} />
-              <div className="divider my-0"></div>
+
               <button
                 onClick={handleClearAll}
-                className="btn btn-error btn-outline w-full"
+                className="btn btn-error font-semibold btn-outline w-full shadow-none rounded-md"
                 disabled={courses.length === 0}
               >
                 Delete All Courses

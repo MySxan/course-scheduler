@@ -130,26 +130,24 @@ export const CourseList: React.FC<CourseListProps> = ({
                   {/* Remove Course Button */}
                   <button
                     onClick={() => onRemoveCourse(course.id)}
-                    className="ml-4 text-error hover:text-error/80 hover:bg-error/10 p-1 rounded transition-colors"
+                    className="ml-4 text-base hover:text-error/80 hover:bg-error/10 p-1 border border-transparent hover:border-error rounded transition-all"
                     title="Remove course"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
+                      className="h-4 w-4"
                       fill="none"
+                      viewBox="0 0 24 24"
                       stroke="currentColor"
-                      strokeWidth="2"
+                      strokeWidth={2}
                       strokeLinecap="round"
                       strokeLinejoin="round"
-                      className="w-4 h-4"
                     >
                       <path d="M3 6h18" />
-                      <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-                      <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-                      <line x1="10" x2="10" y1="11" y2="17" />
-                      <line x1="14" x2="14" y1="11" y2="17" />
+                      <path d="M8 6V4h8v2" />
+                      <path d="M10 11v6" />
+                      <path d="M14 11v6" />
+                      <path d="M5 6l1 14a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-14" />
                     </svg>
                   </button>
                 </div>

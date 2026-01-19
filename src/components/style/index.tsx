@@ -255,7 +255,7 @@ export const StyleSidebar: React.FC<StyleSidebarProps> = ({
                     className={`btn joined-item font-normal py-1.5 rounded-l-md rounded-r-none border flex-1 transition-colors ${
                       capitalization === "none"
                         ? "bg-primary-content border-primary shadow-primary shadow-[inset_0_0_0_1px] text-primary"
-                        : ""
+                        : "bg-base-100"
                     }`}
                     onClick={() => setCapitalization("none")}
                   >
@@ -266,7 +266,7 @@ export const StyleSidebar: React.FC<StyleSidebarProps> = ({
                     className={`btn joined-item rounded-none font-normal py-1.5 border flex-1 transition-colors ${
                       capitalization === "upper"
                         ? "bg-primary-content border-primary shadow-primary shadow-[inset_0_0_0_1px] text-primary"
-                        : ""
+                        : "bg-base-100"
                     }`}
                     onClick={() => setCapitalization("upper")}
                   >
@@ -277,7 +277,7 @@ export const StyleSidebar: React.FC<StyleSidebarProps> = ({
                     className={`btn joined-item rounded-none font-normal py-1.5 border flex-1 transition-colors ${
                       capitalization === "title"
                         ? "bg-primary-content border-primary shadow-primary shadow-[inset_0_0_0_1px] text-primary"
-                        : ""
+                        : "bg-base-100"
                     }`}
                     onClick={() => setCapitalization("title")}
                   >
@@ -288,7 +288,7 @@ export const StyleSidebar: React.FC<StyleSidebarProps> = ({
                     className={`btn joined-item rounded-r-md rounded-l-none font-normal py-1.5 border flex-1 transition-colors ${
                       capitalization === "lower"
                         ? "bg-primary-content border-primary shadow-primary shadow-[inset_0_0_0_1px] text-primary"
-                        : ""
+                        : "bg-base-100"
                     }`}
                     onClick={() => setCapitalization("lower")}
                   >

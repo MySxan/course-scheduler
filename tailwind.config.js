@@ -1,5 +1,7 @@
+import daisyuiThemes from "daisyui/theme/object.js";
+
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
@@ -16,6 +18,19 @@ module.exports = {
           700: "#0F766E",
           800: "#115E59",
           900: "#134E4A",
+        },
+        error: {
+          50: "#FFF5FA",
+          100: "#FFE3F2",
+          200: "#FFC2E3",
+          300: "#FF93CD",
+          400: "#FF5FB2",
+          500: "#F83C98",
+          DEFAULT: "#E82E86",
+          600: "#E82E86",
+          700: "#CC2674",
+          800: "#AD2163",
+          900: "#8B1B50",
         },
       },
     },
