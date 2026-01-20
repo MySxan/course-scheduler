@@ -5,9 +5,9 @@ interface ConfirmDialogProps {
   title: string;
   description: string;
   confirmLabel: string;
-  cancelLabel: string;
+  cancelLabel?: string;
   onConfirm: () => void;
-  onCancel: () => void;
+  onCancel?: () => void;
 }
 
 export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
@@ -20,6 +20,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   onCancel,
 }) => {
   if (!isOpen) return null;
+  const handleCancel = onCancel ?? (() => {});
 
   return (
     <div
@@ -29,7 +30,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
       aria-labelledby="confirmDialogTitle"
     >
       <div className="card bg-base-100 w-full max-w-md shadow-xl overflow-hidden">
-        <div className="card-body p-6 gap-4">
+        <div className="card-body p-6 gap-8">
           <div className="flex-1 items-start gap-3">
             <div className="space-y-1 flex items-center gap-3 mb-2">
               <span className="text-warning">
@@ -57,13 +58,15 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
           </div>
 
           <div className="flex items-center justify-end gap-3">
-            <button
-              type="button"
-              className="btn shadow-none"
-              onClick={onCancel}
-            >
-              {cancelLabel}
-            </button>
+            {cancelLabel && (
+              <button
+                type="button"
+                className="btn shadow-none"
+                onClick={handleCancel}
+              >
+                {cancelLabel}
+              </button>
+            )}
             <button
               type="button"
               className="btn btn-warning shadow-none"

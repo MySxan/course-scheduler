@@ -3,6 +3,7 @@ import type { Course } from "../../types/course";
 import type { TimetableSettings } from "../timetable/SettingsPanel";
 import { TimetablePreview } from "./TimetablePreview";
 import { toPng, toJpeg } from "html-to-image";
+import { ConfirmDialog } from "../ui/ConfirmDialog";
 
 type ExportFormat = "png" | "jpg" | "svg";
 
@@ -20,6 +21,7 @@ export const ExportControlPanel: React.FC<ExportControlPanelProps> = ({
   const [format, setFormat] = useState<ExportFormat>("png");
   const [scale, setScale] = useState<number>(1);
   const [transparent, setTransparent] = useState<boolean>(true);
+  const [isExportErrorOpen, setIsExportErrorOpen] = useState(false);
 
   const handleDownload = useCallback(async () => {
     if (onDownload) {
@@ -65,7 +67,7 @@ export const ExportControlPanel: React.FC<ExportControlPanelProps> = ({
       exportEl.classList.remove("preview-hidden-outline");
     } catch (error) {
       console.error("Error generating image:", error);
-      alert("Failed to export image. Please try again.");
+      setIsExportErrorOpen(true);
       exportEl.classList.remove("preview-hidden-outline");
     }
   }, [format, scale, transparent, onDownload]);
@@ -181,6 +183,13 @@ export const ExportControlPanel: React.FC<ExportControlPanelProps> = ({
       >
         Download Schedule
       </button>
+      <ConfirmDialog
+        isOpen={isExportErrorOpen}
+        title="Export failed"
+        description="Failed to export image. Please try again."
+        confirmLabel="OK"
+        onConfirm={() => setIsExportErrorOpen(false)}
+      />
     </div>
   );
 };
@@ -196,7 +205,7 @@ export const ExportPreviewArea: React.FC<ExportPreviewAreaProps> = ({
 }) => {
   const containerStyles = useMemo(
     () => ({ width: "100%", height: "100%" }),
-    []
+    [],
   );
   return (
     <div className="flex flex-1 flex-col" style={containerStyles}>

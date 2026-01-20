@@ -27,13 +27,13 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
   const [, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [previewCourses, setPreviewCourses] = useState<PreviewRow[] | null>(
-    null
+    null,
   );
   const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [pendingFile, setPendingFile] = useState<File | null>(null);
   const [confirmMode, setConfirmMode] = useState<"replace" | "close">(
-    "replace"
+    "replace",
   );
   const [tooltip, setTooltip] = useState<{
     text: string;
@@ -353,7 +353,7 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
 
   const getCellErrorClass = (
     course: PreviewRow,
-    field: "name" | "day" | "time" | "location"
+    field: "name" | "day" | "time" | "location",
   ) => {
     if (!course.error) return "";
     const errorText = course.error.toLowerCase();
@@ -381,7 +381,7 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
 
   const showErrorTooltip = (
     event: React.MouseEvent<HTMLElement>,
-    text: string
+    text: string,
   ) => {
     if (!panelRef.current) return;
     const panelRect = panelRef.current.getBoundingClientRect();
@@ -432,7 +432,7 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
 
   return (
     <div className="card bg-base-200 shadow-sm">
-      <div className="card-body p-4 space-y-3">
+      <div className="card-body p-4 space-y-2">
         <div className="card-title text-base flex items-center gap-2">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -550,19 +550,19 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
                           {previewCourses.map((course) => {
                             const nameErrorClass = getCellErrorClass(
                               course,
-                              "name"
+                              "name",
                             );
                             const dayErrorClass = getCellErrorClass(
                               course,
-                              "day"
+                              "day",
                             );
                             const timeErrorClass = getCellErrorClass(
                               course,
-                              "time"
+                              "time",
                             );
                             const locationErrorClass = getCellErrorClass(
                               course,
-                              "location"
+                              "location",
                             );
                             const rowErrorClass = course.error
                               ? "bg-error/5"
@@ -772,8 +772,8 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
         }
         description={
           confirmMode === "replace"
-            ? "Uploading a new file will clear the current preview list. Continue?"
-            : "Closing the panel will clear the current preview list. Continue?"
+            ? "Uploading a new file will clear the current preview list."
+            : "Closing the panel will clear the current preview list."
         }
         confirmLabel={confirmMode === "replace" ? "Replace" : "Close"}
         cancelLabel="Keep"

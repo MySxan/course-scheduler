@@ -49,7 +49,7 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
 
   const getCourseCardClasses = (course: TimetableCourse) => {
     const baseClasses =
-      "card card-compact shadow-sm absolute transition-all duration-200 hover:shadow-md cursor-pointer rounded-lg border-2 backdrop-blur-sm opacity-90";
+      "card card-compact shadow-sm absolute transition-colors hover:shadow-md hover:transition-all cursor-pointer rounded-lg border-2 backdrop-blur-sm opacity-90";
 
     if (course.hasConflict) {
       if (course.conflictLevel > 1) {
@@ -65,7 +65,7 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
   const getCoursePosition = (
     course: TimetableCourse,
     startHour: number,
-    verticalScale: number
+    verticalScale: number,
   ) => {
     const [startH, startM] = course.startTime.split(":").map(Number);
     const [endH, endM] = course.endTime.split(":").map(Number);
@@ -87,7 +87,7 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
   if (courses.length === 0) {
     return (
       <div className="card flex flex-col flex-1 h-full justify-center items-center ">
-        <div className="flex-none card-body text-center -mt-16">
+        <div className="flex-none card-body text-center">
           <div className="mx-auto w-12 h-12 bg-base-100 rounded-full flex items-center justify-center mb-3">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -117,9 +117,9 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
   }
 
   return (
-    <div className="card no-scr flex-1 overflow-hidden">
+    <div className="card flex-1 h-fit">
       <div
-        className="grid gap-0 p-2 bg-base rounded-lg relative transition-all ease-out duration-20 w-fit"
+        className="grid gap-0 p-2 bg-base rounded-lg relative transition-none w-fit"
         style={{
           width: `${settings.width}%`,
           gridTemplateColumns: `60px repeat(${visibleDays.length}, 1fr)`,
@@ -175,7 +175,7 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
                 />
               )}
             </div>
-          ))
+          )),
         )}
 
         {/* Day overlays */}
@@ -195,7 +195,7 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
                 style={getCoursePosition(
                   course,
                   startHour,
-                  settings.verticalScale / 120
+                  settings.verticalScale / 120,
                 )}
                 title={`${course.name}${course.section ? ` (${course.section})` : ""} - ${formatTime(course.startTime)} to ${formatTime(course.endTime)}${course.location ? ` at ${course.location}` : ""}`}
               >
@@ -226,4 +226,3 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
     </div>
   );
 };
-

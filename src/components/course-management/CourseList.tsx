@@ -22,7 +22,7 @@ export const CourseList: React.FC<CourseListProps> = ({
       });
       return acc;
     },
-    {} as Record<string, Course[]>
+    {} as Record<string, Course[]>,
   );
 
   // Sort courses within each day by start time
@@ -44,7 +44,7 @@ export const CourseList: React.FC<CourseListProps> = ({
   if (courses.length === 0) {
     return (
       <div className="card flex flex-col flex-1 h-full justify-center items-center">
-        <div className="flex-none card-body text-center -mt-16">
+        <div className="flex-none card-body text-center">
           <div className="mx-auto w-12 h-12 bg-base-100 rounded-full flex items-center justify-center mb-3">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -75,7 +75,7 @@ export const CourseList: React.FC<CourseListProps> = ({
     );
   }
   return (
-    <div className="card">
+    <div className="card flex-1 h-fit">
       <div className="space-y-6">
         {sortedDays.map((day) => (
           <div key={day} className="border-l-4 border-primary pl-4">

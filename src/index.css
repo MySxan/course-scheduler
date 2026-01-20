@@ -51,6 +51,7 @@
 
   .checkbox {
     border-radius: 0.3rem;
+    background-color: white;
   }
 
   .range::-webkit-slider-thumb {

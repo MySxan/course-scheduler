@@ -66,7 +66,7 @@ export const TimetablePreview: React.FC<TimetablePreviewProps> = ({
   const getCoursePosition = (
     course: TimetableCourse,
     startHour: number,
-    verticalScale: number
+    verticalScale: number,
   ) => {
     const [startH, startM] = course.startTime.split(":").map(Number);
     const [endH, endM] = course.endTime.split(":").map(Number);
@@ -87,8 +87,25 @@ export const TimetablePreview: React.FC<TimetablePreviewProps> = ({
 
   if (courses.length === 0) {
     return (
-      <div className="card flex flex-col flex-1 justify-center items-center outline-dotted outline-primary outline-2 rounded-md">
-        <div className="flex-none card-body text-center -mt-16">
+      <div className="card flex flex-col flex-1 h-full justify-center items-center -outline-offset-2 outline-dotted outline-primary outline-2 rounded-md">
+        <div className="flex-none card-body text-center">
+          <div className="mx-auto w-12 h-12 bg-base-100 rounded-full flex items-center justify-center mb-3">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="m18 9-6-6-6 6" />
+              <path d="M12 3v14" />
+              <path d="M5 21h14" />
+            </svg>
+          </div>
           <h3 className="text-lg font-bold">No courses in your schedule</h3>
           <p className="text-sm text-base-content/70">
             Add courses to preview the export timetable
@@ -101,7 +118,7 @@ export const TimetablePreview: React.FC<TimetablePreviewProps> = ({
   return (
     <div
       id="export-area"
-      className="grid gap-0 bg-base p-2 relative w-fit outline-dotted outline-primary outline-2 rounded-md"
+      className="grid gap-0 bg-base -outline-offset-2 p-2 relative w-fit outline-dotted outline-primary outline-2 rounded-md"
       style={{
         width: `${settings.width}%`,
         gridTemplateColumns: `60px repeat(${visibleDays.length}, 1fr)`,
@@ -157,7 +174,7 @@ export const TimetablePreview: React.FC<TimetablePreviewProps> = ({
               />
             )}
           </div>
-        ))
+        )),
       )}
 
       {/* Day overlays */}
@@ -177,7 +194,7 @@ export const TimetablePreview: React.FC<TimetablePreviewProps> = ({
               style={getCoursePosition(
                 course,
                 startHour,
-                settings.verticalScale / 120
+                settings.verticalScale / 120,
               )}
             >
               <div className="card-body p-1">
