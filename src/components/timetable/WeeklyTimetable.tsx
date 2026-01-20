@@ -197,7 +197,7 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
                   startHour,
                   settings.verticalScale / 120,
                 )}
-                title={`${course.name}${course.section ? ` (${course.section})` : ""} - ${formatTime(course.startTime)} to ${formatTime(course.endTime)}${course.location ? ` at ${course.location}` : ""}`}
+                title={`${course.name}${course.section ? ` (${course.section})` : ""} - ${formatTime(course.startTime)} to ${formatTime(course.endTime)}${course.description ? ` - ${course.description}` : ""}`}
               >
                 <div className="card-body p-1">
                   <div className="text-lg font-bold leading-tight line-clamp-2">
@@ -212,9 +212,9 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
                     {formatTime(course.startTime)} -{" "}
                     {formatTime(course.endTime)}
                   </div>
-                  {course.location && (
-                    <div className="truncate text-xs -mt-2">
-                      {course.location}
+                  {course.description && (
+                    <div className="text-xs -mt-2 whitespace-pre-line">
+                      {course.description.replace(/;|\n/g, "\n")}
                     </div>
                   )}
                 </div>

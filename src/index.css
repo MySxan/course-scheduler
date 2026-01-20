@@ -76,4 +76,34 @@
   .toggle-primary:has(> input:checked)::before {
     background-color: var(--color-base-100);
   }
+
+  @keyframes sidebarSlideIn {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes sidebarSlideOut {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-100%);
+    }
+  }
+
+  .animate-sidebar-slide-in {
+    animation: sidebarSlideIn 0.12s ease-out;
+    animation-fill-mode: both;
+    will-change: transform;
+  }
+
+  .animate-sidebar-slide-out {
+    animation: sidebarSlideOut 0.12s ease-in;
+    animation-fill-mode: both;
+    will-change: transform;
+  }
 }

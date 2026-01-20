@@ -22,7 +22,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
 }) => {
   const handleSettingChange = (
     key: keyof TimetableSettings,
-    value: boolean | number
+    value: boolean | number,
   ) => {
     onSettingsChange({
       ...settings,
@@ -31,7 +31,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
   };
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-5">
       {/* Time Range */}
       <div className="card bg-base-200 shadow-sm">
         <div className="card-body p-4 space-y-2">
@@ -91,7 +91,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                     if (newStartHour >= settings.endHour) {
                       handleSettingChange(
                         "endHour",
-                        Math.min(newStartHour + 1, 23)
+                        Math.min(newStartHour + 1, 23),
                       );
                     }
                     handleSettingChange("startHour", newStartHour);
@@ -132,7 +132,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                     if (newEndHour <= settings.startHour) {
                       handleSettingChange(
                         "startHour",
-                        Math.max(newEndHour - 1, 0)
+                        Math.max(newEndHour - 1, 0),
                       );
                     }
                     handleSettingChange("endHour", newEndHour);
@@ -192,7 +192,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                 onChange={(e) =>
                   handleSettingChange(
                     "slotDuration",
-                    e.target.checked ? 30 : 60
+                    e.target.checked ? 30 : 60,
                   )
                 }
               />

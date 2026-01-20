@@ -73,7 +73,7 @@ export const ExportControlPanel: React.FC<ExportControlPanelProps> = ({
   }, [format, scale, transparent, onDownload]);
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-5">
       <div className="card bg-base-200 shadow-sm">
         <div className="card-body p-4 space-y-2">
           <div className="card-title text-base flex items-center gap-2">
@@ -174,15 +174,16 @@ export const ExportControlPanel: React.FC<ExportControlPanelProps> = ({
               />
             </label>
           </div>
+          <button
+            type="submit"
+            className="btn btn-primary shadow-none w-full px-6 py-2 rounded-md font-semibold transition-colors"
+            onClick={handleDownload}
+          >
+            Download Schedule
+          </button>
         </div>
       </div>
-      <button
-        type="submit"
-        className="btn btn-primary shadow-none w-full px-6 py-2 rounded-md font-semibold transition-colors"
-        onClick={handleDownload}
-      >
-        Download Schedule
-      </button>
+
       <ConfirmDialog
         isOpen={isExportErrorOpen}
         title="Export failed"

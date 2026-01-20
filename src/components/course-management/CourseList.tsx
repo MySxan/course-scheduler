@@ -5,12 +5,15 @@ import { formatTime } from "../../lib/utils";
 interface CourseListProps {
   courses: Course[];
   onRemoveCourse: (courseId: string) => void;
+  onEditCourse: (course: Course) => void;
 }
 
 export const CourseList: React.FC<CourseListProps> = ({
   courses,
   onRemoveCourse,
+  onEditCourse,
 }) => {
+  const formatDescription = (value: string) => value.replace(/;|\n/g, "\n");
   // Group courses by day of week (expand courses that occur on multiple days)
   const coursesByDay = courses.reduce(
     (acc, course) => {
@@ -119,37 +122,57 @@ export const CourseList: React.FC<CourseListProps> = ({
                         ))}
                       </div>
 
-                      {/* Location Tag */}
-                      {course.location && (
-                        <span className="text-sm text-primary text-opacity-70 py-1 rounded-md">
-                          {course.location}
+                      {/* Description Tag */}
+                      {course.description && (
+                        <span className="text-sm text-primary text-opacity-70 py-1 rounded-md whitespace-pre-line">
+                          {formatDescription(course.description)}
                         </span>
                       )}
                     </div>
                   </div>
-                  {/* Remove Course Button */}
-                  <button
-                    onClick={() => onRemoveCourse(course.id)}
-                    className="ml-4 text-base hover:text-error/80 hover:bg-error/10 p-1 border border-transparent hover:border-error rounded transition-all"
-                    title="Remove course"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-4 w-4"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={2}
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
+                  <div className="ml-4 flex items-center gap-2">
+                    <button
+                      onClick={() => onEditCourse(course)}
+                      className="text-base hover:text-primary/80 hover:bg-primary/10 p-1 border border-transparent hover:border-primary rounded transition-all"
+                      title="Edit course"
                     >
-                      <path d="M3 6h18" />
-                      <path d="M8 6V4h8v2" />
-                      <path d="M10 11v6" />
-                      <path d="M14 11v6" />
-                      <path d="M5 6l1 14a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-14" />
-                    </svg>
-                  </button>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-4 w-4"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={2}
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M13 21h8" />
+                        <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
+                      </svg>
+                    </button>
+                    <button
+                      onClick={() => onRemoveCourse(course.id)}
+                      className="text-base hover:text-error/80 hover:bg-error/10 p-1 border border-transparent hover:border-error rounded transition-all"
+                      title="Remove course"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-4 w-4"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={2}
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M3 6h18" />
+                        <path d="M8 6V4h8v2" />
+                        <path d="M10 11v6" />
+                        <path d="M14 11v6" />
+                        <path d="M5 6l1 14a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-14" />
+                      </svg>
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>

@@ -15,7 +15,7 @@ export const CourseForm: React.FC<CourseFormProps> = ({ onCourseAdded }) => {
     daysOfWeek: [],
     startTime: "",
     endTime: "",
-    location: "",
+    description: "",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -73,7 +73,7 @@ export const CourseForm: React.FC<CourseFormProps> = ({ onCourseAdded }) => {
       daysOfWeek: formData.daysOfWeek as DaysOfWeek[],
       startTime: formData.startTime,
       endTime: formData.endTime,
-      location: formData.location.trim() || undefined,
+      description: formData.description.trim() || undefined,
     };
 
     onCourseAdded(newCourse);
@@ -85,7 +85,7 @@ export const CourseForm: React.FC<CourseFormProps> = ({ onCourseAdded }) => {
       daysOfWeek: [],
       startTime: "",
       endTime: "",
-      location: "",
+      description: "",
     });
     setErrors({});
     setIsSubmitting(false);
@@ -260,18 +260,18 @@ export const CourseForm: React.FC<CourseFormProps> = ({ onCourseAdded }) => {
           </div>
         </div>
 
-        {/* Location */}
+        {/* Description */}
         <div className="form-control">
-          <label htmlFor="location" className="label mb-1">
-            Location (optional)
+          <label htmlFor="description" className="label mb-1">
+            Description (optional)
           </label>
-          <input
-            id="location"
-            type="text"
-            value={formData.location}
-            onChange={(e) => handleInputChange("location", e.target.value)}
-            placeholder="e.g., Lincoln Hall 1019, Chem Lab 205"
-            className="input w-full px-3 py-2 border rounded-md focus:outline-primary border-base-300"
+          <textarea
+            id="description"
+            rows={3}
+            value={formData.description}
+            onChange={(e) => handleInputChange("description", e.target.value)}
+            placeholder="e.g., Lincoln Hall 1019; Chem Lab 205"
+            className="textarea w-full resize-none px-3 py-2 border rounded-md focus:outline-primary border-base-300"
           />
         </div>
 

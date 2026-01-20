@@ -5,7 +5,7 @@ export interface Course {
   daysOfWeek: DaysOfWeek[];
   startTime: string; // Format: "HH:mm" (24-hour)
   endTime: string; // Format: "HH:mm" (24-hour)
-  location?: string; // Optional location
+  description?: string; // Optional description
 }
 
 export type DaysOfWeek =
@@ -33,7 +33,7 @@ export interface CourseFormData {
   daysOfWeek: DaysOfWeek[];
   startTime: string;
   endTime: string;
-  location: string;
+  description: string;
 }
 
 // For CSV parsing
@@ -43,5 +43,5 @@ export interface CSVRow {
   day: string;
   startTime: string;
   endTime: string;
-  location?: string;
+  description?: string;
 }

@@ -15,7 +15,7 @@ interface PreviewRow extends Course {
   rawStartTime: string;
   rawEndTime: string;
   rawSection: string;
-  rawLocation: string;
+  rawDescription: string;
 }
 
 export const CSVUploader: React.FC<CSVUploaderProps> = ({
@@ -105,7 +105,7 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
     rawStart: string;
     rawEnd: string;
     rawSection: string;
-    rawLocation: string;
+    rawDescription: string;
   }) => {
     const {
       id,
@@ -115,7 +115,7 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
       rawStart,
       rawEnd,
       rawSection,
-      rawLocation,
+      rawDescription,
     } = params;
     const rowErrors: string[] = [];
     const rowErrorSet = new Set<string>();
@@ -186,13 +186,13 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
       daysOfWeek,
       startTime,
       endTime,
-      location: rawLocation || undefined,
+      description: rawDescription || undefined,
       error: rowErrors.length > 0 ? rowErrors.join("; ") : undefined,
       rawDay,
       rawStartTime: rawStart,
       rawEndTime: rawEnd,
       rawSection,
-      rawLocation,
+      rawDescription,
     };
 
     return { previewRow, rowErrors };
@@ -204,13 +204,18 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
       course.daysOfWeek.map((day) => day.slice(0, 3)).join(",");
     const dayValue =
       rawDay.includes(",") || rawDay.includes(" ") ? `"${rawDay}"` : rawDay;
+    const descriptionValue = (
+      course.rawDescription ||
+      course.description ||
+      ""
+    ).replace(/\n/g, ";");
     return [
       course.name,
       course.rawSection || course.section || "",
       dayValue,
       course.rawStartTime || course.startTime,
       course.rawEndTime || course.endTime,
-      course.rawLocation || course.location || "",
+      descriptionValue,
     ].join(",");
   };
 
@@ -257,9 +262,12 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
           case "endtime":
           case "end":
             return "endTime";
+          case "description":
+          case "details":
+            return "description";
           case "location":
           case "room":
-            return "location";
+            return "description";
           default:
             return header;
         }
@@ -285,7 +293,7 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
           const rawStart = row.startTime?.trim() || "";
           const rawEnd = row.endTime?.trim() || "";
           const rawSection = row.section?.trim() || "";
-          const rawLocation = row.location?.trim() || "";
+          const rawDescription = row.description?.trim() || "";
 
           const addRowError = (message: string) => {
             if (rowErrorSet.has(message)) return;
@@ -359,13 +367,13 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
             daysOfWeek,
             startTime,
             endTime,
-            location: rawLocation || undefined,
+            description: rawDescription || undefined,
             error: rowErrors.length > 0 ? rowErrors.join("; ") : undefined,
             rawDay,
             rawStartTime: rawStart,
             rawEndTime: rawEnd,
             rawSection,
-            rawLocation,
+            rawDescription,
           };
 
           const dedupeKey = [
@@ -374,7 +382,7 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
             rawDay.toLowerCase(),
             startTime.toLowerCase(),
             endTime.toLowerCase(),
-            rawLocation.toLowerCase(),
+            rawDescription.toLowerCase(),
           ].join("|");
 
           if (seenRows.has(dedupeKey)) {
@@ -393,7 +401,7 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
               daysOfWeek,
               startTime,
               endTime,
-              location: previewRow.location,
+              description: previewRow.description,
             });
           }
 
@@ -490,7 +498,7 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
       rawDay = "",
       rawStart = "",
       rawEnd = "",
-      rawLocation = "",
+      rawDescription = "",
     ] = values;
 
     setPreviewCourses((prev) => {
@@ -505,7 +513,7 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
           rawStart,
           rawEnd,
           rawSection,
-          rawLocation,
+          rawDescription,
         });
         return previewRow;
       });
@@ -516,7 +524,7 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
 
   const getCellErrorClass = (
     course: PreviewRow,
-    field: "name" | "day" | "time" | "location",
+    field: "name" | "day" | "time" | "description",
   ) => {
     if (!course.error) return "";
     const errorText = course.error.toLowerCase();
@@ -535,7 +543,10 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
     ) {
       return "!text-error";
     }
-    if (field === "location" && errorText.includes("location")) {
+    if (
+      field === "description" &&
+      (errorText.includes("description") || errorText.includes("location"))
+    ) {
       return "!text-error";
     }
 
@@ -571,7 +582,7 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
 
   const downloadSampleCSV = () => {
     const sampleData = [
-      ["name", "section", "day", "startTime", "endTime", "location"],
+      ["name", "section", "day", "startTime", "endTime", "description"],
       ["MATH 231", "AL", "Mon,Wed,Fri", "09:00", "10:30", "Room A101"],
       ["PHY", "B1", "Mon,Wed,Fri", "14:00", "16:00", "Lab B205"],
       ["ENG 115", "", "Friday", "11:00", "12:30", "Room C301"],
@@ -685,14 +696,13 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
                   <ul className="list-disc list-inside space-y-2">
                     <li>
                       Headers: name, section (optional), day, startTime,
-                      endTime, location (optional)
+                      endTime, description (optional, ";" for new lines)
                     </li>
                     <li>
                       Day: Monday/Mon/M/W/Tu/Th/F/Sa/Su, comma-separated for
                       multiple days
                     </li>
                     <li>Time: HH:mm, HHmm, or HMM (e.g. 09:00, 0900, 900)</li>
-                    <li>End time must be after start time</li>
                   </ul>
                 </div>
 
@@ -714,7 +724,7 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
                             <th>section*</th>
                             <th>day</th>
                             <th>time</th>
-                            <th>location*</th>
+                            <th>description*</th>
                             <th className="text-right">actions</th>
                           </tr>
                         </thead>
@@ -732,9 +742,9 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
                               course,
                               "time",
                             );
-                            const locationErrorClass = getCellErrorClass(
+                            const descriptionErrorClass = getCellErrorClass(
                               course,
-                              "location",
+                              "description",
                             );
                             const rowErrorClass = course.error
                               ? "bg-error/5"
@@ -793,17 +803,22 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
                                     {course.rawEndTime || course.endTime}
                                   </td>
                                   <td
-                                    className={`truncate max-w-[200px] py-0 ${rowErrorClass} ${locationErrorClass}`}
+                                    className={`max-w-[200px] py-0 ${rowErrorClass} ${descriptionErrorClass} whitespace-pre-line`}
                                     onMouseEnter={(event) => {
-                                      if (course.error && locationErrorClass) {
+                                      if (
+                                        course.error &&
+                                        descriptionErrorClass
+                                      ) {
                                         showErrorTooltip(event, course.error);
                                       }
                                     }}
                                     onMouseLeave={hideTooltip}
                                   >
-                                    {course.rawLocation ||
-                                      course.location ||
-                                      "-"}
+                                    {(
+                                      course.rawDescription ||
+                                      course.description ||
+                                      "-"
+                                    ).replace(/;|\n/g, "\n")}
                                   </td>
                                   <td
                                     className={`text-right p-2 ${rowErrorClass}`}
@@ -877,7 +892,7 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
                                           onChange={(event) =>
                                             setEditLine(event.target.value)
                                           }
-                                          placeholder="name,section,day,startTime,endTime,location"
+                                          placeholder="name,section,day,startTime,endTime,description"
                                         />
                                         <button
                                           type="button"

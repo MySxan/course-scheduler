@@ -209,9 +209,9 @@ export const TimetablePreview: React.FC<TimetablePreviewProps> = ({
                 <div className="textarea-xs text-base-content/60 opacity-80 -mt-2">
                   {formatTime(course.startTime)} - {formatTime(course.endTime)}
                 </div>
-                {course.location && (
-                  <div className="truncate text-xs -mt-2">
-                    {course.location}
+                {course.description && (
+                  <div className="text-xs -mt-2 whitespace-pre-line">
+                    {course.description.replace(/;|\n/g, "\n")}
                   </div>
                 )}
               </div>

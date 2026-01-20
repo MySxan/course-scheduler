@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import type { Course } from "./types/course";
+import type { Course, CourseFormData, DaysOfWeek } from "./types/course";
 import { CSVUploader } from "./components/course-management";
 import { CourseForm } from "./components/course-management";
 import { CourseList } from "./components/course-management";
+import { EditCoursePanel } from "./components/course-management/EditCoursePanel";
 import { WeeklyTimetable } from "./components/timetable";
 import { TopNav, type TabType } from "./components/layout/TopNav";
 import { ContextualSidebar } from "./components/layout/ContextualSidebar";
@@ -18,12 +19,18 @@ import {
   SettingsPanel,
   type TimetableSettings,
 } from "./components/timetable/SettingsPanel";
+import { validateTimeRange } from "./lib/utils";
 
 function App() {
   const [courses, setCourses] = useState<Course[]>(() => {
     try {
       const raw = localStorage.getItem("courseScheduler.courses");
-      return raw ? (JSON.parse(raw) as Course[]) : [];
+      if (!raw) return [];
+      const parsed = JSON.parse(raw) as Array<Course & { location?: string }>;
+      return parsed.map((course) => ({
+        ...course,
+        description: course.description ?? course.location,
+      }));
     } catch {
       return [];
     }
@@ -75,6 +82,23 @@ function App() {
     }
   });
   const [isClearConfirmOpen, setIsClearConfirmOpen] = useState(false);
+  const [isEditPanelOpen, setIsEditPanelOpen] = useState(false);
+  const [editPanelPhase, setEditPanelPhase] = useState<"enter" | "exit">(
+    "enter",
+  );
+  const [pendingEditCourse, setPendingEditCourse] = useState<Course | null>(
+    null,
+  );
+  const [editingCourseId, setEditingCourseId] = useState<string | null>(null);
+  const [editData, setEditData] = useState<CourseFormData>({
+    name: "",
+    section: "",
+    daysOfWeek: [],
+    startTime: "",
+    endTime: "",
+    description: "",
+  });
+  const [editErrors, setEditErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     try {
@@ -114,6 +138,15 @@ function App() {
     }
   }, [settings]);
 
+  useEffect(() => {
+    if (activeTab === "courses" || !isEditPanelOpen) return;
+    setPendingEditCourse(null);
+    setIsEditPanelOpen(false);
+    setEditingCourseId(null);
+    setEditErrors({});
+    setEditPanelPhase("enter");
+  }, [activeTab, isEditPanelOpen]);
+
   const handleCoursesFromCSV = (newCourses: Course[]) => {
     setCourses((prevCourses) => [...prevCourses, ...newCourses]);
   };
@@ -126,6 +159,97 @@ function App() {
     setCourses((prevCourses) =>
       prevCourses.filter((course) => course.id !== courseId),
     );
+  };
+
+  const loadEditCourse = (course: Course) => {
+    setEditingCourseId(course.id);
+    setEditData({
+      name: course.name,
+      section: course.section || "",
+      daysOfWeek: course.daysOfWeek,
+      startTime: course.startTime,
+      endTime: course.endTime,
+      description: course.description || "",
+    });
+    setEditErrors({});
+    setEditPanelPhase("enter");
+    setIsEditPanelOpen(true);
+  };
+
+  const handleEditCourse = (course: Course) => {
+    if (!isEditPanelOpen) {
+      loadEditCourse(course);
+      return;
+    }
+    if (editingCourseId === course.id) {
+      return;
+    }
+    setPendingEditCourse(course);
+    setEditPanelPhase("exit");
+  };
+
+  const validateEditForm = () => {
+    const newErrors: Record<string, string> = {};
+    if (!editData.name.trim()) {
+      newErrors.name = "Name is required";
+    }
+    if (!editData.daysOfWeek || editData.daysOfWeek.length === 0) {
+      newErrors.daysOfWeek = "At least one day of the week is required";
+    }
+    if (!editData.startTime) {
+      newErrors.startTime = "Start time is required";
+    }
+    if (!editData.endTime) {
+      newErrors.endTime = "End time is required";
+    }
+    if (
+      editData.startTime &&
+      editData.endTime &&
+      !validateTimeRange(editData.startTime, editData.endTime)
+    ) {
+      newErrors.endTime = "End time must be after start time";
+    }
+    setEditErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleEditSave = () => {
+    if (!editingCourseId || !validateEditForm()) {
+      return;
+    }
+    setCourses((prev) =>
+      prev.map((course) =>
+        course.id === editingCourseId
+          ? {
+              ...course,
+              name: editData.name.trim(),
+              section: editData.section.trim() || undefined,
+              daysOfWeek: editData.daysOfWeek as DaysOfWeek[],
+              startTime: editData.startTime,
+              endTime: editData.endTime,
+              description: editData.description.trim() || undefined,
+            }
+          : course,
+      ),
+    );
+    setEditPanelPhase("exit");
+  };
+
+  const handleEditCancel = () => {
+    setPendingEditCourse(null);
+    setEditPanelPhase("exit");
+  };
+
+  const handleEditPanelExited = () => {
+    if (pendingEditCourse) {
+      const nextCourse = pendingEditCourse;
+      setPendingEditCourse(null);
+      loadEditCourse(nextCourse);
+      return;
+    }
+    setIsEditPanelOpen(false);
+    setEditingCourseId(null);
+    setEditErrors({});
   };
 
   const handleClearAll = () => {
@@ -159,27 +283,46 @@ function App() {
 
         {/* Contextual Sidebar */}
         <ContextualSidebar activeTab={activeTab}>
-          {activeTab === "preview" && (
-            <SettingsPanel settings={settings} onSettingsChange={setSettings} />
-          )}
-          {activeTab === "courses" && (
-            <div className="flex flex-col gap-4">
-              <CourseForm onCourseAdded={handleCourseAdded} />
-              <CSVUploader onCoursesLoaded={handleCoursesFromCSV} />
+          <div className="relative h-full">
+            <div className="h-full overflow-y-auto p-4 no-scrollbar">
+              {activeTab === "preview" && (
+                <SettingsPanel
+                  settings={settings}
+                  onSettingsChange={setSettings}
+                />
+              )}
+              {activeTab === "courses" && (
+                <div className="flex flex-col gap-5">
+                  <CourseForm onCourseAdded={handleCourseAdded} />
+                  <CSVUploader onCoursesLoaded={handleCoursesFromCSV} />
 
-              <button
-                onClick={handleClearAll}
-                className="btn btn-error font-semibold btn-outline w-full shadow-none rounded-md"
-                disabled={courses.length === 0}
-              >
-                Delete All Courses
-              </button>
+                  <button
+                    onClick={handleClearAll}
+                    className="btn btn-error font-semibold btn-outline w-full shadow-none rounded-md"
+                    disabled={courses.length === 0}
+                  >
+                    Delete All Courses
+                  </button>
+                </div>
+              )}
+              {activeTab === "export" && <ExportControlPanel />}
+              {activeTab === "style" && (
+                <StyleSidebar activeCategory={activeStyleCategory} />
+              )}
             </div>
-          )}
-          {activeTab === "export" && <ExportControlPanel />}
-          {activeTab === "style" && (
-            <StyleSidebar activeCategory={activeStyleCategory} />
-          )}
+
+            <EditCoursePanel
+              isOpen={isEditPanelOpen}
+              phase={editPanelPhase}
+              editData={editData}
+              editErrors={editErrors}
+              onChange={setEditData}
+              onErrorChange={setEditErrors}
+              onCancel={handleEditCancel}
+              onSave={handleEditSave}
+              onExited={handleEditPanelExited}
+            />
+          </div>
         </ContextualSidebar>
 
         {/* Main Content Area */}
@@ -219,6 +362,7 @@ function App() {
                 <CourseList
                   courses={courses}
                   onRemoveCourse={handleRemoveCourse}
+                  onEditCourse={handleEditCourse}
                 />
               </div>
             </div>
