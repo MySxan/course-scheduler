@@ -35,6 +35,8 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
   const [confirmMode, setConfirmMode] = useState<"replace" | "close">(
     "replace",
   );
+  const [editingRowId, setEditingRowId] = useState<string | null>(null);
+  const [editLine, setEditLine] = useState("");
   const [tooltip, setTooltip] = useState<{
     text: string;
     x: number;
@@ -93,6 +95,123 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
       su: "Sunday",
     };
     return dayMap[normalizedDay] || null;
+  };
+
+  const parseRawRow = (params: {
+    id?: string;
+    rowNumber: number;
+    rawName: string;
+    rawDay: string;
+    rawStart: string;
+    rawEnd: string;
+    rawSection: string;
+    rawLocation: string;
+  }) => {
+    const {
+      id,
+      rowNumber,
+      rawName,
+      rawDay,
+      rawStart,
+      rawEnd,
+      rawSection,
+      rawLocation,
+    } = params;
+    const rowErrors: string[] = [];
+    const rowErrorSet = new Set<string>();
+
+    const addRowError = (message: string) => {
+      if (rowErrorSet.has(message)) return;
+      rowErrorSet.add(message);
+      rowErrors.push(message);
+    };
+
+    if (!rawName) {
+      addRowError("Course name is required");
+    }
+
+    if (!rawDay) {
+      addRowError("Day of week is required");
+    }
+
+    if (!rawStart) {
+      addRowError("Start time is required");
+    }
+
+    if (!rawEnd) {
+      addRowError("End time is required");
+    }
+
+    const dayStrings = rawDay ? rawDay.split(",").map((d) => d.trim()) : [];
+    const daysOfWeek: DaysOfWeek[] = [];
+
+    for (const dayStr of dayStrings) {
+      const dayOfWeek = normalizeDay(dayStr);
+      if (!dayOfWeek) {
+        addRowError(`Invalid day of week "${dayStr}"`);
+        continue;
+      }
+      if (!daysOfWeek.includes(dayOfWeek)) {
+        daysOfWeek.push(dayOfWeek);
+      }
+    }
+
+    const startTime = normalizeTime(rawStart);
+    const endTime = normalizeTime(rawEnd);
+
+    if (!validateTime(startTime) && startTime) {
+      addRowError(`Invalid start time format "${startTime}"`);
+    }
+
+    if (!validateTime(endTime) && endTime) {
+      addRowError(`Invalid end time format "${endTime}"`);
+    }
+
+    if (validateTime(startTime) && validateTime(endTime)) {
+      const [startHour, startMin] = startTime.split(":").map(Number);
+      const [endHour, endMin] = endTime.split(":").map(Number);
+      const startMinutes = startHour * 60 + startMin;
+      const endMinutes = endHour * 60 + endMin;
+
+      if (endMinutes <= startMinutes) {
+        addRowError("End time must be after start time");
+      }
+    }
+
+    const previewRow: PreviewRow = {
+      id: id ?? generateId(),
+      rowNumber,
+      name: rawName || "",
+      section: rawSection || undefined,
+      daysOfWeek,
+      startTime,
+      endTime,
+      location: rawLocation || undefined,
+      error: rowErrors.length > 0 ? rowErrors.join("; ") : undefined,
+      rawDay,
+      rawStartTime: rawStart,
+      rawEndTime: rawEnd,
+      rawSection,
+      rawLocation,
+    };
+
+    return { previewRow, rowErrors };
+  };
+
+  const buildRawLine = (course: PreviewRow) => {
+    const rawDay =
+      course.rawDay ||
+      course.daysOfWeek.map((day) => day.slice(0, 3)).join(",");
+    const dayValue =
+      rawDay.includes(",") || rawDay.includes(" ") ? `"${rawDay}"` : rawDay;
+    return [
+      course.name,
+      course.rawSection || course.section || "",
+      dayValue,
+      course.rawStartTime || course.startTime,
+      course.rawEndTime || course.endTime,
+      course.rawLocation || course.location || "",
+    ].join(",");
   };
 
   const parseFile = (file: File) => {
@@ -338,6 +457,9 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
       }
       return next;
     });
+    if (editingRowId === id) {
+      setEditingRowId(null);
+    }
   };
 
   const handleClosePanel = () => {
@@ -349,6 +471,47 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
     setIsPanelOpen(false);
     setError(null);
     setPreviewCourses(null);
+  };
+
+  const handleEditStart = (course: PreviewRow) => {
+    setEditingRowId(course.id);
+    setEditLine(buildRawLine(course));
+  };
+
+  const handleEditConfirm = () => {
+    if (!editingRowId) return;
+    const parsed = Papa.parse<string[]>(editLine, { skipEmptyLines: true });
+    const values = (parsed.data?.[0] || []).map((value) =>
+      String(value ?? "").trim(),
+    );
+    const [
+      rawName = "",
+      rawSection = "",
+      rawDay = "",
+      rawStart = "",
+      rawEnd = "",
+      rawLocation = "",
+    ] = values;
+
+    setPreviewCourses((prev) => {
+      if (!prev) return prev;
+      return prev.map((row) => {
+        if (row.id !== editingRowId) return row;
+        const { previewRow } = parseRawRow({
+          id: row.id,
+          rowNumber: row.rowNumber,
+          rawName,
+          rawDay,
+          rawStart,
+          rawEnd,
+          rawSection,
+          rawLocation,
+        });
+        return previewRow;
+      });
+    });
+    setEditingRowId(null);
+    setEditLine("");
   };
 
   const getCellErrorClass = (
@@ -536,7 +699,15 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
                 <div className="flex-1 min-h-0">
                   {previewCourses && previewCourses.length > 0 ? (
                     <div className="border border-base-200 rounded-md h-full overflow-auto">
-                      <table className="table table-sm w-full text-sm">
+                      <table className="table table-sm w-full text-sm table-fixed">
+                        <colgroup>
+                          <col className="w-[15%]" />
+                          <col className="w-[11%]" />
+                          <col className="w-[16%]" />
+                          <col className="w-[18%]" />
+                          <col className="w-[21%]" />
+                          <col className="w-[19%]" />
+                        </colgroup>
                         <thead>
                           <tr>
                             <th>name</th>
@@ -544,6 +715,7 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
                             <th>day</th>
                             <th>time</th>
                             <th>location*</th>
+                            <th className="text-right">actions</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -567,120 +739,171 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
                             const rowErrorClass = course.error
                               ? "bg-error/5"
                               : "";
+                            const isEditing = editingRowId === course.id;
 
                             return (
-                              <tr
-                                key={course.id}
-                                className={
-                                  course.error
-                                    ? "group relative bg-error/5"
-                                    : "group"
-                                }
-                              >
-                                <td
-                                  className={`truncate max-w-[160px] ${rowErrorClass} ${nameErrorClass}`}
-                                  onMouseEnter={(event) => {
-                                    if (course.error && nameErrorClass) {
-                                      showErrorTooltip(event, course.error);
-                                    }
-                                  }}
-                                  onMouseLeave={hideTooltip}
+                              <React.Fragment key={course.id}>
+                                <tr
+                                  className={
+                                    course.error
+                                      ? "group relative bg-error/5"
+                                      : "group"
+                                  }
                                 >
-                                  {course.name}
-                                </td>
-                                <td
-                                  className={`truncate max-w-[120px] ${rowErrorClass}`}
-                                >
-                                  {course.rawSection || course.section || "-"}
-                                </td>
-                                <td
-                                  className={`truncate max-w-[160px] ${rowErrorClass} ${dayErrorClass}`}
-                                  onMouseEnter={(event) => {
-                                    if (course.error && dayErrorClass) {
-                                      showErrorTooltip(event, course.error);
-                                    }
-                                  }}
-                                  onMouseLeave={hideTooltip}
-                                >
-                                  {course.rawDay ||
-                                    course.daysOfWeek
-                                      .map((day) => day.slice(0, 3))
-                                      .join(", ")}
-                                </td>
-                                <td
-                                  className={`${rowErrorClass} ${timeErrorClass}`}
-                                  onMouseEnter={(event) => {
-                                    if (course.error && timeErrorClass) {
-                                      showErrorTooltip(event, course.error);
-                                    }
-                                  }}
-                                  onMouseLeave={hideTooltip}
-                                >
-                                  {course.rawStartTime || course.startTime} -{" "}
-                                  {course.rawEndTime || course.endTime}
-                                </td>
-                                <td
-                                  className={`truncate max-w-[200px] ${rowErrorClass} ${locationErrorClass}`}
-                                  onMouseEnter={(event) => {
-                                    if (course.error && locationErrorClass) {
-                                      showErrorTooltip(event, course.error);
-                                    }
-                                  }}
-                                  onMouseLeave={hideTooltip}
-                                >
-                                  {course.rawLocation || course.location || "-"}
-                                </td>
-                                <td
-                                  className={`text-right p-2 ${rowErrorClass}`}
-                                >
-                                  <div className="inline-flex items-center gap-2">
-                                    <button
-                                      type="button"
-                                      className="btn btn-ghost btn-xs shadow-none px-1 hover:bg-primary/10 hover:border-primary hover:text-primary"
-                                      aria-label="Edit course"
-                                      title="Edit"
-                                    >
-                                      <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        className="h-3.5 w-3.5"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        stroke="currentColor"
-                                        strokeWidth={2}
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
+                                  <td
+                                    className={`truncate max-w-[160px] ${rowErrorClass} ${nameErrorClass}`}
+                                    onMouseEnter={(event) => {
+                                      if (course.error && nameErrorClass) {
+                                        showErrorTooltip(event, course.error);
+                                      }
+                                    }}
+                                    onMouseLeave={hideTooltip}
+                                  >
+                                    {course.name}
+                                  </td>
+                                  <td
+                                    className={`truncate max-w-[120px] ${rowErrorClass}`}
+                                  >
+                                    {course.rawSection || course.section || "-"}
+                                  </td>
+                                  <td
+                                    className={`truncate max-w-[160px] ${rowErrorClass} ${dayErrorClass}`}
+                                    onMouseEnter={(event) => {
+                                      if (course.error && dayErrorClass) {
+                                        showErrorTooltip(event, course.error);
+                                      }
+                                    }}
+                                    onMouseLeave={hideTooltip}
+                                  >
+                                    {course.rawDay ||
+                                      course.daysOfWeek
+                                        .map((day) => day.slice(0, 3))
+                                        .join(", ")}
+                                  </td>
+                                  <td
+                                    className={`${rowErrorClass} ${timeErrorClass}`}
+                                    onMouseEnter={(event) => {
+                                      if (course.error && timeErrorClass) {
+                                        showErrorTooltip(event, course.error);
+                                      }
+                                    }}
+                                    onMouseLeave={hideTooltip}
+                                  >
+                                    {course.rawStartTime || course.startTime} -{" "}
+                                    {course.rawEndTime || course.endTime}
+                                  </td>
+                                  <td
+                                    className={`truncate max-w-[200px] py-0 ${rowErrorClass} ${locationErrorClass}`}
+                                    onMouseEnter={(event) => {
+                                      if (course.error && locationErrorClass) {
+                                        showErrorTooltip(event, course.error);
+                                      }
+                                    }}
+                                    onMouseLeave={hideTooltip}
+                                  >
+                                    {course.rawLocation ||
+                                      course.location ||
+                                      "-"}
+                                  </td>
+                                  <td
+                                    className={`text-right p-2 ${rowErrorClass}`}
+                                  >
+                                    <div className="inline-flex items-center gap-2">
+                                      <button
+                                        type="button"
+                                        className={`btn btn-ghost btn-xs shadow-none px-1 hover:bg-primary/10 hover:border-primary hover:text-primary ${
+                                          isEditing
+                                            ? "bg-primary/10 border-primary text-primary"
+                                            : ""
+                                        }`}
+                                        aria-label="Edit course"
+                                        title="Edit"
+                                        onClick={() => {
+                                          if (!isEditing) {
+                                            handleEditStart(course);
+                                          }
+                                        }}
                                       >
-                                        <path d="M13 21h8" />
-                                        <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
-                                      </svg>
-                                    </button>
-                                    <button
-                                      type="button"
-                                      className="btn btn-ghost btn-xs shadow-none px-1 hover:bg-error/10 hover:border-error hover:text-error"
-                                      aria-label="Delete course"
-                                      title="Delete"
-                                      onClick={() => handleDeleteRow(course.id)}
-                                    >
-                                      <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        className="h-3.5 w-3.5"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        stroke="currentColor"
-                                        strokeWidth={2}
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
+                                        <svg
+                                          xmlns="http://www.w3.org/2000/svg"
+                                          className="h-3.5 w-3.5"
+                                          fill="none"
+                                          viewBox="0 0 24 24"
+                                          stroke="currentColor"
+                                          strokeWidth={2}
+                                          strokeLinecap="round"
+                                          strokeLinejoin="round"
+                                        >
+                                          <path d="M13 21h8" />
+                                          <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .830-.497z" />
+                                        </svg>
+                                      </button>
+                                      <button
+                                        type="button"
+                                        className="btn btn-ghost btn-xs shadow-none px-1 hover:bg-error/10 hover:border-error hover:text-error"
+                                        aria-label="Delete course"
+                                        title="Delete"
+                                        onClick={() =>
+                                          handleDeleteRow(course.id)
+                                        }
                                       >
-                                        <path d="M3 6h18" />
-                                        <path d="M8 6V4h8v2" />
-                                        <path d="M10 11v6" />
-                                        <path d="M14 11v6" />
-                                        <path d="M5 6l1 14a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-14" />
-                                      </svg>
-                                    </button>
-                                  </div>
-                                </td>
-                              </tr>
+                                        <svg
+                                          xmlns="http://www.w3.org/2000/svg"
+                                          className="h-3.5 w-3.5"
+                                          fill="none"
+                                          viewBox="0 0 24 24"
+                                          stroke="currentColor"
+                                          strokeWidth={2}
+                                          strokeLinecap="round"
+                                          strokeLinejoin="round"
+                                        >
+                                          <path d="M3 6h18" />
+                                          <path d="M8 6V4h8v2" />
+                                          <path d="M10 11v6" />
+                                          <path d="M14 11v6" />
+                                          <path d="M5 6l1 14a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-14" />
+                                        </svg>
+                                      </button>
+                                    </div>
+                                  </td>
+                                </tr>
+                                {isEditing && (
+                                  <tr className="bg-base-100">
+                                    <td colSpan={6} className="p-2">
+                                      <div className="flex items-center gap-2">
+                                        <input
+                                          className="input input-sm font-mono text-sm flex-1 border-base-300 outline outline-primary focus:outline-primary outline-offset-2"
+                                          value={editLine}
+                                          onChange={(event) =>
+                                            setEditLine(event.target.value)
+                                          }
+                                          placeholder="name,section,day,startTime,endTime,location"
+                                        />
+                                        <button
+                                          type="button"
+                                          className="btn btn-ghost btn-xs shadow-none px-1 hover:bg-primary/10 hover:border-primary hover:text-primary"
+                                          aria-label="Confirm edit"
+                                          title="Confirm"
+                                          onClick={handleEditConfirm}
+                                        >
+                                          <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            className="h-3.5 w-3.5"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                            strokeWidth={2}
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                          >
+                                            <path d="M20 6 9 17l-5-5" />
+                                          </svg>
+                                        </button>
+                                      </div>
+                                    </td>
+                                  </tr>
+                                )}
+                              </React.Fragment>
                             );
                           })}
                         </tbody>

@@ -211,7 +211,7 @@ function App() {
                     Manage your enrolled courses
                   </p>
                 </div>
-                <span className="text-sm text-neutral-content bg-primary px-3 py-1 rounded-md">
+                <span className="text-sm text-white/90 bg-primary px-2 py-1 rounded-md">
                   {courses.length} course{courses.length !== 1 ? "s" : ""}
                 </span>
               </div>
