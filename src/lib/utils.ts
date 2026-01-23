@@ -2,6 +2,8 @@ export const generateId = (): string => {
   return Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
 };
 
+export const DEFAULT_COURSE_COLOR = "#0d9488";
+
 export const formatTime = (time: string): string => {
   const [hours, minutes] = time.split(":");
   const hour = parseInt(hours, 10);

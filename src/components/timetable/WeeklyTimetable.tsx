@@ -14,11 +14,13 @@ import type { TimetableSettings } from "./SettingsPanel";
 interface WeeklyTimetableProps {
   courses: Course[];
   settings: TimetableSettings;
+  cardBackgroundPreset: "primary" | "tealFamily";
 }
 
 export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
   courses,
   settings,
+  cardBackgroundPreset,
 }) => {
   // Memoized time range calculation
   const { startHour, endHour } = useMemo(() => {
@@ -59,7 +61,21 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
       }
     }
 
+    if (cardBackgroundPreset === "tealFamily") {
+      return `${baseClasses} text-white border-transparent hover:opacity-90 hover:scale-[1.02]`;
+    }
+
     return `${baseClasses} bg-primary text-primary-content border-primary hover:bg-primary/90 hover:scale-[1.02]`;
+  };
+
+  const getCourseCardStyle = (course: TimetableCourse) => {
+    if (course.hasConflict || cardBackgroundPreset !== "tealFamily") {
+      return undefined;
+    }
+    return {
+      backgroundColor: course.color,
+      borderColor: course.color,
+    };
   };
 
   const getCoursePosition = (
@@ -192,11 +208,14 @@ export const WeeklyTimetable: React.FC<WeeklyTimetableProps> = ({
               <div
                 key={course.id}
                 className={getCourseCardClasses(course)}
-                style={getCoursePosition(
-                  course,
-                  startHour,
-                  settings.verticalScale / 120,
-                )}
+                style={{
+                  ...getCoursePosition(
+                    course,
+                    startHour,
+                    settings.verticalScale / 120,
+                  ),
+                  ...(getCourseCardStyle(course) || {}),
+                }}
                 title={`${course.name}${course.section ? ` (${course.section})` : ""} - ${formatTime(course.startTime)} to ${formatTime(course.endTime)}${course.description ? ` - ${course.description}` : ""}`}
               >
                 <div className="card-body p-1">

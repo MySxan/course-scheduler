@@ -3,10 +3,14 @@ import type { StyleCategory } from "./CategoryBar";
 
 interface StyleSidebarProps {
   activeCategory: StyleCategory;
+  cardBackgroundPreset: "primary" | "tealFamily";
+  onCardBackgroundPresetChange: (preset: "primary" | "tealFamily") => void;
 }
 
 export const StyleSidebar: React.FC<StyleSidebarProps> = ({
   activeCategory,
+  cardBackgroundPreset,
+  onCardBackgroundPresetChange,
 }) => {
   const [capitalization, setCapitalization] = useState<
     "none" | "upper" | "title" | "lower"
@@ -317,8 +321,47 @@ export const StyleSidebar: React.FC<StyleSidebarProps> = ({
 
       {activeCategory === "colorPresets" && (
         <>
-          <div className="text-sm text-base-content/50 italic">
-            Color presets
+          <div className="card bg-base-200 shadow-sm">
+            <div className="card-body p-4 space-y-2">
+              <div className="card-title text-base flex items-center gap-2">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="w-4 h-4 text-primary"
+                >
+                  <rect width="20" height="16" x="2" y="4" rx="2" />
+                  <path d="M6 8h.01" />
+                  <path d="M10 8h.01" />
+                  <path d="M14 8h.01" />
+                </svg>
+                Card Background
+              </div>
+
+              <div className="form-control">
+                <label className="label mb-1">
+                  <span className="label-text">Color preset</span>
+                </label>
+                <select
+                  className="select inline border-base-300 rounded-md w-full focus:outline-primary focus-within:outline-primary"
+                  value={cardBackgroundPreset}
+                  onChange={(event) =>
+                    onCardBackgroundPresetChange(
+                      event.target.value as "primary" | "tealFamily",
+                    )
+                  }
+                >
+                  <option value="primary">Theme primary</option>
+                  <option value="tealFamily">Teal family</option>
+                </select>
+              </div>
+            </div>
           </div>
         </>
       )}

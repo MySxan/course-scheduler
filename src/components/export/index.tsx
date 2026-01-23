@@ -198,11 +198,13 @@ export const ExportControlPanel: React.FC<ExportControlPanelProps> = ({
 interface ExportPreviewAreaProps {
   courses: Course[];
   settings: TimetableSettings;
+  cardBackgroundPreset: "primary" | "tealFamily";
 }
 
 export const ExportPreviewArea: React.FC<ExportPreviewAreaProps> = ({
   courses,
   settings,
+  cardBackgroundPreset,
 }) => {
   const containerStyles = useMemo(
     () => ({ width: "100%", height: "100%" }),
@@ -210,7 +212,11 @@ export const ExportPreviewArea: React.FC<ExportPreviewAreaProps> = ({
   );
   return (
     <div className="flex flex-1 flex-col" style={containerStyles}>
-      <TimetablePreview courses={courses} settings={settings} />
+      <TimetablePreview
+        courses={courses}
+        settings={settings}
+        cardBackgroundPreset={cardBackgroundPreset}
+      />
     </div>
   );
 };

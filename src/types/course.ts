@@ -6,6 +6,7 @@ export interface Course {
   startTime: string; // Format: "HH:mm" (24-hour)
   endTime: string; // Format: "HH:mm" (24-hour)
   description?: string; // Optional description
+  color: string; // Course card color (hex or CSS color)
 }
 
 export type DaysOfWeek =
@@ -34,6 +35,7 @@ export interface CourseFormData {
   startTime: string;
   endTime: string;
   description: string;
+  color: string;
 }
 
 // For CSV parsing

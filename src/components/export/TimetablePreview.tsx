@@ -14,11 +14,13 @@ import type { TimetableSettings } from "../timetable/SettingsPanel";
 interface TimetablePreviewProps {
   courses: Course[];
   settings: TimetableSettings;
+  cardBackgroundPreset: "primary" | "tealFamily";
 }
 
 export const TimetablePreview: React.FC<TimetablePreviewProps> = ({
   courses,
   settings,
+  cardBackgroundPreset,
 }) => {
   // Memoized time range calculation
   const { startHour, endHour } = useMemo(() => {
@@ -60,7 +62,21 @@ export const TimetablePreview: React.FC<TimetablePreviewProps> = ({
       }
     }
 
+    if (cardBackgroundPreset === "tealFamily") {
+      return `${baseClasses} text-white border-transparent`;
+    }
+
     return `${baseClasses} bg-primary text-primary-content border-primary`;
+  };
+
+  const getCourseCardStyle = (course: TimetableCourse) => {
+    if (course.hasConflict || cardBackgroundPreset !== "tealFamily") {
+      return undefined;
+    }
+    return {
+      backgroundColor: course.color,
+      borderColor: course.color,
+    };
   };
 
   const getCoursePosition = (
@@ -187,16 +203,19 @@ export const TimetablePreview: React.FC<TimetablePreviewProps> = ({
             gridRow: "2 / -1",
           }}
         >
-          {coursesByDay[day]?.map((course) => (
-            <div
-              key={course.id}
-              className={getCourseCardClasses(course)}
-              style={getCoursePosition(
-                course,
-                startHour,
-                settings.verticalScale / 120,
-              )}
-            >
+            {coursesByDay[day]?.map((course) => (
+              <div
+                key={course.id}
+                className={getCourseCardClasses(course)}
+                style={{
+                  ...getCoursePosition(
+                    course,
+                    startHour,
+                    settings.verticalScale / 120,
+                  ),
+                  ...(getCourseCardStyle(course) || {}),
+                }}
+              >
               <div className="card-body p-1">
                 <div className="text-lg font-bold leading-tight line-clamp-2">
                   {course.name}

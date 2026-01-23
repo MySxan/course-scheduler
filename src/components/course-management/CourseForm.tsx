@@ -1,7 +1,11 @@
 import React, { useState } from "react";
 import type { Course, CourseFormData, DaysOfWeek } from "../../types/course";
 import { DAYS_OF_WEEK } from "../../types/course";
-import { generateId, validateTimeRange } from "../../lib/utils";
+import {
+  DEFAULT_COURSE_COLOR,
+  generateId,
+  validateTimeRange,
+} from "../../lib/utils";
 
 interface CourseFormProps {
   onCourseAdded: (course: Course) => void;
@@ -16,6 +20,7 @@ export const CourseForm: React.FC<CourseFormProps> = ({ onCourseAdded }) => {
     startTime: "",
     endTime: "",
     description: "",
+    color: DEFAULT_COURSE_COLOR,
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -74,6 +79,7 @@ export const CourseForm: React.FC<CourseFormProps> = ({ onCourseAdded }) => {
       startTime: formData.startTime,
       endTime: formData.endTime,
       description: formData.description.trim() || undefined,
+      color: formData.color || DEFAULT_COURSE_COLOR,
     };
 
     onCourseAdded(newCourse);
@@ -86,6 +92,7 @@ export const CourseForm: React.FC<CourseFormProps> = ({ onCourseAdded }) => {
       startTime: "",
       endTime: "",
       description: "",
+      color: DEFAULT_COURSE_COLOR,
     });
     setErrors({});
     setIsSubmitting(false);

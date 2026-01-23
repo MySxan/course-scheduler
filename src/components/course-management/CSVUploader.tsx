@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import Papa from "papaparse";
 import type { Course, CSVRow, DaysOfWeek } from "../../types/course";
-import { generateId } from "../../lib/utils";
+import { DEFAULT_COURSE_COLOR, generateId } from "../../lib/utils";
 import { ConfirmDialog } from "../ui/ConfirmDialog";
 
 interface CSVUploaderProps {
@@ -106,6 +106,7 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
     rawEnd: string;
     rawSection: string;
     rawDescription: string;
+    color?: string;
   }) => {
     const {
       id,
@@ -116,6 +117,7 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
       rawEnd,
       rawSection,
       rawDescription,
+      color,
     } = params;
     const rowErrors: string[] = [];
     const rowErrorSet = new Set<string>();
@@ -187,6 +189,7 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
       startTime,
       endTime,
       description: rawDescription || undefined,
+      color: color ?? DEFAULT_COURSE_COLOR,
       error: rowErrors.length > 0 ? rowErrors.join("; ") : undefined,
       rawDay,
       rawStartTime: rawStart,
@@ -294,6 +297,7 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
           const rawEnd = row.endTime?.trim() || "";
           const rawSection = row.section?.trim() || "";
           const rawDescription = row.description?.trim() || "";
+          const color = DEFAULT_COURSE_COLOR;
 
           const addRowError = (message: string) => {
             if (rowErrorSet.has(message)) return;
@@ -368,6 +372,7 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
             startTime,
             endTime,
             description: rawDescription || undefined,
+            color,
             error: rowErrors.length > 0 ? rowErrors.join("; ") : undefined,
             rawDay,
             rawStartTime: rawStart,
@@ -402,6 +407,7 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
               startTime,
               endTime,
               description: previewRow.description,
+              color: previewRow.color,
             });
           }
 
@@ -514,6 +520,7 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
           rawEnd,
           rawSection,
           rawDescription,
+          color: row.color,
         });
         return previewRow;
       });
@@ -887,7 +894,7 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
                                     <td colSpan={6} className="p-2">
                                       <div className="flex items-center gap-2">
                                         <input
-                                          className="input input-sm font-mono text-sm flex-1 border-base-300 outline outline-primary focus:outline-primary outline-offset-2"
+                                          className="input input-sm font-mono text-sm flex-1 border-base-300 outline outline-primary outline-2 focus:outline-primary outline-offset-2"
                                           value={editLine}
                                           onChange={(event) =>
                                             setEditLine(event.target.value)

@@ -19,17 +19,69 @@ import {
   SettingsPanel,
   type TimetableSettings,
 } from "./components/timetable/SettingsPanel";
-import { validateTimeRange } from "./lib/utils";
+import { DEFAULT_COURSE_COLOR, validateTimeRange } from "./lib/utils";
+
+type CardBackgroundPreset = "primary" | "tealFamily";
+
+const TEAL_FAMILY_COLORS = [
+  "#30A685",
+  "#0D9488",
+  "#14BBB0",
+  "#4A6A92",
+  "#00B89F",
+  "#4788C5",
+  "#26669E",
+  "#358BB6",
+  "#4391A4",
+];
+
+const shuffleColors = (colors: string[]) => {
+  const next = [...colors];
+  for (let i = next.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [next[i], next[j]] = [next[j], next[i]];
+  }
+  return next;
+};
+
+const applyTealPalette = (courses: Course[]) => {
+  const palette = shuffleColors(TEAL_FAMILY_COLORS);
+  let index = 0;
+  return courses.map((course) => {
+    const color = palette[index % palette.length];
+    index += 1;
+    return { ...course, color };
+  });
+};
+
+const getNextTealColor = (courses: Course[]) => {
+  const counts = new Map<string, number>(
+    TEAL_FAMILY_COLORS.map((color) => [color, 0]),
+  );
+  courses.forEach((course) => {
+    if (counts.has(course.color)) {
+      counts.set(course.color, (counts.get(course.color) || 0) + 1);
+    }
+  });
+  const minCount = Math.min(...counts.values());
+  const candidates = TEAL_FAMILY_COLORS.filter(
+    (color) => counts.get(color) === minCount,
+  );
+  return candidates[Math.floor(Math.random() * candidates.length)];
+};
 
 function App() {
   const [courses, setCourses] = useState<Course[]>(() => {
     try {
       const raw = localStorage.getItem("courseScheduler.courses");
       if (!raw) return [];
-      const parsed = JSON.parse(raw) as Array<Course & { location?: string }>;
+      const parsed = JSON.parse(raw) as Array<
+        Course & { location?: string; color?: string }
+      >;
       return parsed.map((course) => ({
         ...course,
         description: course.description ?? course.location,
+        color: course.color ?? DEFAULT_COURSE_COLOR,
       }));
     } catch {
       return [];
@@ -53,6 +105,17 @@ function App() {
       }
     },
   );
+  const [cardBackgroundPreset, setCardBackgroundPreset] =
+    useState<CardBackgroundPreset>(() => {
+      try {
+        const raw = localStorage.getItem(
+          "courseScheduler.cardBackgroundPreset",
+        );
+        return (raw as CardBackgroundPreset) || "primary";
+      } catch {
+        return "primary";
+      }
+    });
   const [settings, setSettings] = useState<TimetableSettings>(() => {
     try {
       const raw = localStorage.getItem("courseScheduler.settings");
@@ -97,6 +160,7 @@ function App() {
     startTime: "",
     endTime: "",
     description: "",
+    color: DEFAULT_COURSE_COLOR,
   });
   const [editErrors, setEditErrors] = useState<Record<string, string>>({});
 
@@ -130,6 +194,22 @@ function App() {
   useEffect(() => {
     try {
       localStorage.setItem(
+        "courseScheduler.cardBackgroundPreset",
+        cardBackgroundPreset,
+      );
+    } catch {
+      // Ignore storage failures
+    }
+  }, [cardBackgroundPreset]);
+
+  useEffect(() => {
+    if (cardBackgroundPreset !== "tealFamily") return;
+    setCourses((prevCourses) => applyTealPalette(prevCourses));
+  }, [cardBackgroundPreset]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(
         "courseScheduler.settings",
         JSON.stringify(settings),
       );
@@ -148,11 +228,36 @@ function App() {
   }, [activeTab, isEditPanelOpen]);
 
   const handleCoursesFromCSV = (newCourses: Course[]) => {
-    setCourses((prevCourses) => [...prevCourses, ...newCourses]);
+    setCourses((prevCourses) => {
+      if (cardBackgroundPreset !== "tealFamily") {
+        return [
+          ...prevCourses,
+          ...newCourses.map((course) => ({
+            ...course,
+            color: course.color ?? DEFAULT_COURSE_COLOR,
+          })),
+        ];
+      }
+
+      const nextCourses: Course[] = [...prevCourses];
+      const additions = newCourses.map((course) => {
+        const color = getNextTealColor(nextCourses);
+        const next = { ...course, color };
+        nextCourses.push(next);
+        return next;
+      });
+      return [...prevCourses, ...additions];
+    });
   };
 
   const handleCourseAdded = (newCourse: Course) => {
-    setCourses((prevCourses) => [...prevCourses, newCourse]);
+    setCourses((prevCourses) => {
+      const color =
+        cardBackgroundPreset === "tealFamily"
+          ? getNextTealColor(prevCourses)
+          : newCourse.color ?? DEFAULT_COURSE_COLOR;
+      return [...prevCourses, { ...newCourse, color }];
+    });
   };
 
   const handleRemoveCourse = (courseId: string) => {
@@ -170,6 +275,7 @@ function App() {
       startTime: course.startTime,
       endTime: course.endTime,
       description: course.description || "",
+      color: course.color ?? DEFAULT_COURSE_COLOR,
     });
     setEditErrors({});
     setEditPanelPhase("enter");
@@ -228,6 +334,7 @@ function App() {
               startTime: editData.startTime,
               endTime: editData.endTime,
               description: editData.description.trim() || undefined,
+              color: editData.color || DEFAULT_COURSE_COLOR,
             }
           : course,
       ),
@@ -307,7 +414,11 @@ function App() {
               )}
               {activeTab === "export" && <ExportControlPanel />}
               {activeTab === "style" && (
-                <StyleSidebar activeCategory={activeStyleCategory} />
+                <StyleSidebar
+                  activeCategory={activeStyleCategory}
+                  cardBackgroundPreset={cardBackgroundPreset}
+                  onCardBackgroundPresetChange={setCardBackgroundPreset}
+                />
               )}
             </div>
 
@@ -338,7 +449,11 @@ function App() {
                 </p>
               </div>
               <div className="flex-1 flex overflow-auto no-scrollbar min-w-full">
-                <WeeklyTimetable courses={courses} settings={settings} />
+                <WeeklyTimetable
+                  courses={courses}
+                  settings={settings}
+                  cardBackgroundPreset={cardBackgroundPreset}
+                />
               </div>
             </div>
           )}
@@ -379,7 +494,11 @@ function App() {
                 </p>
               </div>
               <div className="flex-1 flex overflow-auto no-scrollbar min-w-full">
-                <ExportPreviewArea courses={courses} settings={settings} />
+                <ExportPreviewArea
+                  courses={courses}
+                  settings={settings}
+                  cardBackgroundPreset={cardBackgroundPreset}
+                />
               </div>
             </div>
           )}
