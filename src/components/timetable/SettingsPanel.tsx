@@ -1,4 +1,5 @@
-﻿import React from "react";
+import { SettingsGroup } from "../ui/SettingsGroup";
+import React from "react";
 
 export interface TimetableSettings {
   showWeekends: boolean;
@@ -31,291 +32,213 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
   };
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="inspector-stack">
       {/* Time Range */}
-      <div className="card bg-base-200 shadow-sm">
-        <div className="card-body p-4 space-y-2">
-          <div className="card-title text-base flex items-center gap-2">
-            <svg
-              className="w-4 h-4 text-primary"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-            Time Range
-          </div>
+      <SettingsGroup title="Time range">
+        <div className="form-control">
+          <label className="setting-toggle-row">
+            <div className="flex-1">
+              <span className="label-text font-medium">Smart time range</span>
+            </div>
+            <input
+              type="checkbox"
+              className="switch-input"
+              role="switch"
+              checked={settings.dynamicTimeRange}
+              onChange={(e) =>
+                handleSettingChange("dynamicTimeRange", e.target.checked)
+              }
+            />
+          </label>
+        </div>
 
-          <div className="form-control">
-            <label className="label flex items-center cursor-pointer">
-              <div className="flex-1">
-                <span className="label-text font-medium">Smart Time Range</span>
-                <div className="label-text-alt text-xs opacity-70">
-                  {settings.dynamicTimeRange
-                    ? "Auto-adjust based on courses"
-                    : "Use manual time range"}
-                </div>
-              </div>
-              <input
-                type="checkbox"
-                className="toggle toggle-primary"
-                checked={settings.dynamicTimeRange}
-                onChange={(e) =>
-                  handleSettingChange("dynamicTimeRange", e.target.checked)
-                }
-              />
-            </label>
-          </div>
+        <div className="inset-field-pair">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="form-control">
+              <label htmlFor="startHour" className="label mb-1">
+                Start time
+              </label>
+              <select
+                id="startHour"
+                className={`select select-sm inline border-base-300 select-bordered rounded-md w-full focus:outline-primary focus-within:outline-primary ${
+                  settings.dynamicTimeRange ? "select-disabled" : ""
+                }`}
+                value={settings.startHour}
+                disabled={settings.dynamicTimeRange}
+                onChange={(e) => {
+                  const newStartHour = parseInt(e.target.value);
+                  onSettingsChange({
+                    ...settings,
+                    startHour: newStartHour,
+                    endHour: Math.max(newStartHour, settings.endHour),
+                  });
+                }}
+              >
+                {Array.from({ length: 24 }, (_, i) => {
+                  return (
+                    <option key={i} value={i}>
+                      {i.toString().padStart(2, "0")}:00
+                    </option>
+                  );
+                })}
+              </select>
+            </div>
 
-          <div className="p-4 bg-base-100 rounded-lg border-primary">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="form-control">
-                <label htmlFor="startHour" className="label mb-1">
-                  Start Time
-                </label>
-                <select
-                  id="startHour"
-                  className={`select select-sm inline border-base-300 select-bordered rounded-md w-full focus:outline-primary focus-within:outline-primary ${
-                    settings.dynamicTimeRange ? "select-disabled" : ""
-                  }`}
-                  value={settings.startHour}
-                  disabled={settings.dynamicTimeRange}
-                  onChange={(e) => {
-                    const newStartHour = parseInt(e.target.value);
-                    if (newStartHour >= settings.endHour) {
-                      handleSettingChange(
-                        "endHour",
-                        Math.min(newStartHour + 1, 23),
-                      );
-                    }
-                    handleSettingChange("startHour", newStartHour);
-                  }}
-                >
-                  {Array.from({ length: 24 }, (_, i) => {
-                    const isDisabled =
-                      !settings.dynamicTimeRange &&
-                      i >= settings.endHour &&
-                      settings.endHour === 23;
-                    return (
-                      <option key={i} value={i} disabled={isDisabled}>
-                        {i.toString().padStart(2, "0")}:00
-                      </option>
-                    );
-                  })}
-                </select>
-              </div>
-
-              <div className="form-control">
-                <label htmlFor="endHour" className="label mb-1">
-                  End Time
-                </label>
-                <select
-                  id="endHour"
-                  className={`select select-sm inline border-base-300 select-bordered rounded-md w-full focus:outline-primary focus-within:outline-primary ${
-                    settings.dynamicTimeRange ? "select-disabled" : ""
-                  } ${
-                    !settings.dynamicTimeRange &&
-                    settings.startHour >= settings.endHour
-                      ? "select-error"
-                      : ""
-                  }`}
-                  value={settings.endHour}
-                  disabled={settings.dynamicTimeRange}
-                  onChange={(e) => {
-                    const newEndHour = parseInt(e.target.value);
-                    if (newEndHour <= settings.startHour) {
-                      handleSettingChange(
-                        "startHour",
-                        Math.max(newEndHour - 1, 0),
-                      );
-                    }
-                    handleSettingChange("endHour", newEndHour);
-                  }}
-                >
-                  {Array.from({ length: 24 }, (_, i) => {
-                    const displayHour = i + 1;
-                    const isDisabled =
-                      !settings.dynamicTimeRange && i <= settings.startHour;
-                    return (
-                      <option key={i} value={i} disabled={isDisabled}>
-                        {displayHour.toString().padStart(2, "0")}:00
-                      </option>
-                    );
-                  })}
-                </select>
-              </div>
+            <div className="form-control">
+              <label htmlFor="endHour" className="label mb-1">
+                End time
+              </label>
+              <select
+                id="endHour"
+                className={`select select-sm inline border-base-300 select-bordered rounded-md w-full focus:outline-primary focus-within:outline-primary ${
+                  settings.dynamicTimeRange ? "select-disabled" : ""
+                } ${
+                  !settings.dynamicTimeRange &&
+                  settings.startHour > settings.endHour
+                    ? "select-error"
+                    : ""
+                }`}
+                value={settings.endHour}
+                disabled={settings.dynamicTimeRange}
+                onChange={(e) => {
+                  const newEndHour = parseInt(e.target.value);
+                  onSettingsChange({
+                    ...settings,
+                    endHour: newEndHour,
+                    startHour: Math.min(settings.startHour, newEndHour),
+                  });
+                }}
+              >
+                {Array.from({ length: 24 }, (_, i) => {
+                  const displayHour = i + 1;
+                  const isDisabled =
+                    !settings.dynamicTimeRange && i < settings.startHour;
+                  return (
+                    <option key={i} value={i} disabled={isDisabled}>
+                      {displayHour.toString().padStart(2, "0")}:00
+                    </option>
+                  );
+                })}
+              </select>
             </div>
           </div>
         </div>
-      </div>
+      </SettingsGroup>
 
       {/* Grid Settings */}
-      <div className="card bg-base-200 shadow-sm">
-        <div className="card-body p-4 space-y-2">
-          <div className="card-title text-base flex items-center gap-2">
-            <svg
-              className="w-4 h-4 text-primary"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"
-              />
-            </svg>
-            Grid Settings
-          </div>
-
-          <div className="form-control">
-            <label className="label flex items-center gap-4 cursor-pointer">
-              <div className="flex-1">
-                <span className="label-text font-medium">
-                  Display 30 min slot
-                </span>
-                <div className="label-text-alt text-xs opacity-70">
-                  Slots for better time resolution
-                </div>
-              </div>
-              <input
-                type="checkbox"
-                className="checkbox checkbox-primary w-5 h-5"
-                checked={settings.slotDuration === 30}
-                onChange={(e) =>
-                  handleSettingChange(
-                    "slotDuration",
-                    e.target.checked ? 30 : 60,
-                  )
-                }
-              />
-            </label>
-          </div>
-
-          <div className="form-control">
-            <label className="label w-full flex justify-between mb-1">
-              <span className="label-text font-medium">Table Scale</span>
-              <span className="label-text-alt">{settings.verticalScale}%</span>
-            </label>
-            <input
-              type="range"
-              min="50"
-              max="200"
-              step="1"
-              value={settings.verticalScale}
-              onChange={(e) =>
-                handleSettingChange("verticalScale", parseInt(e.target.value))
-              }
-              className="range range-xs range-primary w-full"
-            />
-            <div className="w-full flex justify-between text-xs mt-1 opacity-70 tabular-nums">
-              <span>50%</span>
-              <span className="ml-2">100%</span>
-              <span>150%</span>
-              <span>200%</span>
+      <SettingsGroup title="Grid">
+        <div className="form-control">
+          <label className="setting-toggle-row">
+            <div className="flex-1">
+              <span className="label-text font-medium">
+                Display 30 min slot
+              </span>
             </div>
-          </div>
-
-          <div className="form-control">
-            <label className="label w-full flex justify-between mb-1">
-              <span className="label-text font-medium">Table Width</span>
-              <span className="label-text-alt">{settings.width}%</span>
-            </label>
             <input
-              type="range"
-              min="20"
-              max="100"
-              value={settings.width}
+              type="checkbox"
+              className="switch-input"
+              role="switch"
+              checked={settings.slotDuration === 30}
               onChange={(e) =>
-                handleSettingChange("width", parseInt(e.target.value))
+                handleSettingChange("slotDuration", e.target.checked ? 30 : 60)
               }
-              className="range range-xs range-primary w-full"
             />
-            <div className="w-full flex justify-between text-xs mt-1 opacity-70">
-              <span>20%</span>
-              <span></span>
-              <span></span>
-              <span className="-ml-1">50%</span>
-              <span></span>
-              <span></span>
-              <span></span>
-              <span></span>
-              <span>100%</span>
-            </div>
+          </label>
+        </div>
+
+        <div className="form-control">
+          <label className="label w-full flex justify-between mb-1">
+            <span className="label-text font-medium">Table scale</span>
+            <span className="label-text-alt">{settings.verticalScale}%</span>
+          </label>
+          <input
+            type="range"
+            aria-label="Table scale"
+            min="50"
+            max="200"
+            step="1"
+            value={settings.verticalScale}
+            onChange={(e) =>
+              handleSettingChange("verticalScale", parseInt(e.target.value))
+            }
+            className="slider-input"
+          />
+          <div className="w-full flex justify-between text-xs mt-1 opacity-70 tabular-nums">
+            <span>50%</span>
+            <span className="ml-2">100%</span>
+            <span>150%</span>
+            <span>200%</span>
           </div>
         </div>
-      </div>
+
+        <div className="form-control">
+          <label className="label w-full flex justify-between mb-1">
+            <span className="label-text font-medium">Table width</span>
+            <span className="label-text-alt">{settings.width}%</span>
+          </label>
+          <input
+            type="range"
+            aria-label="Table width"
+            min="20"
+            max="100"
+            value={settings.width}
+            onChange={(e) =>
+              handleSettingChange("width", parseInt(e.target.value))
+            }
+            className="slider-input"
+          />
+          <div className="w-full flex justify-between text-xs mt-1 opacity-70">
+            <span>20%</span>
+            <span></span>
+            <span></span>
+            <span className="-ml-1">50%</span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span>100%</span>
+          </div>
+        </div>
+      </SettingsGroup>
 
       {/* View Options */}
-      <div className="card bg-base-200 shadow-sm">
-        <div className="card-body p-4 space-y-2">
-          {/* title */}
-          <div className="card-title text-base flex items-center gap-2">
-            <svg
-              className="w-4 h-4 text-primary"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-            >
-              <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-            </svg>
-            View Options
-          </div>
-
-          {/* show weekends */}
-          <div className="form-control">
-            <label className="label flex items-center gap-4 cursor-pointer">
-              <div className="flex-1">
-                <span className="label-text font-medium">Show Weekends</span>
-                <div className="label-text-alt text-xs opacity-70">
-                  Display Saturday and Sunday
-                </div>
-              </div>
-              <input
-                type="checkbox"
-                className="checkbox checkbox-primary w-5 h-5"
-                checked={settings.showWeekends}
-                onChange={(e) =>
-                  handleSettingChange("showWeekends", e.target.checked)
-                }
-              />
-            </label>
-          </div>
-
-          {/* start with Sunday */}
-          <div className="form-control">
-            <label className="label flex items-center gap-4 cursor-pointer">
-              <div className="flex-1">
-                <span className="label-text font-medium">
-                  Start with Sunday
-                </span>
-                <div className="label-text-alt text-xs opacity-70">
-                  Begin the week on Sunday
-                </div>
-              </div>
-              <input
-                type="checkbox"
-                className="checkbox checkbox-primary w-5 h-5"
-                checked={settings.startWithSunday}
-                onChange={(e) =>
-                  handleSettingChange("startWithSunday", e.target.checked)
-                }
-              />
-            </label>
-          </div>
+      <SettingsGroup title="Week">
+        {/* show weekends */}
+        <div className="form-control">
+          <label className="setting-toggle-row">
+            <div className="flex-1">
+              <span className="label-text font-medium">Show weekends</span>
+            </div>
+            <input
+              type="checkbox"
+              className="switch-input"
+              role="switch"
+              checked={settings.showWeekends}
+              onChange={(e) =>
+                handleSettingChange("showWeekends", e.target.checked)
+              }
+            />
+          </label>
         </div>
-      </div>
+
+        {/* start with Sunday */}
+        <div className="form-control">
+          <label className="setting-toggle-row">
+            <div className="flex-1">
+              <span className="label-text font-medium">Start with Sunday</span>
+            </div>
+            <input
+              type="checkbox"
+              className="switch-input"
+              role="switch"
+              checked={settings.startWithSunday}
+              onChange={(e) =>
+                handleSettingChange("startWithSunday", e.target.checked)
+              }
+            />
+          </label>
+        </div>
+      </SettingsGroup>
     </div>
   );
 };

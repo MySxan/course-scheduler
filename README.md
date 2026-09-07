@@ -8,6 +8,7 @@ A web-based course scheduling application that helps students visualize and mana
 - **Manual Course Entry** - Add courses one by one with details like name, section, days, times, and location
 - **CSV Import** - Bulk import courses from CSV files for quick schedule setup
 - **Customizable Display** - Adjust time ranges, show/hide weekends, change week start day, and scale the timetable
+- **Style Studio** - Four groups of live controls, presets, actual-size course cards, undo/redo, local saving, and style JSON import/export
 - **Export to Image** - Download your timetable as a PNG image to share or print
 - **Smart Time Range** - Automatically adjusts the displayed hours based on your courses
 - **Responsive Design** - Works on desktop and mobile devices
@@ -16,7 +17,7 @@ A web-based course scheduling application that helps students visualize and mana
 
 ### Prerequisites
 
-- Node.js 18+
+- Node.js 20.19+ or 22.12+
 - npm or pnpm
 
 ### Installation
@@ -101,6 +102,10 @@ The built files will be in the `dist` directory.
 1. **Time Range** - Set custom start/end hours or use smart auto-detection
 2. **Grid Settings** - Toggle 30-minute slots, adjust table scale and width
 3. **View Options** - Show/hide weekends, start week on Sunday
+
+### Style Studio
+
+Open **Style** to customize typography, card shape and spacing, visible fields and their order, colors and surfaces. Changes apply immediately to the card specimen, your weekly timetable, and image exports. Use **Undo**, **Redo**, or **Reset style** to experiment. **Save style file** and **Load style file** transfer appearance settings without modifying courses.
 
 ### Export Your Schedule
 

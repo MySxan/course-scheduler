@@ -1,3 +1,8 @@
+@import "./styles/tokens.css";
+@import "./styles/controls.css";
+@import "./styles/workspace.css";
+@import "./styles/style-studio.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -11,99 +16,50 @@
     padding: 0;
     overflow: hidden;
   }
-
   html {
     text-size-adjust: 100%;
     -webkit-text-size-adjust: 100%;
   }
-
-  [data-theme="cupcake"] {
-    --color-primary: #0d9488;
-    --color-primary-content: #f0fdfa;
-    --color-error: #e82e86;
-    --color-error-content: #fff5fa;
+  body {
+    font-family: var(--ui-font);
+    -webkit-font-smoothing: antialiased;
   }
 }
 
-@layer utilities {
-  .no-scrollbar::-webkit-scrollbar {
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.preview-hidden-outline {
+  outline: none;
+}
+
+/* Preserve animation completion and focus visibility while removing motion. */
+@media (prefers-reduced-motion: reduce) {
+  .app-shell *,
+  .app-shell *::before,
+  .app-shell *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+@media (forced-colors: active) {
+  .top-nav-tab[aria-current="page"],
+  .style-category[aria-pressed="true"],
+  .day-button[aria-pressed="true"],
+  .segmented-control button[aria-pressed="true"] {
+    outline: 2px solid Highlight;
+    outline-offset: -2px;
+  }
+  .app-shell input.switch-input {
+    appearance: auto;
+  }
+  .app-shell input.switch-input::before {
     display: none;
-  }
-  .no-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-
-  .preview-hidden-outline {
-    outline: none;
-  }
-
-  .checkbox,
-  .checkbox:checked,
-  .select:focus-within,
-  .input:focus,
-  .input,
-  .toggle,
-  .toggle:before,
-  .toggle:after {
-    box-shadow: none;
-  }
-
-  .checkbox {
-    border-radius: 0.3rem;
-    background-color: white;
-  }
-
-  .range::-webkit-slider-thumb {
-    box-shadow:
-      -1000px 0 0px 992px currentColor,
-      0 0 0 5px white inset;
-  }
-
-  .toggle-primary:not(:checked):not([aria-checked="true"]) {
-    --input-color: var(--color-primary);
-    background-color: var(--color-base-100);
-  }
-
-  .toggle-primary:checked,
-  .toggle-primary[aria-checked="true"],
-  .toggle-primary:has(> input:checked) {
-    background-color: var(--color-primary);
-  }
-
-  .toggle-primary:checked::before,
-  .toggle-primary[aria-checked="true"]::before,
-  .toggle-primary:has(> input:checked)::before {
-    background-color: var(--color-base-100);
-  }
-
-  @keyframes sidebarSlideIn {
-    from {
-      transform: translateX(-100%);
-    }
-    to {
-      transform: translateX(0);
-    }
-  }
-
-  @keyframes sidebarSlideOut {
-    from {
-      transform: translateX(0);
-    }
-    to {
-      transform: translateX(-100%);
-    }
-  }
-
-  .animate-sidebar-slide-in {
-    animation: sidebarSlideIn 0.12s ease-out;
-    animation-fill-mode: both;
-    will-change: transform;
-  }
-
-  .animate-sidebar-slide-out {
-    animation: sidebarSlideOut 0.12s ease-in;
-    animation-fill-mode: both;
-    will-change: transform;
   }
 }

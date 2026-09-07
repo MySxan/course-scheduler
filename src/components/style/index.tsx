@@ -1,378 +1,512 @@
-import React, { useState } from "react";
+import { Icon } from "../ui/Icon";
+import type { StyleSettings, ContentField } from "../../types/style";
 import type { StyleCategory } from "./CategoryBar";
+import { FONT_STACKS, PALETTES } from "../../lib/style";
+import {
+  ColorControl,
+  NumberControl,
+  ChoiceControl,
+  SettingGroup,
+  ToggleControl,
+} from "./controls";
 
 interface StyleSidebarProps {
   activeCategory: StyleCategory;
-  cardBackgroundPreset: "primary" | "tealFamily";
-  onCardBackgroundPresetChange: (preset: "primary" | "tealFamily") => void;
+  styleSettings: StyleSettings;
+  onChange: (value: StyleSettings, group?: string) => void;
+  onEnd: () => void;
 }
+const FIELD_NAMES: Record<ContentField, string> = {
+  name: "Course name",
+  section: "Section",
+  time: "Time",
+  description: "Description",
+};
 
-export const StyleSidebar: React.FC<StyleSidebarProps> = ({
+export function StyleSidebar({
   activeCategory,
-  cardBackgroundPreset,
-  onCardBackgroundPresetChange,
-}) => {
-  const [capitalization, setCapitalization] = useState<
-    "none" | "upper" | "title" | "lower"
-  >("none");
-
+  styleSettings: s,
+  onChange,
+  onEnd,
+}: StyleSidebarProps) {
+  const update = <
+    K extends "typography" | "layout" | "content" | "colors",
+    F extends keyof StyleSettings[K],
+  >(
+    group: K,
+    field: F,
+    value: StyleSettings[K][F],
+    continuous = false,
+  ) =>
+    onChange(
+      { ...s, [group]: { ...s[group], [field]: value } },
+      continuous ? `${group}.${String(field)}` : undefined,
+    );
+  const numeric = (
+    group: "typography" | "layout",
+    field: string,
+    label: string,
+    value: number,
+    min: number,
+    max: number,
+    step = 1,
+    unit = "px",
+  ) => (
+    <NumberControl
+      label={label}
+      value={value}
+      min={min}
+      max={max}
+      step={step}
+      unit={unit}
+      onChange={(next) =>
+        onChange(
+          { ...s, [group]: { ...s[group], [field]: next } },
+          `${group}.${field}`,
+        )
+      }
+      onEnd={onEnd}
+    />
+  );
+  const moveField = (index: number, delta: number) => {
+    const order = [...s.content.order];
+    [order[index], order[index + delta]] = [order[index + delta], order[index]];
+    update("content", "order", order);
+  };
   return (
-    <div className="flex flex-col gap-5">
+    <div className="style-controls">
       {activeCategory === "typography" && (
         <>
-          {/* Basic Typography Settings */}
-          <div className="card bg-base-200 shadow-sm">
-            <div className="card-body p-4 space-y-2">
-              <div className="card-title text-base flex items-center gap-2">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="w-4 h-4 text-primary"
+          <SettingGroup title="Typeface">
+            <ChoiceControl
+              label="Font family"
+              columns={2}
+              renderOption={(key, text) => (
+                <span
+                  className="font-choice"
+                  style={{
+                    fontFamily: FONT_STACKS[key as keyof typeof FONT_STACKS],
+                  }}
                 >
-                  <path d="M12 4v16" />
-                  <path d="M4 7V5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v2" />
-                  <path d="M9 20h6" />
-                </svg>
-                Basic Settings
-              </div>
-
-              {/* Font Family */}
-              <div className="form-control">
-                <label className="label mb-1">
-                  <span className="label-text">Font Family</span>
-                </label>
-                <select className="select inline border-base-300 rounded-md w-full focus:outline-primary focus-within:outline-primary">
-                  <option value="sans">Sans</option>
-                  <option value="serif">Serif</option>
-                  <option value="mono">Monospace</option>
-                  <option value="geist">Geist Sans</option>
-                </select>
-              </div>
-
-              <div className="flex flex-1 gap-4">
-                {/* Font Size */}
-                <div className="form-control flex-1">
-                  <label className="label mb-1 flex justify-between">
-                    <span className="label-text font-medium">Font Size</span>
-                  </label>
-                  <div className="flex gap-2 items-center">
-                    <input
-                      type="number"
-                      min="10"
-                      max="24"
-                      defaultValue="14"
-                      className="input input-md border-base-300 focus:outline-primary"
-                    />
-                  </div>
-                </div>
-
-                {/* Line Height */}
-                <div className="form-control flex-1">
-                  <label className="label mb-1 flex justify-between">
-                    <span className="label-text font-medium">Line Height</span>
-                  </label>
-                  <div className="flex gap-2 items-center">
-                    <input
-                      type="number"
-                      min="1"
-                      max="2.5"
-                      step="0.1"
-                      defaultValue="1.5"
-                      className="input input-md border-base-300 focus:outline-primary"
-                    />
-                  </div>
-                </div>
-
-                {/* Spacing */}
-                <div className="form-control flex-1">
-                  <label className="label mb-1 flex justify-between">
-                    <span className="label-text font-medium">Spacing</span>
-                  </label>
-                  <div className="flex gap-2 items-center">
-                    <input
-                      type="number"
-                      min="-2"
-                      max="4"
-                      step="0.1"
-                      defaultValue="0"
-                      className="input input-md border-base-300 focus:outline-primary"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex flex-1 gap-4">
-                {/* Title Weight */}
-                <div className="form-control flex-1">
-                  <label className="label mb-1">
-                    <span className="label-text">Title Weight</span>
-                  </label>
-                  <select className="select inline border-base-300 rounded-md w-full focus:outline-primary focus-within:outline-primary">
-                    <option value="300">Light (300)</option>
-                    <option value="400">Regular (400)</option>
-                    <option value="500">Medium (500)</option>
-                    <option value="600" selected>
-                      Semibold (600)
-                    </option>
-                    <option value="700">Bold (700)</option>
-                    <option value="800">Extrabold (800)</option>
-                  </select>
-                </div>
-
-                {/* Content Weight */}
-                <div className="form-control flex-1">
-                  <label className="label mb-1">
-                    <span className="label-text">Content Weight</span>
-                  </label>
-                  <select className="select inline border-base-300 rounded-md w-full focus:outline-primary focus-within:outline-primary">
-                    <option value="300">Light (300)</option>
-                    <option value="400" selected>
-                      Regular (400)
-                    </option>
-                    <option value="500">Medium (500)</option>
-                    <option value="600">Semibold (600)</option>
-                    <option value="700">Bold (700)</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Title Weight Axis */}
-              <div className="form-control">
-                <label className="label py-1 flex justify-between">
-                  <span className="label-text text-sm">Title Weight Axis</span>
-                  <span className="label-text-alt tabular-nums">500</span>
-                </label>
-                <input
-                  type="range"
-                  min="100"
-                  max="900"
-                  step="10"
-                  defaultValue="500"
-                  className="range range-xs range-primary w-full"
-                />
-                <div className="w-full flex justify-between text-xs mt-1 opacity-70 tabular-nums">
-                  <span>100</span>
-                  <span>500</span>
-                  <span>900</span>
-                </div>
-              </div>
-
-              {/* Content Weight Axis */}
-              <div className="form-control">
-                <label className="label py-1 flex justify-between">
-                  <span className="label-text text-sm">
-                    Content Weight Axis
-                  </span>
-                  <span className="label-text-alt tabular-nums">300</span>
-                </label>
-                <input
-                  type="range"
-                  min="100"
-                  max="900"
-                  step="10"
-                  defaultValue="300"
-                  className="range range-xs range-primary w-full"
-                />
-                <div className="w-full flex justify-between text-xs mt-1 opacity-70 tabular-nums">
-                  <span>100</span>
-                  <span>500</span>
-                  <span>900</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Advanced Metrics */}
-          <div className="card bg-base-200 shadow-sm">
-            <div className="card-body p-4 space-y-2">
-              <div className="card-title text-base flex items-center gap-2">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="w-4 h-4 text-primary"
+                  <b>Aa</b>
+                  <span>{text}</span>
+                </span>
+              )}
+              value={s.typography.font}
+              options={[
+                ["outfit", "Outfit"],
+                ["system", "System UI"],
+                ["sans", "Arial / Helvetica"],
+                ["serif", "Georgia / Serif"],
+                ["mono", "Monospace"],
+              ]}
+              onChange={(v) =>
+                update(
+                  "typography",
+                  "font",
+                  v as StyleSettings["typography"]["font"],
+                )
+              }
+            />
+            <ChoiceControl
+              label="Course name weight"
+              columns={5}
+              renderOption={(key) => (
+                <span
+                  aria-hidden="true"
+                  className="type-choice"
+                  style={{ fontWeight: Number(key) }}
                 >
-                  <circle cx="12" cy="12" r="10" />
-                  <path d="M12 8v8M8 12h8" />
-                </svg>
-                Advanced Metrics
-              </div>
-
-              {/* Ascender Trim */}
-              <div className="form-control">
-                <label className="label cursor-pointer flex justify-center">
-                  <div className="flex-1">
-                    <span className="label-text font-medium">
-                      Ascender Trim
-                    </span>
-                    <div className="label-text-alt text-xs opacity-70">
-                      Remove excess space above capital letters
-                    </div>
-                  </div>
-                  <input
-                    type="checkbox"
-                    className="toggle toggle-primary shadow-none before:shadow-none after:shadow-none bg-transparent"
-                  />
-                </label>
-              </div>
-
-              {/* Tabular Numbers */}
-              <div className="form-control">
-                <label className="label cursor-pointer flex justify-center">
-                  <div className="flex-1">
-                    <span className="label-text font-medium">
-                      Tabular Numbers
-                    </span>
-                    <div className="label-text-alt text-xs opacity-70">
-                      Fixed-width digits for alignment
-                    </div>
-                  </div>
-                  <input
-                    type="checkbox"
-                    className="toggle toggle-primary shadow-none before:shadow-none after:shadow-none bg-transparent"
-                    defaultChecked
-                  />
-                </label>
-              </div>
-
-              {/* Capitalization */}
-              <div className="form-control">
-                <label className="label mb-1">
-                  <span className="label-text">Capitalization</span>
-                </label>
-                <div className="join flex-1 flex w-full gap-0 rounded-lg">
-                  <button
-                    type="button"
-                    className={`btn joined-item font-normal py-1.5 rounded-l-md rounded-r-none border flex-1 transition-colors ${
-                      capitalization === "none"
-                        ? "bg-primary-content border-primary shadow-primary shadow-[inset_0_0_0_1px] text-primary"
-                        : "bg-base-100"
-                    }`}
-                    onClick={() => setCapitalization("none")}
-                  >
-                    -
-                  </button>
-                  <button
-                    type="button"
-                    className={`btn joined-item rounded-none font-normal py-1.5 border flex-1 transition-colors ${
-                      capitalization === "upper"
-                        ? "bg-primary-content border-primary shadow-primary shadow-[inset_0_0_0_1px] text-primary"
-                        : "bg-base-100"
-                    }`}
-                    onClick={() => setCapitalization("upper")}
-                  >
-                    ABC
-                  </button>
-                  <button
-                    type="button"
-                    className={`btn joined-item rounded-none font-normal py-1.5 border flex-1 transition-colors ${
-                      capitalization === "title"
-                        ? "bg-primary-content border-primary shadow-primary shadow-[inset_0_0_0_1px] text-primary"
-                        : "bg-base-100"
-                    }`}
-                    onClick={() => setCapitalization("title")}
-                  >
-                    Abc
-                  </button>
-                  <button
-                    type="button"
-                    className={`btn joined-item rounded-r-md rounded-l-none font-normal py-1.5 border flex-1 transition-colors ${
-                      capitalization === "lower"
-                        ? "bg-primary-content border-primary shadow-primary shadow-[inset_0_0_0_1px] text-primary"
-                        : "bg-base-100"
-                    }`}
-                    onClick={() => setCapitalization("lower")}
-                  >
-                    abc
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
+                  Aa
+                </span>
+              )}
+              value={s.typography.titleWeight}
+              options={[
+                [400, "Regular"],
+                [500, "Medium"],
+                [600, "Semibold"],
+                [700, "Bold"],
+                [800, "Extra bold"],
+              ]}
+              onChange={(v) => update("typography", "titleWeight", Number(v))}
+            />
+            <ChoiceControl
+              label="Course name case"
+              columns={4}
+              renderOption={(key) => (
+                <span aria-hidden="true" className="type-choice">
+                  {
+                    {
+                      none: "—",
+                      uppercase: "AA",
+                      capitalize: "Aa",
+                      lowercase: "aa",
+                    }[key]
+                  }
+                </span>
+              )}
+              value={s.typography.capitalization}
+              options={[
+                ["none", "As typed"],
+                ["uppercase", "UPPERCASE"],
+                ["capitalize", "Title Case"],
+                ["lowercase", "lowercase"],
+              ]}
+              onChange={(v) =>
+                update(
+                  "typography",
+                  "capitalization",
+                  v as StyleSettings["typography"]["capitalization"],
+                )
+              }
+            />
+          </SettingGroup>
+          <SettingGroup title="Type scale">
+            {numeric(
+              "typography",
+              "titleSize",
+              "Course name",
+              s.typography.titleSize,
+              10,
+              36,
+            )}
+            {numeric(
+              "typography",
+              "sectionSize",
+              "Section",
+              s.typography.sectionSize,
+              10,
+              24,
+            )}
+            {numeric(
+              "typography",
+              "timeSize",
+              "Time",
+              s.typography.timeSize,
+              10,
+              24,
+            )}
+            {numeric(
+              "typography",
+              "descriptionSize",
+              "Description",
+              s.typography.descriptionSize,
+              10,
+              24,
+            )}
+          </SettingGroup>
+          <SettingGroup title="Spacing & numbers">
+            {numeric(
+              "typography",
+              "lineHeight",
+              "Line height",
+              s.typography.lineHeight,
+              1,
+              2,
+              0.05,
+              "×",
+            )}
+            {numeric(
+              "typography",
+              "letterSpacing",
+              "Letter spacing",
+              s.typography.letterSpacing,
+              -0.5,
+              3,
+              0.1,
+            )}
+            <ToggleControl
+              label="Tabular numbers"
+              checked={s.typography.tabularNumbers}
+              onChange={(v) => update("typography", "tabularNumbers", v)}
+            />
+          </SettingGroup>
         </>
       )}
-
       {activeCategory === "cardLayout" && (
         <>
-          <div className="text-sm text-base-content/50 italic">Card layout</div>
+          <SettingGroup title="Shape & spacing">
+            {numeric(
+              "layout",
+              "radius",
+              "Corner radius",
+              s.layout.radius,
+              0,
+              24,
+            )}
+            {numeric(
+              "layout",
+              "padding",
+              "Inner padding",
+              s.layout.padding,
+              0,
+              20,
+            )}
+            {numeric("layout", "gap", "Field spacing", s.layout.gap, 0, 12)}
+            {numeric(
+              "layout",
+              "cardGap",
+              "Card inset",
+              s.layout.cardGap,
+              0,
+              10,
+            )}
+            {numeric(
+              "layout",
+              "borderWidth",
+              "Border width",
+              s.layout.borderWidth,
+              0,
+              4,
+            )}
+          </SettingGroup>
+          <SettingGroup title="Alignment & depth">
+            <ChoiceControl
+              label="Text alignment"
+              renderOption={(key) => (
+                <Icon name={key as "left" | "center" | "right"} />
+              )}
+              value={s.layout.align}
+              options={[
+                ["left", "Left"],
+                ["center", "Center"],
+                ["right", "Right"],
+              ]}
+              onChange={(v) =>
+                update("layout", "align", v as StyleSettings["layout"]["align"])
+              }
+            />
+            <ChoiceControl
+              label="Vertical alignment"
+              renderOption={(key) => (
+                <Icon
+                  name={key === "center" ? "middle" : (key as "top" | "bottom")}
+                />
+              )}
+              value={s.layout.verticalAlign}
+              options={[
+                ["top", "Top"],
+                ["center", "Center"],
+                ["bottom", "Bottom"],
+              ]}
+              onChange={(v) =>
+                update(
+                  "layout",
+                  "verticalAlign",
+                  v as StyleSettings["layout"]["verticalAlign"],
+                )
+              }
+            />
+            <ChoiceControl
+              label="Shadow"
+              value={s.layout.shadow}
+              options={[
+                ["none", "None"],
+                ["small", "Subtle"],
+                ["medium", "Elevated"],
+              ]}
+              onChange={(v) =>
+                update(
+                  "layout",
+                  "shadow",
+                  v as StyleSettings["layout"]["shadow"],
+                )
+              }
+            />
+          </SettingGroup>
         </>
       )}
-
       {activeCategory === "contentVisibility" && (
         <>
-          <div className="text-sm text-base-content/50 italic">
-            Content visibility
-          </div>
+          <SettingGroup title="Fields & order">
+            <ol className="style-field-order">
+              {s.content.order.map((field, index) => (
+                <li key={field}>
+                  <label
+                    title={
+                      field === "name"
+                        ? "Course name is always visible"
+                        : `Show ${FIELD_NAMES[field]}`
+                    }
+                  >
+                    <input
+                      type="checkbox"
+                      checked={field === "name" || s.content[field]}
+                      disabled={field === "name"}
+                      onChange={(event) => {
+                        if (field !== "name")
+                          update("content", field, event.target.checked);
+                      }}
+                    />
+                    <span>{FIELD_NAMES[field]}</span>
+                  </label>
+                  <div>
+                    <button
+                      type="button"
+                      aria-label={`Move ${FIELD_NAMES[field]} up`}
+                      disabled={index === 0}
+                      onClick={() => moveField(index, -1)}
+                    >
+                      <Icon name="up" />
+                    </button>
+                    <button
+                      type="button"
+                      aria-label={`Move ${FIELD_NAMES[field]} down`}
+                      disabled={index === s.content.order.length - 1}
+                      onClick={() => moveField(index, 1)}
+                    >
+                      <Icon name="down" />
+                    </button>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </SettingGroup>
+          <SettingGroup title="Display format">
+            <ChoiceControl
+              label="Time format"
+              value={s.content.timeFormat}
+              options={[
+                ["12h", "2:30 PM"],
+                ["24h", "14:30"],
+              ]}
+              onChange={(v) =>
+                update("content", "timeFormat", v as "12h" | "24h")
+              }
+            />
+            <ChoiceControl
+              label="Maximum course name lines"
+              columns={4}
+              renderOption={(key) => (
+                <span aria-hidden="true" className="line-choice">
+                  {Array.from({ length: Number(key) }, (_, i) => (
+                    <i key={i} />
+                  ))}
+                </span>
+              )}
+              value={s.content.titleLines}
+              options={[
+                [1, "1 line"],
+                [2, "2 lines"],
+                [3, "3 lines"],
+                [4, "4 lines"],
+              ]}
+              onChange={(v) => update("content", "titleLines", Number(v))}
+            />
+          </SettingGroup>
         </>
       )}
-
       {activeCategory === "colorPresets" && (
         <>
-          <div className="card bg-base-200 shadow-sm">
-            <div className="card-body p-4 space-y-2">
-              <div className="card-title text-base flex items-center gap-2">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="w-4 h-4 text-primary"
-                >
-                  <rect width="20" height="16" x="2" y="4" rx="2" />
-                  <path d="M6 8h.01" />
-                  <path d="M10 8h.01" />
-                  <path d="M14 8h.01" />
-                </svg>
-                Card Background
+          <SettingGroup title="Course colors">
+            <ChoiceControl
+              label="Color source"
+              columns={2}
+              renderOption={(key, text) => (
+                <span className="palette-choice">
+                  <span className="palette-strip" aria-hidden="true">
+                    {(key === "uniform"
+                      ? [s.colors.accent]
+                      : key === "course"
+                        ? ["#8b8b92", "#b7b7bd", "#d2d2d7"]
+                        : PALETTES[key as keyof typeof PALETTES]
+                    ).map((color, i) => (
+                      <i key={i} style={{ backgroundColor: color }} />
+                    ))}
+                  </span>
+                  <span>{text}</span>
+                </span>
+              )}
+              value={s.colors.source}
+              options={[
+                ["uniform", "One color"],
+                ["course", "My course colors"],
+                ["teal", "Teal family"],
+                ["spectrum", "Spectrum"],
+              ]}
+              onChange={(v) =>
+                update(
+                  "colors",
+                  "source",
+                  v as StyleSettings["colors"]["source"],
+                )
+              }
+            />
+            {s.colors.source === "uniform" && (
+              <ColorControl
+                label="Card color"
+                value={s.colors.accent}
+                onChange={(v) => update("colors", "accent", v, true)}
+                onEnd={onEnd}
+              />
+            )}
+            {(s.colors.source === "teal" || s.colors.source === "spectrum") && (
+              <div className="style-swatches" aria-label="Palette colors">
+                {PALETTES[s.colors.source].map((color) => (
+                  <span
+                    key={color}
+                    style={{ background: color }}
+                    title={color}
+                  />
+                ))}
               </div>
-
-              <div className="form-control">
-                <label className="label mb-1">
-                  <span className="label-text">Color preset</span>
-                </label>
-                <select
-                  className="select inline border-base-300 rounded-md w-full focus:outline-primary focus-within:outline-primary"
-                  value={cardBackgroundPreset}
-                  onChange={(event) =>
-                    onCardBackgroundPresetChange(
-                      event.target.value as "primary" | "tealFamily",
-                    )
-                  }
-                >
-                  <option value="primary">Theme primary</option>
-                  <option value="tealFamily">Teal family</option>
-                </select>
-              </div>
-            </div>
-          </div>
+            )}
+          </SettingGroup>
+          <SettingGroup title="Surface & text">
+            <ChoiceControl
+              label="Card surface"
+              renderOption={(key, text) => (
+                <span className="surface-choice">
+                  <span
+                    aria-hidden="true"
+                    className={`surface-sample surface-${key}`}
+                  >
+                    <i />
+                    <i />
+                  </span>
+                  <span>{text}</span>
+                </span>
+              )}
+              value={s.colors.surface}
+              options={[
+                ["solid", "Solid"],
+                ["soft", "Soft tint"],
+                ["outline", "Outline"],
+              ]}
+              onChange={(v) =>
+                update(
+                  "colors",
+                  "surface",
+                  v as StyleSettings["colors"]["surface"],
+                )
+              }
+            />
+            <ChoiceControl
+              label="Text color"
+              value={s.colors.textMode}
+              options={[
+                ["auto", "Auto"],
+                ["custom", "Custom"],
+              ]}
+              onChange={(v) =>
+                update("colors", "textMode", v as "auto" | "custom")
+              }
+            />
+            {s.colors.textMode === "custom" && (
+              <ColorControl
+                label="Custom text"
+                value={s.colors.text}
+                onChange={(v) => update("colors", "text", v, true)}
+                onEnd={onEnd}
+              />
+            )}
+          </SettingGroup>
         </>
       )}
     </div>
   );
-};
+}
 
-export const StylePreviewGrid: React.FC = () => {
-  return <div className="grid grid-cols-5 gap-4"></div>;
-};
-
+export { StylePreviewGrid } from "./StylePreviewGrid";
+export { StyleToolbar } from "./StyleToolbar";
 export { CategoryBar, type StyleCategory } from "./CategoryBar";
-
-export default {};

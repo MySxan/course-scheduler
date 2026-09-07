@@ -1,4 +1,4 @@
-import React from "react";
+import { useId } from "react";
 
 interface ConfirmDialogProps {
   isOpen: boolean;
@@ -8,9 +8,10 @@ interface ConfirmDialogProps {
   cancelLabel?: string;
   onConfirm: () => void;
   onCancel?: () => void;
+  tone?: "default" | "danger";
 }
 
-export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
+export function ConfirmDialog({
   isOpen,
   title,
   description,
@@ -18,65 +19,38 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   cancelLabel,
   onConfirm,
   onCancel,
-}) => {
+  tone = "default",
+}: ConfirmDialogProps) {
+  const id = useId();
   if (!isOpen) return null;
-  const handleCancel = onCancel ?? (() => {});
-
   return (
     <div
-      className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 p-4"
+      className="dialog-backdrop confirmation-layer"
       role="dialog"
       aria-modal="true"
-      aria-labelledby="confirmDialogTitle"
+      aria-labelledby={`${id}-title`}
+      aria-describedby={`${id}-description`}
     >
-      <div className="card bg-base-100 w-full max-w-md shadow-xl overflow-hidden">
-        <div className="card-body p-6 gap-8">
-          <div className="flex-1 items-start gap-3">
-            <div className="space-y-1 flex items-center gap-3 mb-2">
-              <span className="text-warning">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
-                >
-                  <path d="M12 9v4" />
-                  <path d="M12 17h.01" />
-                  <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z" />
-                </svg>
-              </span>
-              <div id="confirmDialogTitle" className="text-lg font-semibold">
-                {title}
-              </div>
-            </div>
-            <p className="text-sm text-base-content/70">{description}</p>
-          </div>
-
-          <div className="flex items-center justify-end gap-3">
-            {cancelLabel && (
-              <button
-                type="button"
-                className="btn shadow-none"
-                onClick={handleCancel}
-              >
-                {cancelLabel}
-              </button>
-            )}
-            <button
-              type="button"
-              className="btn btn-warning shadow-none"
-              onClick={onConfirm}
-            >
-              {confirmLabel}
+      <div className="confirmation-dialog">
+        <div className="dialog-content">
+          <h2 id={`${id}-title`}>{title}</h2>
+          <p id={`${id}-description`}>{description}</p>
+        </div>
+        <div className="dialog-actions">
+          {cancelLabel && (
+            <button type="button" className="btn" onClick={onCancel}>
+              {cancelLabel}
             </button>
-          </div>
+          )}
+          <button
+            type="button"
+            className={`btn ${tone === "danger" ? "btn-danger" : "btn-primary"}`}
+            onClick={onConfirm}
+          >
+            {confirmLabel}
+          </button>
         </div>
       </div>
     </div>
   );
-};
+}

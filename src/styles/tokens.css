@@ -1,0 +1,62 @@
+@font-face {
+  font-family: "Outfit";
+  src: url("../assets/fonts/Outfit-Variable.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+/* Application chrome only. CourseCard continues to use user-owned StyleSettings. */
+:root,
+html[data-theme="cupcake"] {
+  color-scheme: light;
+  --ui-canvas: #ffffff;
+  --ui-sidebar: #f5f5f7;
+  --ui-surface: #ffffff;
+  --ui-inset: #f5f5f7;
+  --ui-hover: #ededf0;
+  --ui-pressed: #e3e3e8;
+  --ui-text: #1d1d1f;
+  --ui-secondary: #6e6e73;
+  --ui-muted: #86868b;
+  --ui-border: #d2d2d7;
+  --ui-divider: #e8e8ed;
+  --ui-accent: #0d9488;
+  --ui-accent-hover: #0f766e;
+  --ui-accent-pressed: #115e59;
+  --ui-accent-soft: #f0fdfa;
+  --ui-danger: #b42318;
+  --ui-danger-soft: #fff0ee;
+  --ui-success: #237044;
+  --ui-warning: #805b12;
+  --ui-warning-soft: #fff9ec;
+  --ui-focus: #0d9488;
+  --ui-radius-control: 6px;
+  --ui-radius-panel: 8px;
+  --ui-radius-dialog: 10px;
+  --ui-shadow-selected: none;
+  --ui-shadow-dialog: none;
+  --ui-font:
+    "Outfit", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui,
+    sans-serif;
+  --ui-duration-press: 90ms;
+  --ui-duration-control: 150ms;
+  --ui-duration-panel: 220ms;
+  --ui-ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --ui-layer-header: 10;
+  --ui-layer-inspector: 20;
+  --ui-layer-dialog: 50;
+  --ui-layer-confirmation: 60;
+  --ui-layer-tooltip: 70;
+  /* Existing DaisyUI controls consume the same semantic palette. */
+  --color-base-100: var(--ui-surface);
+  --color-base-200: var(--ui-sidebar);
+  --color-base-300: var(--ui-divider);
+  --color-base-content: var(--ui-text);
+  --color-primary: var(--ui-accent);
+  --color-primary-content: #ffffff;
+  --color-error: var(--ui-danger);
+  --color-error-content: #ffffff;
+  --color-success: var(--ui-success);
+  --color-warning: var(--ui-warning);
+}

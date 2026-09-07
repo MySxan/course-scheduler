@@ -29,22 +29,22 @@ export const EditCoursePanel: React.FC<EditCoursePanelProps> = ({
     if (!isOpen || phase !== "exit") return;
     const timer = window.setTimeout(() => {
       onExited?.();
-    }, 120);
+    }, 220);
     return () => window.clearTimeout(timer);
   }, [isOpen, phase, onExited]);
 
   if (!isOpen) return null;
 
   return (
-    <div className=" absolute inset-0 z-20  m-4 ">
+    <div className="edit-panel-layer">
       <div
-        className={`card-body card bg-base-200 h-full w-fit p-4 flex flex-col overflow-visible ${
+        className={`edit-panel ${
           phase === "exit"
             ? "animate-sidebar-slide-out"
             : "animate-sidebar-slide-in"
         }`}
       >
-        <div className="card-title text-base flex items-center gap-2 mb-2">
+        <div className="edit-panel-heading">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className="w-4 h-4 text-primary"
@@ -58,14 +58,14 @@ export const EditCoursePanel: React.FC<EditCoursePanelProps> = ({
             <path d="M13 21h8" />
             <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
           </svg>
-          Edit Course
+          <h3>Edit course</h3>
         </div>
 
-        <div className="flex-1 overflow-visible">
-          <div className="space-y-3 h-full">
+        <div className="edit-panel-scroll">
+          <div className="edit-panel-fields">
             <div className="form-control">
               <label htmlFor="editCourseName" className="label mb-1">
-                Course Name
+                Course name
               </label>
               <input
                 id="editCourseName"
@@ -106,9 +106,9 @@ export const EditCoursePanel: React.FC<EditCoursePanelProps> = ({
               aria-labelledby="editDayOfWeekLabel"
             >
               <label id="editDayOfWeekLabel" className="label mb-1">
-                Day of Week
+                Days of week
               </label>
-              <div className="flex flex-wrap gap-2">
+              <div className="day-picker">
                 {DAYS_OF_WEEK.map((day) => {
                   const isSelected = editData.daysOfWeek.includes(day);
                   return (
@@ -129,11 +129,9 @@ export const EditCoursePanel: React.FC<EditCoursePanelProps> = ({
                           onErrorChange(next);
                         }
                       }}
-                      className={`btn w-8 font-normal py-1.5 rounded-md flex-1 transition-colors ${
-                        isSelected
-                          ? "bg-primary-content text-primary shadow-[inset_0_0_0_1px] border-primary font-medium"
-                          : "bg-base-100 text-base-content hover:bg-base-200"
-                      }`}
+                      aria-pressed={isSelected}
+                      aria-label={day}
+                      className="day-button"
                     >
                       {day.slice(0, 2)}
                     </button>
@@ -147,10 +145,10 @@ export const EditCoursePanel: React.FC<EditCoursePanelProps> = ({
               )}
             </div>
 
-            <div className="grid grid-cols-1 gap-3">
+            <div className="form-pair">
               <div className="form-control">
                 <label htmlFor="editStartTime" className="label mb-1">
-                  Start Time
+                  Start time
                 </label>
                 <input
                   id="editStartTime"
@@ -174,7 +172,7 @@ export const EditCoursePanel: React.FC<EditCoursePanelProps> = ({
 
               <div className="form-control">
                 <label htmlFor="editEndTime" className="label mb-1">
-                  End Time
+                  End time
                 </label>
                 <input
                   id="editEndTime"
@@ -214,7 +212,7 @@ export const EditCoursePanel: React.FC<EditCoursePanelProps> = ({
           </div>
         </div>
 
-        <div className="mt-4 flex items-center gap-2">
+        <div className="edit-panel-actions">
           <button
             type="button"
             className="btn bg-white shadow-none flex-1 hover:bg-base-300"

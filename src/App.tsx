@@ -11,6 +11,7 @@ import { ExportControlPanel, ExportPreviewArea } from "./components/export";
 import { ConfirmDialog } from "./components/ui/ConfirmDialog";
 import {
   StyleSidebar,
+  StyleToolbar,
   StylePreviewGrid,
   CategoryBar,
   type StyleCategory,
@@ -21,56 +22,13 @@ import {
 } from "./components/timetable/SettingsPanel";
 import { DEFAULT_COURSE_COLOR, validateTimeRange } from "./lib/utils";
 
-type CardBackgroundPreset = "primary" | "tealFamily";
-
-const TEAL_FAMILY_COLORS = [
-  "#30A685",
-  "#0D9488",
-  "#14BBB0",
-  "#4A6A92",
-  "#00B89F",
-  "#4788C5",
-  "#26669E",
-  "#358BB6",
-  "#4391A4",
-];
-
-const shuffleColors = (colors: string[]) => {
-  const next = [...colors];
-  for (let i = next.length - 1; i > 0; i -= 1) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [next[i], next[j]] = [next[j], next[i]];
-  }
-  return next;
-};
-
-const applyTealPalette = (courses: Course[]) => {
-  const palette = shuffleColors(TEAL_FAMILY_COLORS);
-  let index = 0;
-  return courses.map((course) => {
-    const color = palette[index % palette.length];
-    index += 1;
-    return { ...course, color };
-  });
-};
-
-const getNextTealColor = (courses: Course[]) => {
-  const counts = new Map<string, number>(
-    TEAL_FAMILY_COLORS.map((color) => [color, 0]),
-  );
-  courses.forEach((course) => {
-    if (counts.has(course.color)) {
-      counts.set(course.color, (counts.get(course.color) || 0) + 1);
-    }
-  });
-  const minCount = Math.min(...counts.values());
-  const candidates = TEAL_FAMILY_COLORS.filter(
-    (color) => counts.get(color) === minCount,
-  );
-  return candidates[Math.floor(Math.random() * candidates.length)];
-};
+import { useStyleSettings } from "./hooks/useStyleSettings";
+import { PageHeader } from "./components/ui/PageHeader";
+import { useCanvasSize } from "./hooks/useCanvasSize";
 
 function App() {
+  const styleController = useStyleSettings();
+  const { ref: mainRef, availableWidth, rootFontSize } = useCanvasSize();
   const [courses, setCourses] = useState<Course[]>(() => {
     try {
       const raw = localStorage.getItem("courseScheduler.courses");
@@ -90,7 +48,9 @@ function App() {
   const [activeTab, setActiveTab] = useState<TabType>(() => {
     try {
       const raw = localStorage.getItem("courseScheduler.activeTab");
-      return (raw as TabType) || "courses";
+      return ["courses", "preview", "style", "export"].includes(raw ?? "")
+        ? (raw as TabType)
+        : "courses";
     } catch {
       return "courses";
     }
@@ -99,23 +59,19 @@ function App() {
     () => {
       try {
         const raw = localStorage.getItem("courseScheduler.styleCategory");
-        return (raw as StyleCategory) || "typography";
+        return [
+          "typography",
+          "cardLayout",
+          "contentVisibility",
+          "colorPresets",
+        ].includes(raw ?? "")
+          ? (raw as StyleCategory)
+          : "typography";
       } catch {
         return "typography";
       }
     },
   );
-  const [cardBackgroundPreset, setCardBackgroundPreset] =
-    useState<CardBackgroundPreset>(() => {
-      try {
-        const raw = localStorage.getItem(
-          "courseScheduler.cardBackgroundPreset",
-        );
-        return (raw as CardBackgroundPreset) || "primary";
-      } catch {
-        return "primary";
-      }
-    });
   const [settings, setSettings] = useState<TimetableSettings>(() => {
     try {
       const raw = localStorage.getItem("courseScheduler.settings");
@@ -194,22 +150,6 @@ function App() {
   useEffect(() => {
     try {
       localStorage.setItem(
-        "courseScheduler.cardBackgroundPreset",
-        cardBackgroundPreset,
-      );
-    } catch {
-      // Ignore storage failures
-    }
-  }, [cardBackgroundPreset]);
-
-  useEffect(() => {
-    if (cardBackgroundPreset !== "tealFamily") return;
-    setCourses((prevCourses) => applyTealPalette(prevCourses));
-  }, [cardBackgroundPreset]);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem(
         "courseScheduler.settings",
         JSON.stringify(settings),
       );
@@ -228,36 +168,20 @@ function App() {
   }, [activeTab, isEditPanelOpen]);
 
   const handleCoursesFromCSV = (newCourses: Course[]) => {
-    setCourses((prevCourses) => {
-      if (cardBackgroundPreset !== "tealFamily") {
-        return [
-          ...prevCourses,
-          ...newCourses.map((course) => ({
-            ...course,
-            color: course.color ?? DEFAULT_COURSE_COLOR,
-          })),
-        ];
-      }
-
-      const nextCourses: Course[] = [...prevCourses];
-      const additions = newCourses.map((course) => {
-        const color = getNextTealColor(nextCourses);
-        const next = { ...course, color };
-        nextCourses.push(next);
-        return next;
-      });
-      return [...prevCourses, ...additions];
-    });
+    setCourses((previous) => [
+      ...previous,
+      ...newCourses.map((course) => ({
+        ...course,
+        color: course.color ?? DEFAULT_COURSE_COLOR,
+      })),
+    ]);
   };
 
   const handleCourseAdded = (newCourse: Course) => {
-    setCourses((prevCourses) => {
-      const color =
-        cardBackgroundPreset === "tealFamily"
-          ? getNextTealColor(prevCourses)
-          : newCourse.color ?? DEFAULT_COURSE_COLOR;
-      return [...prevCourses, { ...newCourse, color }];
-    });
+    setCourses((previous) => [
+      ...previous,
+      { ...newCourse, color: newCourse.color ?? DEFAULT_COURSE_COLOR },
+    ]);
   };
 
   const handleRemoveCourse = (courseId: string) => {
@@ -368,9 +292,9 @@ function App() {
   };
 
   return (
-    <div className="h-screen bg-base-200 flex flex-col overflow-hidden">
+    <div className="app-shell">
       {/* Fixed height header - must not expand */}
-      <header className="h-16 flex-none">
+      <header className="app-header">
         <TopNav
           activeTab={activeTab}
           onTabChange={setActiveTab}
@@ -379,19 +303,11 @@ function App() {
       </header>
 
       {/* Main layout area - fills remaining space */}
-      <div className="flex-1 flex overflow-hidden min-h-0">
-        {/* Category Bar*/}
-        {activeTab === "style" && (
-          <CategoryBar
-            activeCategory={activeStyleCategory}
-            onCategoryChange={setActiveStyleCategory}
-          />
-        )}
-
+      <div className="app-workspace">
         {/* Contextual Sidebar */}
         <ContextualSidebar activeTab={activeTab}>
           <div className="relative h-full">
-            <div className="h-full overflow-y-auto p-4 no-scrollbar">
+            <div className="sidebar-scroll">
               {activeTab === "preview" && (
                 <SettingsPanel
                   settings={settings}
@@ -399,26 +315,35 @@ function App() {
                 />
               )}
               {activeTab === "courses" && (
-                <div className="flex flex-col gap-5">
+                <div className="inspector-stack">
                   <CourseForm onCourseAdded={handleCourseAdded} />
                   <CSVUploader onCoursesLoaded={handleCoursesFromCSV} />
 
                   <button
                     onClick={handleClearAll}
-                    className="btn btn-error font-semibold btn-outline w-full shadow-none rounded-md"
+                    className="btn btn-danger-quiet w-full"
                     disabled={courses.length === 0}
                   >
-                    Delete All Courses
+                    Delete all courses
                   </button>
                 </div>
               )}
-              {activeTab === "export" && <ExportControlPanel />}
+              {activeTab === "export" && (
+                <ExportControlPanel disabled={!courses.length} />
+              )}
               {activeTab === "style" && (
-                <StyleSidebar
-                  activeCategory={activeStyleCategory}
-                  cardBackgroundPreset={cardBackgroundPreset}
-                  onCardBackgroundPresetChange={setCardBackgroundPreset}
-                />
+                <>
+                  <CategoryBar
+                    activeCategory={activeStyleCategory}
+                    onCategoryChange={setActiveStyleCategory}
+                  />
+                  <StyleSidebar
+                    activeCategory={activeStyleCategory}
+                    styleSettings={styleController.style}
+                    onChange={styleController.change}
+                    onEnd={styleController.endGroup}
+                  />
+                </>
               )}
             </div>
 
@@ -437,43 +362,33 @@ function App() {
         </ContextualSidebar>
 
         {/* Main Content Area */}
-        <main className="flex-1 min-h-0 overflow-hidden no-scrollbar p-8">
+        <main ref={mainRef} className="app-main">
           {activeTab === "preview" && (
-            <div className="flex flex-col h-full min-h-0">
-              <div className="flex-col mb-6">
-                <h1 className="text-2xl font-bold text-base-content mb-1">
-                  Timetable Preview
-                </h1>
-                <p className="text-base-content/70">
-                  View and customize your schedule layout
-                </p>
-              </div>
-              <div className="flex-1 flex overflow-auto no-scrollbar min-w-full">
+            <div className="workspace-page">
+              <PageHeader title="Timetable" />
+              <div className="content-scroll">
                 <WeeklyTimetable
                   courses={courses}
                   settings={settings}
-                  cardBackgroundPreset={cardBackgroundPreset}
+                  styleSettings={styleController.style}
+                  availableWidth={availableWidth}
+                  rootFontSize={rootFontSize}
                 />
               </div>
             </div>
           )}
 
           {activeTab === "courses" && (
-            <div className="flex flex-col h-full min-h-0">
-              <div className="flex justify-between items-baseline mb-6">
-                <div>
-                  <h1 className="text-2xl font-bold text-base-content mb-1">
-                    Course List
-                  </h1>
-                  <p className="text-base-content/70">
-                    Manage your enrolled courses
-                  </p>
-                </div>
-                <span className="text-sm text-white/90 bg-primary px-2 py-1 rounded-md">
-                  {courses.length} course{courses.length !== 1 ? "s" : ""}
-                </span>
-              </div>
-              <div className="flex-1 flex overflow-auto no-scrollbar min-w-full">
+            <div className="workspace-page">
+              <PageHeader
+                title="Your courses"
+                accessory={
+                  <span className="count-badge">
+                    {courses.length} course{courses.length !== 1 ? "s" : ""}
+                  </span>
+                }
+              />
+              <div className="content-scroll">
                 <CourseList
                   courses={courses}
                   onRemoveCourse={handleRemoveCourse}
@@ -484,43 +399,42 @@ function App() {
           )}
 
           {activeTab === "export" && (
-            <div className="flex flex-col h-full min-h-0">
-              <div className="mb-6">
-                <h1 className="text-2xl font-bold text-base-content mb-1">
-                  Export Schedule
-                </h1>
-                <p className="text-base-content/70">
-                  Preview and download your timetable
-                </p>
-              </div>
-              <div className="flex-1 flex overflow-auto no-scrollbar min-w-full">
+            <div className="workspace-page">
+              <PageHeader title="Export" />
+              <div className="content-scroll">
                 <ExportPreviewArea
                   courses={courses}
                   settings={settings}
-                  cardBackgroundPreset={cardBackgroundPreset}
+                  styleSettings={styleController.style}
+                  availableWidth={availableWidth}
+                  rootFontSize={rootFontSize}
                 />
               </div>
             </div>
           )}
 
           {activeTab === "style" && (
-            <div className="flex flex-col h-full min-h-0">
-              <div className="mb-6">
-                <h1 className="text-2xl font-bold text-base-content mb-1">
-                  Style System
-                </h1>
-                <p className="text-base-content/70">
-                  Adjust global styles and preview multiple card variants
-                </p>
-              </div>
-              <div className="flex-1 flex overflow-auto no-scrollbar min-w-full">
-                <StylePreviewGrid />
+            <div className="workspace-page">
+              <PageHeader title="Style" />
+              <div className="content-scroll">
+                <div className="style-studio-content">
+                  <StyleToolbar controller={styleController} />
+                  <StylePreviewGrid
+                    courses={courses}
+                    settings={settings}
+                    styleSettings={styleController.style}
+                    availableWidth={availableWidth}
+                    rootFontSize={rootFontSize}
+                    onLayoutClick={() => setActiveTab("preview")}
+                  />
+                </div>
               </div>
             </div>
           )}
         </main>
         <ConfirmDialog
           isOpen={isClearConfirmOpen}
+          tone="danger"
           title="Remove all courses"
           description="This will permanently delete all courses from the list."
           confirmLabel="Delete All"

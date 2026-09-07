@@ -1,6 +1,7 @@
-import React from "react";
 import type { Course } from "../../types/course";
+import { DAYS_OF_WEEK } from "../../types/course";
 import { formatTime } from "../../lib/utils";
+import { EmptyState } from "../ui/EmptyState";
 
 interface CourseListProps {
   courses: Course[];
@@ -8,177 +9,115 @@ interface CourseListProps {
   onEditCourse: (course: Course) => void;
 }
 
-export const CourseList: React.FC<CourseListProps> = ({
+export function CourseList({
   courses,
   onRemoveCourse,
   onEditCourse,
-}) => {
-  const formatDescription = (value: string) => value.replace(/;|\n/g, "\n");
-  // Group courses by day of week (expand courses that occur on multiple days)
-  const coursesByDay = courses.reduce(
-    (acc, course) => {
-      course.daysOfWeek.forEach((day) => {
-        if (!acc[day]) {
-          acc[day] = [];
-        }
-        acc[day].push(course);
-      });
-      return acc;
-    },
-    {} as Record<string, Course[]>,
-  );
-
-  // Sort courses within each day by start time
-  Object.keys(coursesByDay).forEach((day) => {
-    coursesByDay[day].sort((a, b) => a.startTime.localeCompare(b.startTime));
-  });
-
-  const daysOrder = [
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-    "Sunday",
-  ];
-  const sortedDays = daysOrder.filter((day) => coursesByDay[day]);
-
-  if (courses.length === 0) {
+}: CourseListProps) {
+  if (!courses.length)
     return (
-      <div className="card flex flex-col flex-1 h-full justify-center items-center">
-        <div className="flex-none card-body text-center">
-          <div className="mx-auto w-12 h-12 bg-base-100 rounded-full flex items-center justify-center mb-3">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="h-6 w-6 text-base-content/40"
-            >
-              <path d="M3 5h.01" />
-              <path d="M3 12h.01" />
-              <path d="M3 19h.01" />
-              <path d="M8 5h13" />
-              <path d="M8 12h13" />
-              <path d="M8 19h13" />
-            </svg>
-          </div>
-          <h3 className="text-lg font-bold">No courses in your schedule</h3>
-          <p className="text-sm text-base-content/70">
-            Upload a CSV file or add courses manually to get started
-          </p>
-        </div>
-      </div>
+      <EmptyState title="Your week starts here">
+        Add a course or import a CSV file to build your schedule.
+      </EmptyState>
     );
-  }
   return (
-    <div className="card flex-1 h-fit">
-      <div className="space-y-6">
-        {sortedDays.map((day) => (
-          <div key={day} className="border-l-4 border-primary pl-4">
-            <h3 className="text-lg font-bold text-base-content mb-3">{day}</h3>
-            <div className="space-y-2">
-              {coursesByDay[day].map((course) => (
-                <div
-                  key={course.id}
-                  className="flex items-center justify-between p-3 bg-base-200 rounded-md border border-base-300 hover:bg-base-300 transition"
-                >
-                  <div className="flex-1">
-                    <div className="flex items-center gap-x-4 gap-y-1 flex-wrap">
-                      <h4 className="font-bold text-base-content">
-                        {course.name}
-                        {course.section && (
-                          <span className="text-sm font-normal text-base-content/70 ml-1">
-                            - {course.section}
-                          </span>
-                        )}
-                      </h4>
-
-                      {/* Time Range tag */}
-                      <span className="text-sm text-base-content/70">
-                        {formatTime(course.startTime)} -{" "}
-                        {formatTime(course.endTime)}
-                      </span>
-
-                      {/* Days of Week Tags */}
-                      <div className="flex gap-2 flex-wrap">
-                        {course.daysOfWeek.map((courseDay) => (
-                          <span
-                            key={courseDay}
-                            className={`text-sm px-2 py-1 rounded ${
-                              courseDay === day
-                                ? "bg-primary/20 text-primary font-medium"
-                                : "bg-base-200 text-base-content/60"
-                            }`}
-                          >
-                            {courseDay.slice(0, 2)}
-                          </span>
-                        ))}
-                      </div>
-
-                      {/* Description Tag */}
-                      {course.description && (
-                        <span className="text-sm text-primary text-opacity-70 py-1 rounded-md whitespace-pre-line">
-                          {formatDescription(course.description)}
-                        </span>
+    <div className="course-list">
+      {DAYS_OF_WEEK.map((day) => {
+        const dayCourses = courses
+          .filter((course) => course.daysOfWeek.includes(day))
+          .sort((a, b) => a.startTime.localeCompare(b.startTime));
+        if (!dayCourses.length) return null;
+        return (
+          <section key={day} className="course-day" aria-label={day}>
+            <div className="course-day-heading">
+              <h2>{day}</h2>
+              <span>
+                {dayCourses.length}{" "}
+                {dayCourses.length === 1 ? "class" : "classes"}
+              </span>
+            </div>
+            <div className="course-day-list">
+              {dayCourses.map((course) => (
+                <article className="course-row" key={course.id}>
+                  <div className="course-row-time">
+                    <span>{formatTime(course.startTime)}</span>
+                    <span>{formatTime(course.endTime)}</span>
+                  </div>
+                  <div className="course-row-content">
+                    <div className="course-row-title">
+                      <h3>{course.name}</h3>
+                      {course.section && (
+                        <span className="section-badge">{course.section}</span>
                       )}
                     </div>
+                    {course.description && (
+                      <p className="course-description">
+                        {course.description.replace(/;|\n/g, "\n")}
+                      </p>
+                    )}
+                    <div className="course-days" aria-label="Meets on">
+                      {course.daysOfWeek.map((courseDay) => (
+                        <span
+                          key={courseDay}
+                          className={
+                            courseDay === day ? "is-current-day" : undefined
+                          }
+                        >
+                          {courseDay.slice(0, 2)}
+                        </span>
+                      ))}
+                    </div>
                   </div>
-                  <div className="ml-4 flex items-center gap-2">
+                  <div className="course-row-actions">
                     <button
+                      type="button"
+                      className="icon-button"
                       onClick={() => onEditCourse(course)}
-                      className="text-base hover:text-primary/80 hover:bg-primary/10 p-1 border border-transparent hover:border-primary rounded transition-all"
+                      aria-label={`Edit ${course.name}`}
                       title="Edit course"
                     >
                       <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-4 w-4"
-                        fill="none"
+                        width="18"
+                        height="18"
                         viewBox="0 0 24 24"
+                        fill="none"
                         stroke="currentColor"
-                        strokeWidth={2}
+                        strokeWidth="1.6"
                         strokeLinecap="round"
                         strokeLinejoin="round"
+                        aria-hidden="true"
                       >
-                        <path d="M13 21h8" />
-                        <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
+                        <path d="M13 21h8M16 3a2.1 2.1 0 0 1 3 3L7 18l-4 1 1-4Z" />
                       </svg>
                     </button>
                     <button
+                      type="button"
+                      className="icon-button icon-button-danger"
                       onClick={() => onRemoveCourse(course.id)}
-                      className="text-base hover:text-error/80 hover:bg-error/10 p-1 border border-transparent hover:border-error rounded transition-all"
+                      aria-label={`Remove ${course.name}`}
                       title="Remove course"
                     >
                       <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-4 w-4"
-                        fill="none"
+                        width="18"
+                        height="18"
                         viewBox="0 0 24 24"
+                        fill="none"
                         stroke="currentColor"
-                        strokeWidth={2}
+                        strokeWidth="1.6"
                         strokeLinecap="round"
                         strokeLinejoin="round"
+                        aria-hidden="true"
                       >
-                        <path d="M3 6h18" />
-                        <path d="M8 6V4h8v2" />
-                        <path d="M10 11v6" />
-                        <path d="M14 11v6" />
-                        <path d="M5 6l1 14a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-14" />
+                        <path d="M3 6h18M9 6V3h6v3M5 6l1 14h12l1-14M10 10v6m4-6v6" />
                       </svg>
                     </button>
                   </div>
-                </div>
+                </article>
               ))}
             </div>
-          </div>
-        ))}
-      </div>
+          </section>
+        );
+      })}
     </div>
   );
-};
+}

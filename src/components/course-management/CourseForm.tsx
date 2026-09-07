@@ -1,3 +1,4 @@
+import { SettingsGroup } from "../ui/SettingsGroup";
 import React, { useState } from "react";
 import type { Course, CourseFormData, DaysOfWeek } from "../../types/course";
 import { DAYS_OF_WEEK } from "../../types/course";
@@ -113,30 +114,13 @@ export const CourseForm: React.FC<CourseFormProps> = ({ onCourseAdded }) => {
   };
 
   return (
-    <div className="card bg-base-200 shadow-sm">
-      <form onSubmit={handleSubmit} className="card-body p-4 space-y-2">
-        <div className="card-title text-base flex items-center gap-2">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="w-4 h-4 text-primary"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            strokeWidth={2}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M13 21h8" />
-            <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
-          </svg>
-          Add Course Manually
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Course Name */}
+    <SettingsGroup title="New course">
+      <form onSubmit={handleSubmit} className="course-form">
+        <div className="form-pair">
+          {/* Course name */}
           <div className="form-control">
             <label htmlFor="courseName" className="label mb-1">
-              Course Name
+              Course name
             </label>
             <input
               id="courseName"
@@ -176,9 +160,9 @@ export const CourseForm: React.FC<CourseFormProps> = ({ onCourseAdded }) => {
           aria-labelledby="dayOfWeekLabel"
         >
           <label id="dayOfWeekLabel" className="label mb-1">
-            Day of Week
+            Days of week
           </label>
-          <div className="flex flex-wrap gap-2">
+          <div className="day-picker">
             {DAYS_OF_WEEK.map((day) => {
               const isSelected = Array.isArray(formData.daysOfWeek)
                 ? formData.daysOfWeek.includes(day)
@@ -207,12 +191,9 @@ export const CourseForm: React.FC<CourseFormProps> = ({ onCourseAdded }) => {
                       });
                     }
                   }}
-                  className={`btn w-8 font-normal py-1.5 rounded-md flex-1 transition-colors
-                  ${
-                    isSelected
-                      ? "bg-primary-content text-primary shadow-[inset_0_0_0_1px] border-primary font-medium"
-                      : "bg-base-100 text-base-content hover:bg-base-200"
-                  }`}
+                  aria-pressed={isSelected}
+                  aria-label={day}
+                  className="day-button"
                 >
                   {day.slice(0, 2)}
                 </button>
@@ -225,11 +206,11 @@ export const CourseForm: React.FC<CourseFormProps> = ({ onCourseAdded }) => {
         </div>
 
         {/* Time Inputs */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Start Time */}
+        <div className="form-pair">
+          {/* Start time */}
           <div className="form-control">
             <label htmlFor="startTime" className="label mb-1">
-              Start Time
+              Start time
             </label>
             <input
               id="startTime"
@@ -247,10 +228,10 @@ export const CourseForm: React.FC<CourseFormProps> = ({ onCourseAdded }) => {
             )}
           </div>
 
-          {/* End Time */}
+          {/* End time */}
           <div className="form-control">
             <label htmlFor="endTime" className="label mb-1">
-              End Time
+              End time
             </label>
             <input
               id="endTime"
@@ -293,10 +274,10 @@ export const CourseForm: React.FC<CourseFormProps> = ({ onCourseAdded }) => {
                 : "btn-primary shadow-none"
             } text-primary-content`}
           >
-            {isSubmitting ? "Adding..." : "Add Course"}
+            {isSubmitting ? "Adding..." : "Add course"}
           </button>
         </div>
       </form>
-    </div>
+    </SettingsGroup>
   );
 };

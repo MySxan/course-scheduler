@@ -44,7 +44,7 @@ export const CategoryBar: React.FC<CategoryBarProps> = ({
     },
     {
       id: "cardLayout",
-      label: "Card Layout",
+      label: "Layout",
       icon: (
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -68,7 +68,7 @@ export const CategoryBar: React.FC<CategoryBarProps> = ({
     },
     {
       id: "contentVisibility",
-      label: "Content Visibility",
+      label: "Content",
       icon: (
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -91,7 +91,7 @@ export const CategoryBar: React.FC<CategoryBarProps> = ({
     },
     {
       id: "colorPresets",
-      label: "Color Presets",
+      label: "Colors",
       icon: (
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -116,27 +116,21 @@ export const CategoryBar: React.FC<CategoryBarProps> = ({
   ];
 
   return (
-    <div className="w-48 flex-none bg-base-100 border-r border-base-200 flex flex-col overflow-hidden">
-      <div className="flex-1 flex flex-col gap-2 p-2">
+    <div className="style-category-bar">
+      <div className="style-category-grid">
         {categories.map((category) => (
           <button
             key={category.id}
             onClick={() => onCategoryChange(category.id)}
-            className={`flex h-12 justify-left items-center gap-2 p-4 rounded-lg transition-all duration-200 text-xs font-medium ${
-              activeCategory === category.id
-                ? "bg-primary text-primary-content border-2 border-primary"
-                : "text-base-content/60 hover:bg-base-200 hover:text-base-content border-2 border-transparent"
-            }`}
+            aria-pressed={activeCategory === category.id}
+            className="style-category"
             title={category.label}
           >
             {category.icon}
-            <span className="mt-0.5 text-center leading-tight">
-              {category.label}
-            </span>
+            <span className="style-category-label">{category.label}</span>
           </button>
         ))}
       </div>
     </div>
   );
 };
-

@@ -31,7 +31,7 @@ export const generateTimeSlots = (
   startHour: number = 7,
   endHour: number = 22,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _slotDuration?: number
+  _slotDuration?: number,
 ): TimeSlot[] => {
   const slots: TimeSlot[] = [];
 
@@ -54,7 +54,7 @@ export const generateTimeSlots = (
 export const generateAllTimeSlots = (
   startHour: number = 7,
   endHour: number = 22,
-  slotDuration: number = 60
+  slotDuration: number = 60,
 ): TimeSlot[] => {
   const slots: TimeSlot[] = [];
 
@@ -115,7 +115,7 @@ export const calculateTimeRange = (courses: Course[]): TimeRange => {
 export const timeToSlotIndex = (
   time: string,
   startHour: number = 7,
-  slotDuration: number = 30
+  slotDuration: number = 30,
 ): number => {
   const [hours, minutes] = time.split(":").map(Number);
   const totalMinutes = (hours - startHour) * 60 + minutes;
@@ -129,7 +129,7 @@ export const calculateDuration = (
   startTime: string,
   endTime: string,
   startHour: number = 7,
-  slotDuration: number = 30
+  slotDuration: number = 30,
 ): number => {
   const startSlot = timeToSlotIndex(startTime, startHour, slotDuration);
   const endSlot = timeToSlotIndex(endTime, startHour, slotDuration);
@@ -151,20 +151,14 @@ interface CourseWithSlots extends Course {
  */
 export const detectConflicts = (
   courses: Course[],
-  startHour: number = 7,
-  slotDuration: number = 30
+  _startHour: number = 7,
+  _slotDuration: number = 30,
 ): (Course & { hasConflict: boolean; conflictLevel: number })[] => {
+  // Conflict semantics are minute-exact and independent of displayed grid slots.
   const coursesWithConflicts: CourseWithSlots[] = courses.map((course) => ({
     ...course,
-    startSlot: timeToSlotIndex(course.startTime, startHour, slotDuration),
-    endSlot:
-      timeToSlotIndex(course.startTime, startHour, slotDuration) +
-      calculateDuration(
-        course.startTime,
-        course.endTime,
-        startHour,
-        slotDuration
-      ),
+    startSlot: timeToSlotIndex(course.startTime, 0, 1),
+    endSlot: timeToSlotIndex(course.endTime, 0, 1),
     hasConflict: false,
     conflictLevel: 0,
   }));
@@ -228,12 +222,12 @@ export const detectConflicts = (
 export const createTimetableCourses = (
   courses: Course[],
   startHour: number,
-  slotDuration: number = 30
+  slotDuration: number = 30,
 ): TimetableCourse[] => {
   const coursesWithConflicts = detectConflicts(
     courses,
     startHour,
-    slotDuration
+    slotDuration,
   );
 
   return coursesWithConflicts.map((course) => ({
@@ -243,7 +237,7 @@ export const createTimetableCourses = (
       course.startTime,
       course.endTime,
       startHour,
-      slotDuration
+      slotDuration,
     ),
   }));
 };
@@ -269,7 +263,7 @@ export const groupCoursesByDay = (courses: TimetableCourse[]): CoursesByDay => {
  */
 export const getVisibleDays = (
   showWeekends: boolean,
-  startWithSunday: boolean
+  startWithSunday: boolean,
 ): DaysOfWeek[] => {
   const DAYS: DaysOfWeek[] = [
     "Monday",

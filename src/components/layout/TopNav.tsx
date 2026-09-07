@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React from "react";
 
 export type TabType = "preview" | "courses" | "export" | "style";
 
@@ -104,66 +104,39 @@ export const TopNav: React.FC<TopNavProps> = ({
         ),
       },
     ],
-    []
+    [],
   );
 
-  const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
-  const [indicatorLeft, setIndicatorLeft] = useState(0);
-  const [indicatorWidth, setIndicatorWidth] = useState(0);
-
-  useEffect(() => {
-    const activeIndex = tabs.findIndex((t) => t.id === activeTab);
-    const el = tabRefs.current[activeIndex];
-    if (el) {
-      setIndicatorLeft(el.offsetLeft);
-      setIndicatorWidth(el.offsetWidth);
-    }
-  }, [activeTab, tabs]);
-
   return (
-    <div className="bg-base-100 border-b border-base-200 px-4 h-full flex items-center">
-      <div className="flex-1 flex items-center">
-        <span
-          onClick={onLogoClick}
-          className="flex text-xl gap-3 px-1 cursor-pointer font-bold items-center select-none"
-        >
-          <img
-            src={`${import.meta.env.BASE_URL}icon-192.png`}
-            alt="Course Scheduler"
-            className="h-8 w-8"
-          />
-          <h1>Course Scheduler</h1>
-        </span>
+    <nav className="top-nav" aria-label="Main navigation">
+      <button
+        type="button"
+        className="app-brand"
+        onClick={onLogoClick}
+        aria-label="Reload Course Scheduler"
+      >
+        <img
+          src={`${import.meta.env.BASE_URL}icon-192.png`}
+          alt=""
+          width="28"
+          height="28"
+        />
+        <span className="app-brand-name">Course Scheduler</span>
+      </button>
+      <div className="workspace-tabs">
+        {tabs.map((tab) => (
+          <button
+            type="button"
+            key={tab.id}
+            onClick={() => onTabChange(tab.id)}
+            aria-current={activeTab === tab.id ? "page" : undefined}
+            className="top-nav-tab"
+          >
+            <span aria-hidden="true">{tab.icon}</span>
+            {tab.label}
+          </button>
+        ))}
       </div>
-      <div className="flex-none h-full">
-        <div className="relative flex h-full">
-          {tabs.map((tab, index) => (
-            <button
-              key={tab.id}
-              ref={(el) => {
-                tabRefs.current[index] = el;
-              }}
-              onClick={() => onTabChange(tab.id)}
-              className={`flex justify-center items-center w-28 gap-2 pr-1 text-sm font-bold  transition-colors ${
-                activeTab === tab.id
-                  ? "text-base-content"
-                  : "text-base-content/60 hover:text-base-content"
-              }`}
-            >
-              {tab.icon}
-              {tab.label}
-            </button>
-          ))}
-
-          <span
-            className="absolute bottom-0 h-[4px] bg-primary transition-all duration-100"
-            style={{
-              width: indicatorWidth,
-              transform: `translateX(${indicatorLeft}px)`,
-            }}
-          />
-        </div>
-      </div>
-    </div>
+    </nav>
   );
 };

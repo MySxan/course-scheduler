@@ -1,3 +1,4 @@
+import { SettingsGroup } from "../ui/SettingsGroup";
 import React, { useRef, useState } from "react";
 import Papa from "papaparse";
 import type { Course, CSVRow, DaysOfWeek } from "../../types/course";
@@ -612,54 +613,33 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
   };
 
   return (
-    <div className="card bg-base-200 shadow-sm">
-      <div className="card-body p-4 space-y-2">
-        <div className="card-title text-base flex items-center gap-2">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="w-4 h-4 text-primary"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            strokeWidth={2}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M12 3v12" />
-            <path d="m8 11 4 4 4-4" />
-            <path d="M8 5H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-4" />
-          </svg>
-          Add Courses from File
-        </div>
-
+    <div className="csv-import">
+      <SettingsGroup title="Import courses">
         <button
           type="button"
-          className="btn btn-primary shadow-none w-full px-6 py-2 rounded-md font-semibold transition-colors"
+          className="btn w-full"
           onClick={() => setIsPanelOpen(true)}
         >
-          Open Upload Panel
+          Import CSV…
         </button>
 
         {success && (
-          <div className="py-2 px-3 border border-success rounded-md">
+          <div className="inline-success">
             <p className="text-success text-sm">{success}</p>
           </div>
         )}
-      </div>
+      </SettingsGroup>
 
       {isPanelOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+          className="dialog-backdrop upload-layer"
           role="dialog"
           aria-modal="true"
           aria-labelledby="uploadPanelTitle"
         >
-          <div
-            ref={panelRef}
-            className="card bg-base-100 w-full max-w-3xl h-[90vh] shadow-xl overflow-hidden relative"
-          >
-            <div className="card-body p-6 flex h-full flex-col gap-5">
-              <div className="flex items-center gap-3" id="uploadPanelTitle">
+          <div ref={panelRef} className="upload-dialog">
+            <div className="upload-dialog-body">
+              <div className="upload-dialog-heading" id="uploadPanelTitle">
                 <span className="text-primary">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -676,7 +656,7 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
                     <path d="M8 5H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-4" />
                   </svg>
                 </span>
-                <div className="text-xl font-bold">Upload Courses</div>
+                <h2>Import courses</h2>
               </div>
 
               <div className="flex-1 min-h-0 flex flex-col">
@@ -684,16 +664,13 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
                   <label className="text-base font-semibold">
                     Format Requirements
                   </label>
-                  <button
-                    onClick={downloadSampleCSV}
-                    className="label text-primary hover:text-primary/80 underline"
-                  >
+                  <button onClick={downloadSampleCSV} className="text-button">
                     Download Sample CSV
                   </button>
                 </div>
 
                 <div
-                  className="label mt-2 mb-4 border border-dashed border-base-300 rounded-md p-4 text-sm"
+                  className="csv-format-help"
                   role="group"
                   aria-labelledby="csvFormatLabel"
                 >
@@ -939,14 +916,15 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
                 </div>
               </div>
 
-              <div className="mt-auto flex items-center justify-between">
+              <div className="upload-dialog-footer">
                 <div className="flex items-center gap-3">
-                  <label
-                    htmlFor="csvFile"
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
                     className="btn btn-primary shadow-none"
                   >
-                    Choose File
-                  </label>
+                    Choose file
+                  </button>
                   <input
                     ref={fileInputRef}
                     id="csvFile"
@@ -995,7 +973,7 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
             </div>
             {tooltip.visible && (
               <div
-                className="absolute z-50 rounded-md border border-error bg-error-50 px-3 py-2 text-xs text-error pointer-events-none"
+                className="validation-tooltip"
                 style={{
                   left: tooltip.x,
                   top: tooltip.y,

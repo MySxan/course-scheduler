@@ -1,0 +1,419 @@
+.style-category-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  padding: 4px;
+  border-radius: var(--ui-radius-control);
+  background: #e8e8ed;
+}
+.style-category {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 36px;
+  padding: 8px 9px;
+  border: 0;
+  border-radius: var(--ui-radius-control);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--ui-secondary);
+}
+.style-category svg {
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0;
+  padding: 0;
+  stroke-width: 1.6;
+}
+.style-category[aria-pressed="true"] {
+  background: var(--ui-accent-soft);
+  color: var(--ui-accent-hover);
+  box-shadow: none;
+}
+.style-controls {
+  padding-top: 28px;
+}
+.style-help {
+  color: var(--ui-secondary);
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  margin: 0;
+}
+.style-field-order {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.style-field-order li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 0;
+  border-bottom: 1px solid #dcdce2;
+}
+.style-field-order li:first-child {
+  padding-top: 0;
+}
+.style-field-order label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.875rem;
+}
+.style-field-order small {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--ui-secondary);
+  margin-top: 3px;
+}
+.style-field-order li > div {
+  display: flex;
+  gap: 3px;
+}
+.app-shell .style-field-order button {
+  min-height: 32px;
+  width: 28px;
+  padding: 4px;
+  background: transparent;
+  border-color: transparent;
+}
+.style-swatches {
+  display: flex;
+  gap: 5px;
+}
+.style-swatches span {
+  flex: 1;
+  height: 24px;
+  border-radius: 5px;
+}
+.style-studio-content {
+  width: 100%;
+  min-width: 0;
+}
+.style-toolbar {
+  margin-bottom: 28px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--ui-divider);
+}
+.style-toolbar-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.style-toolbar-row + .style-toolbar-row {
+  margin-top: 18px;
+}
+.style-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.style-presets button {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 7px 13px 7px 7px;
+  min-height: 44px;
+  border: 1px solid var(--ui-divider);
+  border-radius: var(--ui-radius-control);
+  background: white;
+  color: var(--ui-secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+.style-presets button[aria-pressed="true"] {
+  color: var(--ui-text);
+  border-color: var(--ui-accent);
+  box-shadow: none;
+}
+.preset-chip {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+/* These swatches illustrate course presets, not the application's accent. */
+.preset-classic {
+  background: #0d9488;
+  color: #102b29;
+}
+.preset-soft {
+  background: #e2e8fb;
+  color: #293c76;
+}
+.preset-minimal {
+  border: 1px solid #0d9488;
+  color: #102b29;
+  border-radius: 2px;
+}
+.preset-compact {
+  background: #0d9488;
+  color: #102b29;
+  font-size: 0.75rem;
+  border-radius: 4px;
+}
+.style-custom-label,
+.style-save-status {
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--ui-secondary);
+}
+.style-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.app-shell .style-actions button {
+  min-height: 32px;
+  padding: 6px 10px;
+  background: transparent;
+  border-color: var(--ui-divider);
+  font-size: 0.8125rem;
+  font-weight: 400;
+}
+.style-message {
+  margin-top: 12px;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--ui-secondary);
+}
+.style-preview-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  padding-bottom: 28px;
+}
+.style-specimen {
+  background: var(--ui-surface);
+  border: 1px solid var(--ui-divider);
+  border-radius: var(--ui-radius-panel);
+  padding: 24px;
+}
+.style-section-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 22px;
+}
+.style-section-heading h2 {
+  font-size: 1.0625rem;
+  line-height: 1.4;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--ui-text);
+  margin: 0;
+}
+.style-section-heading p {
+  font-size: 0.8125rem;
+  color: var(--ui-secondary);
+  margin: 4px 0 0;
+  line-height: 1.5;
+}
+.style-dimension {
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--ui-secondary);
+  border-radius: 6px;
+  background: var(--ui-inset);
+  padding: 6px 9px;
+}
+.style-sample-controls {
+  display: flex;
+  align-items: end;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+.style-sample-controls > label:first-child {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 8px;
+  min-width: min(200px, 100%);
+  font-size: 0.8125rem;
+  color: var(--ui-secondary);
+}
+.style-conflict-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 38px;
+  font-size: 0.8125rem;
+  color: var(--ui-secondary);
+  cursor: pointer;
+}
+.style-specimen-stage {
+  padding: 40px;
+  overflow-x: auto;
+  border-radius: var(--ui-radius-control);
+  background: var(--ui-inset);
+}
+.style-specimen-card {
+  width: max-content;
+  margin: 0 auto;
+}
+.style-specimen-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-size: 0.75rem;
+  color: var(--ui-secondary);
+  margin: 14px 0 10px;
+  line-height: 1.5;
+}
+.style-specimen-footer button {
+  min-height: 32px;
+  color: var(--ui-accent);
+  text-underline-offset: 3px;
+}
+.style-notice {
+  color: var(--ui-warning);
+  background: var(--ui-warning-soft);
+  border-radius: var(--ui-radius-control);
+  padding: 12px 14px;
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  margin-top: 12px;
+}
+.style-week-scroll {
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+.timetable-canvas {
+  display: grid;
+  flex-shrink: 0;
+  height: fit-content;
+  padding: 8px;
+  box-sizing: border-box;
+  color: var(--ui-text);
+  background: transparent;
+}
+.timetable-day {
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-align: center;
+  border-bottom: 1px solid #b9b9c0;
+  padding-top: 3px;
+}
+.timetable-hour {
+  position: absolute;
+  right: 14px;
+  transform: translateY(-50%);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--ui-secondary);
+}
+.timetable-line {
+  position: absolute;
+  width: 100%;
+  border-bottom: 1px solid #d8d8df;
+  pointer-events: none;
+}
+.timetable-half {
+  position: absolute;
+  top: 50%;
+  width: 100%;
+  border-top: 1px dashed #e8e8ed;
+}
+.timetable-export {
+  outline: 1px dashed #b9b9c0;
+  outline-offset: -1px;
+  border-radius: var(--ui-radius-control);
+}
+.timetable-export.preview-hidden-outline {
+  outline: none;
+}
+.schedule-card-content {
+  box-sizing: border-box;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.schedule-conflict {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  background: #a50e4a;
+  color: white;
+  font: 700 12px/1 system-ui;
+  border-radius: 0 0 0 4px;
+}
+@media (hover: hover) {
+  .style-category:hover:not([aria-pressed="true"]) {
+    color: var(--ui-text);
+    background: #f0f0f3;
+  }
+  .style-presets button:hover {
+    background: #fafafa;
+  }
+  .style-specimen-footer button:hover {
+    color: var(--ui-accent-hover);
+    text-decoration: underline;
+  }
+}
+@media (max-width: 900px) {
+  .style-specimen {
+    padding: 20px;
+  }
+  .style-specimen-stage {
+    padding: 28px;
+  }
+}
+@media (max-width: 680px) {
+  .style-specimen {
+    padding: 18px;
+  }
+  .style-specimen-stage {
+    padding: 24px;
+  }
+  .style-toolbar-row {
+    align-items: flex-start;
+  }
+}
+
+.app-shell .style-actions button[title] {
+  position: relative;
+  width: 36px;
+  min-height: 36px;
+  padding: 7px;
+}
+.app-shell .style-actions button[title]::after {
+  content: attr(title);
+  position: absolute;
+  left: 0;
+  top: calc(100% + 6px);
+  z-index: var(--ui-layer-tooltip);
+  width: max-content;
+  max-width: 180px;
+  padding: 6px 9px;
+  border: 1px solid var(--ui-border);
+  border-radius: 4px;
+  background: var(--ui-surface);
+  color: var(--ui-text);
+  font-size: 0.8125rem;
+  pointer-events: none;
+  opacity: 0;
+}
+.app-shell .style-actions button[title]:focus-visible::after {
+  opacity: 1;
+}
+@media (hover: hover) {
+  .app-shell .style-actions button[title]:hover::after {
+    opacity: 1;
+  }
+}
