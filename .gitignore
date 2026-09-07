@@ -24,4 +24,3 @@ dist-ssr
 *.sw?
 src/components/style/style.md
 docs
-tests
