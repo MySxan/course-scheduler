@@ -5,10 +5,13 @@ import type { TimetableCanvasProps } from "../timetable/TimetableCanvas";
 import { TimetablePreview } from "./TimetablePreview";
 import { toPng, toJpeg, toSvg } from "html-to-image";
 import { ConfirmDialog } from "../ui/ConfirmDialog";
+import Papa from "papaparse";
+import type { Course } from "../../types/course";
 
 type ExportFormat = "png" | "jpg" | "svg";
 
 interface ExportControlPanelProps {
+  courses: Course[];
   disabled?: boolean;
   onDownload?: (options: {
     format: ExportFormat;
@@ -18,6 +21,7 @@ interface ExportControlPanelProps {
 }
 
 export const ExportControlPanel: React.FC<ExportControlPanelProps> = ({
+  courses,
   onDownload,
   disabled = false,
 }) => {
@@ -26,6 +30,34 @@ export const ExportControlPanel: React.FC<ExportControlPanelProps> = ({
   const [scale, setScale] = useState<number>(1);
   const [transparent, setTransparent] = useState<boolean>(true);
   const [isExportErrorOpen, setIsExportErrorOpen] = useState(false);
+
+  const handleCsvDownload = useCallback(() => {
+    if (disabled || courses.length === 0) return;
+
+    const csvRows = courses.map((course) => [
+      course.name,
+      course.section ?? "",
+      course.daysOfWeek.join(","),
+      course.startTime,
+      course.endTime,
+      (course.description ?? "").replace(/\n/g, ";"),
+    ]);
+    const csvContent = Papa.unparse(
+      [
+        ["name", "section", "day", "startTime", "endTime", "description"],
+        ...csvRows,
+      ],
+      { header: false, quotes: true },
+    );
+    const url = URL.createObjectURL(
+      new Blob([csvContent], { type: "text/csv;charset=utf-8" }),
+    );
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `schedule-${new Date().getTime()}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  }, [courses, disabled]);
 
   const handleDownload = useCallback(async () => {
     if (disabled || isExporting) return;
@@ -132,6 +164,20 @@ export const ExportControlPanel: React.FC<ExportControlPanelProps> = ({
           onClick={handleDownload}
         >
           {isExporting ? "Preparing image…" : "Download schedule"}
+        </button>
+      </SettingsGroup>
+      <SettingsGroup title="CSV export">
+        <p className="export-description">
+          Download your current schedule as a CSV file that can be imported
+          again later.
+        </p>
+        <button
+          type="button"
+          className="btn w-full"
+          disabled={disabled || courses.length === 0}
+          onClick={handleCsvDownload}
+        >
+          Export CSV
         </button>
       </SettingsGroup>
       <ConfirmDialog

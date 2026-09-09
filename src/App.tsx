@@ -329,7 +329,10 @@ function App() {
                 </div>
               )}
               {activeTab === "export" && (
-                <ExportControlPanel disabled={!courses.length} />
+                <ExportControlPanel
+                  courses={courses}
+                  disabled={!courses.length}
+                />
               )}
               {activeTab === "style" && (
                 <>

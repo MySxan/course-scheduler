@@ -134,6 +134,12 @@
   gap: 20px;
   min-width: 0;
 }
+.export-description {
+  margin: -4px 0 0;
+  color: var(--ui-secondary);
+  font-size: 0.8125rem;
+  line-height: 1.55;
+}
 .course-form > .form-pair:first-child {
   grid-template-columns: minmax(0, 1fr);
 }
