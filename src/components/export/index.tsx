@@ -163,7 +163,7 @@ export const ExportControlPanel: React.FC<ExportControlPanelProps> = ({
           disabled={disabled || isExporting}
           onClick={handleDownload}
         >
-          {isExporting ? "Preparing image…" : "Download schedule"}
+          {isExporting ? "Preparing image…" : "Export image"}
         </button>
       </SettingsGroup>
       <SettingsGroup title="CSV export">

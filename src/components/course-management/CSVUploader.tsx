@@ -613,7 +613,7 @@ export const CSVUploader: React.FC<CSVUploaderProps> = ({
   };
 
   return (
-    <div className="csv-import">
+    <div className="settings-group">
       <SettingsGroup title="Import courses">
         <button
           type="button"

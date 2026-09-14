@@ -116,41 +116,39 @@ export const CourseForm: React.FC<CourseFormProps> = ({ onCourseAdded }) => {
   return (
     <SettingsGroup title="New course">
       <form onSubmit={handleSubmit} className="course-form">
-        <div className="form-pair">
-          {/* Course name */}
-          <div className="form-control">
-            <label htmlFor="courseName" className="label mb-1">
-              Course name
-            </label>
-            <input
-              id="courseName"
-              type="text"
-              value={formData.name}
-              onChange={(e) => handleInputChange("name", e.target.value)}
-              placeholder="e.g. CHEM 101"
-              className={`input w-full px-3 py-2 border rounded-md focus:outline-primary ${
-                errors.name ? "border-error bg-error/10" : "border-base-300"
-              }`}
-            />
-            {errors.name && (
-              <p className="mt-1 text-sm text-error">{errors.name}</p>
-            )}
-          </div>
+        {/* Course name */}
+        <div className="form-control">
+          <label htmlFor="courseName" className="label mb-1">
+            Course name
+          </label>
+          <input
+            id="courseName"
+            type="text"
+            value={formData.name}
+            onChange={(e) => handleInputChange("name", e.target.value)}
+            placeholder="e.g. CHEM 101"
+            className={`input w-full px-3 py-2 border rounded-md focus:outline-primary ${
+              errors.name ? "border-error bg-error/10" : "border-base-300"
+            }`}
+          />
+          {errors.name && (
+            <p className="mt-1 text-sm text-error">{errors.name}</p>
+          )}
+        </div>
 
-          {/* Course Section */}
-          <div className="form-control">
-            <label htmlFor="courseSection" className="label mb-1">
-              Section (optional)
-            </label>
-            <input
-              id="courseSection"
-              type="text"
-              value={formData.section}
-              onChange={(e) => handleInputChange("section", e.target.value)}
-              placeholder="e.g. Y19"
-              className="input w-full px-3 py-2 border border-base-300 rounded-md focus:outline-primary"
-            />
-          </div>
+        {/* Course Section */}
+        <div className="form-control">
+          <label htmlFor="courseSection" className="label mb-1">
+            Section (optional)
+          </label>
+          <input
+            id="courseSection"
+            type="text"
+            value={formData.section}
+            onChange={(e) => handleInputChange("section", e.target.value)}
+            placeholder="e.g. Y19"
+            className="input w-full px-3 py-2 border border-base-300 rounded-md focus:outline-primary"
+          />
         </div>
 
         {/* Days of Week */}
